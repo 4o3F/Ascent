@@ -1,16 +1,20 @@
+import 'package:ascent/floatingwindow/view.dart';
+import 'package:ascent/pairing/pair/view.dart';
 import 'package:ascent/route.dart';
 import 'package:ascent/state.dart';
+import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:android_window/main.dart' as android_window;
 
 import 'generated/l10n.dart';
 
-// @pragma('vm:entry-point')
-// void androidWindow() {
-//   runApp(const AndroidWindowApp());
-// }
+@pragma("vm:entry-point")
+void androidWindow() {
+  runApp(const FloatingwindowPage());
+}
 
 void main() async {
   await GetStorage.init();
@@ -26,7 +30,7 @@ class Ascent extends StatelessWidget {
     return MaterialApp(
       title: 'Ascent',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyanAccent),
         useMaterial3: true,
       ),
       home: const AscentMain(title: "Ascent"),
@@ -41,8 +45,6 @@ class Ascent extends StatelessWidget {
   }
 }
 
-class AscentMainState extends GetxController {}
-
 class AscentMain extends StatelessWidget {
   const AscentMain({super.key, required this.title});
 
@@ -50,8 +52,17 @@ class AscentMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = Get.put(AscentMainState());
-    final globalState = Get.put(AscentGlobalState());
+    final globalState = Get.put(AscentGlobalState.INSTANCE);
+
+    android_window.setHandler((name, data) async {
+      debugPrint("Main window event received: ${name} / ${data.toString()}");
+      switch (name) {
+        case "REQUEST_STAGE":
+          android_window.post("SWITCH_STAGES",
+              AscentGlobalState.INSTANCE.ascentStage.value.name);
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(S.current.title),
@@ -82,7 +93,7 @@ class AscentMain extends StatelessWidget {
         title: 'Ascent',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyanAccent),
           useMaterial3: true,
         ),
         initialRoute: "/",

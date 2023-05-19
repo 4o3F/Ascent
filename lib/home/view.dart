@@ -6,7 +6,6 @@ import 'package:timeline_list/timeline.dart';
 import 'package:timeline_list/timeline_model.dart';
 
 import '../generated/l10n.dart';
-import 'logic.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -30,7 +29,9 @@ class HomePage extends StatelessWidget {
           padding: EdgeInsets.zero,
           icon: const Icon(Icons.send),
           onPressed: () {
-            if (AscentGlobalState().getPairingStatus() == PairingStatus.REQUIRED) {
+            if (AscentGlobalState.INSTANCE.getPairingStatus() ==
+                PairingStatus.REQUIRED) {
+              AscentGlobalState.INSTANCE.ascentStage.value = AscentStage.PAIR;
               Get.toNamed("/pairing");
             } else {
               Get.toNamed("/connecting");
@@ -75,9 +76,9 @@ class HomePage extends StatelessWidget {
                                     ),
                                     TextSpan(
                                       text:
-                                          "(${getPairingStatusStr(AscentGlobalState().getPairingStatus())})",
+                                          "(${getPairingStatusStr(AscentGlobalState.INSTANCE.getPairingStatus())})",
                                       style: TextStyle(
-                                          color: (AscentGlobalState()
+                                          color: (AscentGlobalState.INSTANCE
                                                       .getPairingStatus() ==
                                                   PairingStatus.DONE)
                                               ? Colors.greenAccent

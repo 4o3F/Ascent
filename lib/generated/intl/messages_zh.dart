@@ -28,8 +28,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "stage_connecting_description": MessageLookupByLibrary.simpleMessage(
             "Ascent将询问你无限调试的端口，此过程不需要再小窗模式下运行，输入正确的端口并连接成功后将自动开始监听祈愿历史记录链接"),
         "stage_pairing": MessageLookupByLibrary.simpleMessage("手机配对"),
+        "stage_pairing_code": MessageLookupByLibrary.simpleMessage("配对码"),
         "stage_pairing_description": MessageLookupByLibrary.simpleMessage(
             "Ascent将进入小窗模式，请开启\n设置=>开发者选项=>无限调试\n然后选择使用配对码配对并将端口和配对码输入小窗中的对应位置\n(该过程只需要执行一次)"),
+        "stage_pairing_guide_error":
+            MessageLookupByLibrary.simpleMessage("机型教程未找到，请联系开发者"),
+        "stage_pairing_guide_error_brand":
+            MessageLookupByLibrary.simpleMessage("品牌"),
+        "stage_pairing_guide_error_version":
+            MessageLookupByLibrary.simpleMessage("版本"),
+        "stage_pairing_port": MessageLookupByLibrary.simpleMessage("端口"),
+        "stage_pairing_start": MessageLookupByLibrary.simpleMessage("开始配对"),
         "stage_pairing_status_done":
             MessageLookupByLibrary.simpleMessage("已配对"),
         "stage_pairing_status_required":

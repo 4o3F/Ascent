@@ -97,6 +97,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.1.4"
+  floating:
+    dependency: "direct main"
+    description:
+      name: floating
+      sha256: c6380d9cbf628370c68749fa1f0675bc5b69d9a5b923b84660e79b3e6c9a47ec
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   flutter:
     dependency: "direct main"
     description: flutter

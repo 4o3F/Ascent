@@ -100,11 +100,61 @@ class S {
     );
   }
 
+  /// `Guide for your brand can't be found, please contact developers`
+  String get stage_pairing_guide_error {
+    return Intl.message(
+      'Guide for your brand can\'t be found, please contact developers',
+      name: 'stage_pairing_guide_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Brand`
+  String get stage_pairing_guide_error_brand {
+    return Intl.message(
+      'Brand',
+      name: 'stage_pairing_guide_error_brand',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Version`
+  String get stage_pairing_guide_error_version {
+    return Intl.message(
+      'Version',
+      name: 'stage_pairing_guide_error_version',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Start Pairing`
   String get stage_pairing_start {
     return Intl.message(
       'Start Pairing',
       name: 'stage_pairing_start',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Port`
+  String get stage_pairing_port {
+    return Intl.message(
+      'Port',
+      name: 'stage_pairing_port',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pairing Code`
+  String get stage_pairing_code {
+    return Intl.message(
+      'Pairing Code',
+      name: 'stage_pairing_code',
       desc: '',
       args: [],
     );

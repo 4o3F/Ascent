@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:ascent/utils/common_utils.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -8,8 +11,11 @@ enum AscentPages { FUNCTION, ABOUT }
 enum PairingStatus { REQUIRED, DONE }
 
 class AscentGlobalState extends GetxController {
+  static AscentGlobalState INSTANCE = AscentGlobalState();
   Rx<AscentStage> ascentStage = AscentStage.LAUNCH.obs;
   Rx<AscentPages> ascentPage = AscentPages.FUNCTION.obs;
+
+  Rx<String> adbLibraryPath = "".obs;
 
   final String pairingStatusKey = "pairing_status";
 
@@ -54,6 +60,17 @@ class AscentGlobalState extends GetxController {
       }
     } else {
       GetStorage().write(pairingStatusKey, "DONE");
+    }
+  }
+
+  Future<String> getAdbLibPath() async {
+    if (adbLibraryPath.value.isEmpty) {
+      final libPath = await getLibPath();
+      final execPath = "${libPath!}/libadb.so";
+      adbLibraryPath.value = execPath;
+      return execPath;
+    } else {
+      return adbLibraryPath.value;
     }
   }
 }
