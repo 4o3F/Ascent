@@ -1,0 +1,43 @@
+// DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
+// This is a library that provides messages for a zh locale. All the
+// messages from the main program should be duplicated here with the same
+// function name.
+
+// Ignore issues from commonly used lints in this file.
+// ignore_for_file:unnecessary_brace_in_string_interps, unnecessary_new
+// ignore_for_file:prefer_single_quotes,comment_references, directives_ordering
+// ignore_for_file:annotate_overrides,prefer_generic_function_type_aliases
+// ignore_for_file:unused_import, file_names, avoid_escaping_inner_quotes
+// ignore_for_file:unnecessary_string_interpolations, unnecessary_string_escapes
+
+import 'package:intl/intl.dart';
+import 'package:intl/message_lookup_by_library.dart';
+
+final messages = new MessageLookup();
+
+typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
+
+class MessageLookup extends MessageLookupByLibrary {
+  String get localeName => 'zh';
+
+  final messages = _notInlinedMessages(_notInlinedMessages);
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "drawer_about": MessageLookupByLibrary.simpleMessage("关于"),
+        "drawer_function": MessageLookupByLibrary.simpleMessage("应用"),
+        "stage_connecting": MessageLookupByLibrary.simpleMessage("手机连接"),
+        "stage_connecting_description": MessageLookupByLibrary.simpleMessage(
+            "Ascent将询问你无限调试的端口，此过程不需要再小窗模式下运行，输入正确的端口并连接成功后将自动开始监听祈愿历史记录链接"),
+        "stage_pairing": MessageLookupByLibrary.simpleMessage("手机配对"),
+        "stage_pairing_description": MessageLookupByLibrary.simpleMessage(
+            "Ascent将进入小窗模式，请开启\n设置=>开发者选项=>无限调试\n然后选择使用配对码配对并将端口和配对码输入小窗中的对应位置\n(该过程只需要执行一次)"),
+        "stage_pairing_status_done":
+            MessageLookupByLibrary.simpleMessage("已配对"),
+        "stage_pairing_status_required":
+            MessageLookupByLibrary.simpleMessage("未配对"),
+        "stage_watching": MessageLookupByLibrary.simpleMessage("监听链接"),
+        "stage_watching_description": MessageLookupByLibrary.simpleMessage(
+            "Ascent开始监听祈愿历史记录链接，您现在可以打开原神/星穹铁道，当监听到有效的链接时会发送通知"),
+        "stages": MessageLookupByLibrary.simpleMessage("Ascent执行步骤"),
+        "title": MessageLookupByLibrary.simpleMessage("Ascent")
+      };
+}

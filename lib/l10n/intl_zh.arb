@@ -1,0 +1,16 @@
+{
+  "@@locale": "zh",
+  "title": "Ascent",
+  "drawer_function": "应用",
+  "drawer_about": "关于",
+  "stages": "Ascent执行步骤",
+  "stage_pairing": "手机配对",
+  "stage_pairing_start": "开始配对",
+  "stage_pairing_status_done": "已配对",
+  "stage_pairing_status_required": "未配对",
+  "stage_pairing_description": "Ascent将进入小窗模式，请开启\n设置=>开发者选项=>无限调试\n然后选择使用配对码配对并将端口和配对码输入小窗中的对应位置\n(该过程只需要执行一次)",
+  "stage_connecting": "手机连接",
+  "stage_connecting_description": "Ascent将询问你无限调试的端口，此过程不需要再小窗模式下运行，输入正确的端口并连接成功后将自动开始监听祈愿历史记录链接",
+  "stage_watching": "监听链接",
+  "stage_watching_description": "Ascent开始监听祈愿历史记录链接，您现在可以打开原神/星穹铁道，当监听到有效的链接时会发送通知",
+}
