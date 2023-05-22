@@ -1,8 +1,8 @@
 import 'package:ascent/state.dart';
 import 'package:ascent/utils/device_info_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:android_window/main.dart' as android_window;
 
 import '../../generated/l10n.dart';
 
@@ -51,8 +51,6 @@ class PairingGuidePage extends StatelessWidget {
               Expanded(
                   child: TextButton(
                 onPressed: () {
-                  android_window.open(size: Size(600, 800), focusable: true);
-                  //android_window.post("SWITCH_STAGES", AscentStage.PAIR.name);
                 },
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
