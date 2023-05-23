@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ascent/utils/common_utils.dart';
+import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 

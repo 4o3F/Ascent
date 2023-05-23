@@ -24,6 +24,9 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "drawer_about": MessageLookupByLibrary.simpleMessage("About"),
         "drawer_function": MessageLookupByLibrary.simpleMessage("Application"),
+        "notification_action": MessageLookupByLibrary.simpleMessage("Input"),
+        "service_init": MessageLookupByLibrary.simpleMessage(
+            "Background service initializing"),
         "stage_connecting":
             MessageLookupByLibrary.simpleMessage("Phone Connecting"),
         "stage_connecting_description": MessageLookupByLibrary.simpleMessage(
@@ -39,6 +42,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Brand"),
         "stage_pairing_guide_error_version":
             MessageLookupByLibrary.simpleMessage("Version"),
+        "stage_pairing_notification_description_code":
+            MessageLookupByLibrary.simpleMessage(
+                "Please enter pairing code below"),
+        "stage_pairing_notification_description_port":
+            MessageLookupByLibrary.simpleMessage(
+                "Auto detecting pairing port, you can also input it manually below"),
         "stage_pairing_port": MessageLookupByLibrary.simpleMessage("Port"),
         "stage_pairing_start":
             MessageLookupByLibrary.simpleMessage("Start Pairing"),

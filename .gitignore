@@ -31,7 +31,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-
+/native/target
 # Symbolication related
 app.*.symbols
 

@@ -24,11 +24,12 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "drawer_about": MessageLookupByLibrary.simpleMessage("关于"),
         "drawer_function": MessageLookupByLibrary.simpleMessage("应用"),
+        "notification_action": MessageLookupByLibrary.simpleMessage("输入"),
+        "service_init": MessageLookupByLibrary.simpleMessage("后台服务启动中"),
         "stage_connecting": MessageLookupByLibrary.simpleMessage("手机连接"),
         "stage_connecting_description": MessageLookupByLibrary.simpleMessage(
             "Ascent将询问你无限调试的端口，此过程不需要再小窗模式下运行，输入正确的端口并连接成功后将自动开始监听祈愿历史记录链接"),
         "stage_pairing": MessageLookupByLibrary.simpleMessage("手机配对"),
-        "stage_pairing_code": MessageLookupByLibrary.simpleMessage("配对码"),
         "stage_pairing_description": MessageLookupByLibrary.simpleMessage(
             "Ascent将进入小窗模式，请开启\n设置=>开发者选项=>无限调试\n然后选择使用配对码配对并将端口和配对码输入小窗中的对应位置\n(该过程只需要执行一次)"),
         "stage_pairing_guide_error":
@@ -37,7 +38,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("品牌"),
         "stage_pairing_guide_error_version":
             MessageLookupByLibrary.simpleMessage("版本"),
-        "stage_pairing_port": MessageLookupByLibrary.simpleMessage("端口"),
+        "stage_pairing_notification_description_code":
+            MessageLookupByLibrary.simpleMessage("请根据提示输入配对码"),
+        "stage_pairing_notification_description_port":
+            MessageLookupByLibrary.simpleMessage("自动检测配对端口中，您也可以手动在下方输入"),
         "stage_pairing_start": MessageLookupByLibrary.simpleMessage("开始配对"),
         "stage_pairing_status_done":
             MessageLookupByLibrary.simpleMessage("已配对"),

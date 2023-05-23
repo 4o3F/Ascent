@@ -60,6 +60,16 @@ class S {
     );
   }
 
+  /// `Background service initializing`
+  String get service_init {
+    return Intl.message(
+      'Background service initializing',
+      name: 'service_init',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Application`
   String get drawer_function {
     return Intl.message(
@@ -75,6 +85,16 @@ class S {
     return Intl.message(
       'About',
       name: 'drawer_about',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Input`
+  String get notification_action {
+    return Intl.message(
+      'Input',
+      name: 'notification_action',
       desc: '',
       args: [],
     );
@@ -135,6 +155,26 @@ class S {
     return Intl.message(
       'Start Pairing',
       name: 'stage_pairing_start',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto detecting pairing port, you can also input it manually below`
+  String get stage_pairing_notification_description_port {
+    return Intl.message(
+      'Auto detecting pairing port, you can also input it manually below',
+      name: 'stage_pairing_notification_description_port',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter pairing code below`
+  String get stage_pairing_notification_description_code {
+    return Intl.message(
+      'Please enter pairing code below',
+      name: 'stage_pairing_notification_description_code',
       desc: '',
       args: [],
     );

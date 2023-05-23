@@ -1,7 +1,6 @@
-import 'package:ascent/state.dart';
 import 'package:ascent/utils/device_info_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 
 import '../../generated/l10n.dart';
@@ -51,6 +50,9 @@ class PairingGuidePage extends StatelessWidget {
               Expanded(
                   child: TextButton(
                 onPressed: () {
+                  FlutterBackgroundService().invoke('update_stage', {
+                    'stage': 'pairing'
+                  });
                 },
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(

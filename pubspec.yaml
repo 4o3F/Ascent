@@ -39,12 +39,17 @@ dependencies:
   cupertino_icons: ^1.0.2
   get:
   get_storage:
-  intl: 0.18.0
+  intl: 0.18.1
   timeline_list: ^0.0.6
   device_info_plus: ^9.0.1
   floating: ^2.0.0
   flutter_local_notifications: ^14.0.1
   flutter_background_service: ^2.4.6
+  multicast_dns: ^0.3.2+3
+  ffi: ^2.0.1
+  flutter_rust_bridge: ^1.75.3
+  freezed_annotation: ^2.2.0
+  path_provider: ^2.0.15
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +61,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  ffigen: ^7.2.4
+  build_runner: ^2.4.4
+  freezed: ^2.3.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
