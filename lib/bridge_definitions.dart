@@ -7,6 +7,9 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:uuid/uuid.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
+
+part 'bridge_definitions.freezed.dart';
 
 abstract class Native {
   Future<void> writeData(
@@ -21,4 +24,34 @@ abstract class Native {
   Future<int> countData({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCountDataConstMeta;
+
+  Stream<Event> registerEventListener({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kRegisterEventListenerConstMeta;
+
+  Future<void> closeEventListener({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCloseEventListenerConstMeta;
+
+  Future<void> createEvent(
+      {required String address, required String payload, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCreateEventConstMeta;
+
+  Future<String> asStringMethodEvent({required Event that, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kAsStringMethodEventConstMeta;
+}
+
+@freezed
+class Event with _$Event {
+  const Event._();
+  const factory Event({
+    required Native bridge,
+    required String address,
+    required String payload,
+  }) = _Event;
+  Future<String> asString({dynamic hint}) => bridge.asStringMethodEvent(
+        that: this,
+      );
 }

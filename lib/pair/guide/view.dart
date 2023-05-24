@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 
+import '../../ffi.dart';
 import '../../generated/l10n.dart';
 
-class PairingGuidePage extends StatelessWidget {
-  const PairingGuidePage({Key? key}) : super(key: key);
+class PairGuidePage extends StatelessWidget {
+  const PairGuidePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +51,7 @@ class PairingGuidePage extends StatelessWidget {
               Expanded(
                   child: TextButton(
                 onPressed: () {
-                  FlutterBackgroundService().invoke('update_stage', {
-                    'stage': 'pairing'
-                  });
+                  api.createEvent(address: 'update_stage', payload: 'pair');
                 },
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(

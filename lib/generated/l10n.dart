@@ -180,50 +180,20 @@ class S {
     );
   }
 
-  /// `Port`
-  String get stage_pairing_port {
+  /// `Pairing successful`
+  String get stage_pairing_notification_success {
     return Intl.message(
-      'Port',
-      name: 'stage_pairing_port',
+      'Pairing successful',
+      name: 'stage_pairing_notification_success',
       desc: '',
       args: [],
     );
   }
 
-  /// `Pairing Code`
-  String get stage_pairing_code {
-    return Intl.message(
-      'Pairing Code',
-      name: 'stage_pairing_code',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Paired`
-  String get stage_pairing_status_done {
-    return Intl.message(
-      'Paired',
-      name: 'stage_pairing_status_done',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Unpaired`
-  String get stage_pairing_status_required {
-    return Intl.message(
-      'Unpaired',
-      name: 'stage_pairing_status_required',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Ascent will enter picture-in-picture mode. Please go to Settings => Developer options => Enable wireless debugging. Then select "Pair with pairing code" and enter the port and pairing code in their respective fields in the picture-in-picture window.\n(This action only needs to be run once)`
+  /// `Ascent will send notifications, please enable \nSettings => Developer options => Wireless Debugging\nThen select "Pair with pairing code."\nAfterwards, follow the notification prompts to enter the port and pairing code.\n(This process only needs to be performed once.)`
   String get stage_pairing_description {
     return Intl.message(
-      'Ascent will enter picture-in-picture mode. Please go to Settings => Developer options => Enable wireless debugging. Then select "Pair with pairing code" and enter the port and pairing code in their respective fields in the picture-in-picture window.\n(This action only needs to be run once)',
+      'Ascent will send notifications, please enable \nSettings => Developer options => Wireless Debugging\nThen select "Pair with pairing code."\nAfterwards, follow the notification prompts to enter the port and pairing code.\n(This process only needs to be performed once.)',
       name: 'stage_pairing_description',
       desc: '',
       args: [],

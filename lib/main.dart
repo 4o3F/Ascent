@@ -2,15 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:ascent/bridge_definitions.dart';
-import 'package:ascent/pairing/pair/pairing.dart';
+import 'package:ascent/pair/pair/pairing.dart';
 import 'package:ascent/route.dart';
 import 'package:ascent/state.dart';
 import 'package:ascent/utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -21,16 +19,18 @@ import 'ffi.dart';
 import 'generated/l10n.dart';
 
 void main() async {
-  runApp(const Ascent());
-
   // Storage initialize
   await GetStorage.init();
   // Make sure widgets are loaded
   WidgetsFlutterBinding.ensureInitialized();
   // Background service initialize
   await initializeService();
+
+  runApp(const Ascent());
 }
 Future<void> initializeService() async {
+  await S.load(Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
+
   final service = FlutterBackgroundService();
 
   AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -61,8 +61,16 @@ Future<void> initializeService() async {
     iosConfiguration: IosConfiguration(),
   );
 
-  service.startService();
 
+  // These are used to write global data for all isolates
+  await initGlobalData();
+
+  service.startService();
+  api.createEvent(address: 'update_stage', payload: 'pair');
+
+}
+
+initGlobalData() async {
   String? nativeLibPath = await getLibPath();
   String dataPath = (await getApplicationDocumentsDirectory()).path;
   await api.writeData(key: AscentConstants.APPLICATION_DATA_PATH, value: dataPath);
@@ -75,23 +83,32 @@ void onStart(ServiceInstance service) async {
 
   await S.load(Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
   service.on('update_stage').listen((event) {
     String? stage = event?['stage'].toString();
     debugPrint("Service change stage: ${stage}");
     switch (stage) {
       case "pairing":
-        Pairing.getInstance().doPairing(service);
+        debugPrint(service.hashCode.toString());
+        Pairing.getInstance().doPairing();
         break;
     }
   });
 
-  service.on('stop_self').listen((event) {
-    debugPrint("service self stopped");
-    service.stopSelf();
+  api.registerEventListener().listen((event) {
+    debugPrint("Received event: ${event.address}");
+    switch(event.address) {
+      case 'update_stage':
+        Pairing.getInstance().doPairing();
+    }
   });
+
+  // api.registerEventListener().listen((event) {
+  //   debugPrint("EVENT RECEIVED");
+  //   debugPrint(event.address);
+  // });
+  //
+  // debugPrint("Creating eventbus event");
+  // await api.createEvent(address: 'EVENTBUS_EVENT', payload: "");
 
 }
 

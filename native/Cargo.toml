@@ -11,3 +11,4 @@ crate-type = ["staticlib", "cdylib"]
 [dependencies]
 flutter_rust_bridge = "1"
 lazy_static = "1.4.0"
+anyhow = { version = "1.0", default-features = false }

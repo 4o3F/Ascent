@@ -78,6 +78,75 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
+  Stream<Event> registerEventListener({dynamic hint}) {
+    return _platform.executeStream(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_register_event_listener(port_),
+      parseSuccessData: (d) => _wire2api_event(d),
+      constMeta: kRegisterEventListenerConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kRegisterEventListenerConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "register_event_listener",
+        argNames: [],
+      );
+
+  Future<void> closeEventListener({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_close_event_listener(port_),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kCloseEventListenerConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCloseEventListenerConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "close_event_listener",
+        argNames: [],
+      );
+
+  Future<void> createEvent(
+      {required String address, required String payload, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(address);
+    var arg1 = _platform.api2wire_String(payload);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_create_event(port_, arg0, arg1),
+      parseSuccessData: _wire2api_unit,
+      constMeta: kCreateEventConstMeta,
+      argValues: [address, payload],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kCreateEventConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "create_event",
+        argNames: ["address", "payload"],
+      );
+
+  Future<String> asStringMethodEvent({required Event that, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_event(that);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_as_string__method__Event(port_, arg0),
+      parseSuccessData: _wire2api_String,
+      constMeta: kAsStringMethodEventConstMeta,
+      argValues: [that],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kAsStringMethodEventConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "as_string__method__Event",
+        argNames: ["that"],
+      );
+
   void dispose() {
     _platform.dispose();
   }
@@ -85,6 +154,17 @@ class NativeImpl implements Native {
 
   String _wire2api_String(dynamic raw) {
     return raw as String;
+  }
+
+  Event _wire2api_event(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return Event(
+      bridge: this,
+      address: _wire2api_String(arr[0]),
+      payload: _wire2api_String(arr[1]),
+    );
   }
 
   int _wire2api_i32(dynamic raw) {
@@ -124,6 +204,13 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
+  ffi.Pointer<wire_Event> api2wire_box_autoadd_event(Event raw) {
+    final ptr = inner.new_box_autoadd_event_0();
+    _api_fill_to_wire_event(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_uint_8_list> api2wire_uint_8_list(Uint8List raw) {
     final ans = inner.new_uint_8_list_0(raw.length);
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
@@ -132,6 +219,16 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
 // Section: finalizer
 
 // Section: api_fill_to_wire
+
+  void _api_fill_to_wire_box_autoadd_event(
+      Event apiObj, ffi.Pointer<wire_Event> wireObj) {
+    _api_fill_to_wire_event(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_event(Event apiObj, wire_Event wireObj) {
+    wireObj.address = api2wire_String(apiObj.address);
+    wireObj.payload = api2wire_String(apiObj.payload);
+  }
 }
 
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names
@@ -281,6 +378,81 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_count_data =
       _wire_count_dataPtr.asFunction<void Function(int)>();
 
+  void wire_register_event_listener(
+    int port_,
+  ) {
+    return _wire_register_event_listener(
+      port_,
+    );
+  }
+
+  late final _wire_register_event_listenerPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_register_event_listener');
+  late final _wire_register_event_listener =
+      _wire_register_event_listenerPtr.asFunction<void Function(int)>();
+
+  void wire_close_event_listener(
+    int port_,
+  ) {
+    return _wire_close_event_listener(
+      port_,
+    );
+  }
+
+  late final _wire_close_event_listenerPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_close_event_listener');
+  late final _wire_close_event_listener =
+      _wire_close_event_listenerPtr.asFunction<void Function(int)>();
+
+  void wire_create_event(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> address,
+    ffi.Pointer<wire_uint_8_list> payload,
+  ) {
+    return _wire_create_event(
+      port_,
+      address,
+      payload,
+    );
+  }
+
+  late final _wire_create_eventPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_create_event');
+  late final _wire_create_event = _wire_create_eventPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_as_string__method__Event(
+    int port_,
+    ffi.Pointer<wire_Event> that,
+  ) {
+    return _wire_as_string__method__Event(
+      port_,
+      that,
+    );
+  }
+
+  late final _wire_as_string__method__EventPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_Event>)>>('wire_as_string__method__Event');
+  late final _wire_as_string__method__Event = _wire_as_string__method__EventPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_Event>)>();
+
+  ffi.Pointer<wire_Event> new_box_autoadd_event_0() {
+    return _new_box_autoadd_event_0();
+  }
+
+  late final _new_box_autoadd_event_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Event> Function()>>(
+          'new_box_autoadd_event_0');
+  late final _new_box_autoadd_event_0 = _new_box_autoadd_event_0Ptr
+      .asFunction<ffi.Pointer<wire_Event> Function()>();
+
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
   ) {
@@ -318,6 +490,12 @@ final class wire_uint_8_list extends ffi.Struct {
 
   @ffi.Int32()
   external int len;
+}
+
+final class wire_Event extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> address;
+
+  external ffi.Pointer<wire_uint_8_list> payload;
 }
 
 typedef DartPostCObjectFnType = ffi.Pointer<

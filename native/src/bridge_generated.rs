@@ -62,6 +62,57 @@ fn wire_count_data_impl(port_: MessagePort) {
         move || move |task_callback| Ok(count_data()),
     )
 }
+fn wire_register_event_listener_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "register_event_listener",
+            port: Some(port_),
+            mode: FfiCallMode::Stream,
+        },
+        move || move |task_callback| register_event_listener(task_callback.stream_sink()),
+    )
+}
+fn wire_close_event_listener_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "close_event_listener",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(close_event_listener()),
+    )
+}
+fn wire_create_event_impl(
+    port_: MessagePort,
+    address: impl Wire2Api<String> + UnwindSafe,
+    payload: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_event",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_address = address.wire2api();
+            let api_payload = payload.wire2api();
+            move |task_callback| Ok(create_event(api_address, api_payload))
+        },
+    )
+}
+fn wire_as_string__method__Event_impl(port_: MessagePort, that: impl Wire2Api<Event> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "as_string__method__Event",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_that = that.wire2api();
+            move |task_callback| Ok(Event::as_string(&api_that))
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -92,6 +143,13 @@ impl Wire2Api<u8> for u8 {
 }
 
 // Section: impl IntoDart
+
+impl support::IntoDart for Event {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.address.into_dart(), self.payload.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Event {}
 
 // Section: executor
 
