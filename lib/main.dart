@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:ascent/pair/pair/pairing.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'constants.dart';
 import 'ffi.dart';
@@ -23,18 +25,37 @@ void main() async {
   await GetStorage.init();
   // Make sure widgets are loaded
   WidgetsFlutterBinding.ensureInitialized();
+
   // Background service initialize
   await initializeService();
 
+  await requestPermission();
+
   runApp(const Ascent());
 }
+
+Future<void> requestPermission() async {
+  Permission alertPermission = Permission.notification;
+  if(await alertPermission.status.isDenied) {
+    debugPrint("Notification permission requesting");
+    alertPermission.request();
+  }
+  debugPrint("Notification permission granted");
+}
+
 Future<void> initializeService() async {
-  await S.load(Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
+  await S.load(
+      Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
 
   final service = FlutterBackgroundService();
 
+  if(await service.isRunning()) {
+    service.invoke('stop');
+  }
+
+  // Create a notification channel used by foreground service to stay alive
   AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'ascent_channel', // id
+    'ascent_service_channel', // id
     S.current.title, // title
     description: '', // description
     importance: Importance.max, // importance must be at low or higher level
@@ -53,7 +74,7 @@ Future<void> initializeService() async {
       onStart: onStart,
       autoStart: true,
       isForegroundMode: true,
-      notificationChannelId: 'ascent_channel',
+      notificationChannelId: 'ascent_service_channel',
       initialNotificationTitle: S.current.title,
       initialNotificationContent: S.current.service_init,
       foregroundServiceNotificationId: 233,
@@ -61,57 +82,57 @@ Future<void> initializeService() async {
     iosConfiguration: IosConfiguration(),
   );
 
-
   // These are used to write global data for all isolates
   await initGlobalData();
 
-  service.startService();
-  api.createEvent(address: 'update_stage', payload: 'pair');
+  // api.registerEventListener().listen((event) {
+  //   switch(event.address) {
+  //     case 'restart':
+  //       if()
+  //   }
+  // });
 
+  service.startService();
 }
 
 initGlobalData() async {
+  debugPrint("Init global data");
   String? nativeLibPath = await getLibPath();
   String dataPath = (await getApplicationDocumentsDirectory()).path;
-  await api.writeData(key: AscentConstants.APPLICATION_DATA_PATH, value: dataPath);
+  await api.writeData(
+      key: AscentConstants.APPLICATION_DATA_PATH, value: dataPath);
   await api.writeData(key: AscentConstants.ADB_LIB_PATH, value: nativeLibPath!);
 }
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
+  debugPrint("Background service init ensured");
 
-  await S.load(Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
+  await S.load(
+      Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
 
-  service.on('update_stage').listen((event) {
-    String? stage = event?['stage'].toString();
-    debugPrint("Service change stage: ${stage}");
-    switch (stage) {
-      case "pairing":
-        debugPrint(service.hashCode.toString());
+  debugPrint("Background service language loaded");
+
+  debugPrint("Registering event listener from dart background service");
+  api.registerEventListener().listen((event) {
+    debugPrint("Received event: ${event.address}");
+    switch (event.address) {
+      case 'update_stage':
         Pairing.getInstance().doPairing();
         break;
     }
   });
 
-  api.registerEventListener().listen((event) {
-    debugPrint("Received event: ${event.address}");
-    switch(event.address) {
-      case 'update_stage':
-        Pairing.getInstance().doPairing();
-    }
+  service.on('stop').listen((event) {
+    debugPrint("Background service stopping");
+    service.stopSelf();
   });
-
-  // api.registerEventListener().listen((event) {
-  //   debugPrint("EVENT RECEIVED");
-  //   debugPrint(event.address);
-  // });
-  //
-  // debugPrint("Creating eventbus event");
-  // await api.createEvent(address: 'EVENTBUS_EVENT', payload: "");
-
+  int identity = Random().nextInt(20);
+  Timer.periodic(const Duration(seconds: 1), (timer) {
+    debugPrint("Service identity: $identity");
+  });
 }
-
 
 class Ascent extends StatelessWidget {
   const Ascent({super.key});

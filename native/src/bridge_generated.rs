@@ -72,16 +72,6 @@ fn wire_register_event_listener_impl(port_: MessagePort) {
         move || move |task_callback| register_event_listener(task_callback.stream_sink()),
     )
 }
-fn wire_close_event_listener_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "close_event_listener",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || move |task_callback| Ok(close_event_listener()),
-    )
-}
 fn wire_create_event_impl(
     port_: MessagePort,
     address: impl Wire2Api<String> + UnwindSafe,
@@ -98,6 +88,16 @@ fn wire_create_event_impl(
             let api_payload = payload.wire2api();
             move |task_callback| Ok(create_event(api_address, api_payload))
         },
+    )
+}
+fn wire_get_listener_count_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_listener_count",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(get_listener_count()),
     )
 }
 fn wire_as_string__method__Event_impl(port_: MessagePort, that: impl Wire2Api<Event> + UnwindSafe) {

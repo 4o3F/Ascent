@@ -50,8 +50,10 @@ class PairGuidePage extends StatelessWidget {
             children: [
               Expanded(
                   child: TextButton(
-                onPressed: () {
+                onPressed: () async {
+                  debugPrint("Sending update_stage event from main activity to ${await api.getListenerCount()} listeners");
                   api.createEvent(address: 'update_stage', payload: 'pair');
+                  Get.toNamed("/pairing_window");
                 },
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(

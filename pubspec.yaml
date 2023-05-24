@@ -50,6 +50,7 @@ dependencies:
   flutter_rust_bridge: ^1.75.3
   freezed_annotation: ^2.2.0
   path_provider: ^2.0.15
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:ascent/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 
@@ -12,6 +13,14 @@ import '../../generated/l10n.dart';
 @pragma('vm:entry-point')
 handleNotificationAction(NotificationResponse response) async {
   debugPrint("Notification response received");
+
+  debugPrint(response.notificationResponseType.name);
+  debugPrint("Notification response payload: ${response.payload}");
+
+  if (response.input == null) {
+    debugPrint("Notification action response without input");
+    return;
+  }
 
   if (response.actionId == "pairing_port") {
     // Used to check if the input is correct or not
@@ -38,18 +47,30 @@ class Pairing {
     return _instance!;
   }
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   String adbPairingPort = "";
   String adbPairingCode = "";
 
   void doPairing() async {
+
+    if(adbPairingPort.isNotEmpty || adbPairingCode.isNotEmpty) {
+      debugPrint("Clearing adb pairing data");
+      // Not empty meaning the service has started and user has tried to do something once, reset all
+      adbPairingPort = "";
+      adbPairingCode = "";
+      sendPortNotification();
+      waitMDns();
+      return;
+    }
+
+
     AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'ascent_channel', // id
-      S.current.title, // title
-      description: '', // description
-      importance: Importance.max, // importance must be at low or higher level
+      'ascent_channel',
+      S.current.title,
+      description: '',
+      importance: Importance.max,
     );
 
     await flutterLocalNotificationsPlugin
@@ -57,36 +78,34 @@ class Pairing {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
+    flutterLocalNotificationsPlugin.initialize(
+        const InitializationSettings(
+            android: AndroidInitializationSettings('ic_bg_service_small')),
+        onDidReceiveNotificationResponse: handleNotificationAction,
+        onDidReceiveBackgroundNotificationResponse: handleNotificationAction);
+
+    debugPrint("Registering event listener from dart pairing service");
     api.registerEventListener().listen((event) async {
+      debugPrint("Pairing Background received event ${event.address}");
       switch (event.address) {
         case AscentConstants.EVENT_PAIRING_PORT_RECEIVED:
           await flutterLocalNotificationsPlugin.cancelAll();
           adbPairingPort = event.payload;
+          debugPrint("Adb pairing port set to $adbPairingPort");
           sendCodeNotification();
           break;
         case AscentConstants.EVENT_PAIRING_CODE_RECEIVED:
           await flutterLocalNotificationsPlugin.cancelAll();
           adbPairingCode = event.payload;
+          debugPrint("Adb pairing code set to $adbPairingCode");
           doPairShell();
           break;
         default:
       }
     });
 
-    startPairingProcess();
-  }
-
-  void startPairingProcess() {
-    debugPrint("Start pairing process");
-    flutterLocalNotificationsPlugin.initialize(
-        const InitializationSettings(
-            android: AndroidInitializationSettings('ic_bg_service_small')),
-        onDidReceiveNotificationResponse: handleNotificationAction,
-        onDidReceiveBackgroundNotificationResponse: handleNotificationAction);
     sendPortNotification();
-    api
-        .writeData(key: AscentConstants.ADB_PAIRING_PORT_STATUS, value: "false")
-        .then((value) => {waitMDns()});
+    waitMDns();
   }
 
   void sendPortNotification() {
@@ -182,6 +201,7 @@ class Pairing {
     debugPrint("mDns started");
 
     while (adbPairingPort.isEmpty) {
+      debugPrint("ADB pairing mDNS listening...");
       await for (final PtrResourceRecord ptr
           in mDnsClient.lookup<PtrResourceRecord>(
               ResourceRecordQuery.serverPointer(adbTlsMdns))) {
@@ -211,19 +231,26 @@ class Pairing {
       debugPrint("Exec path: $execPath");
       debugPrint("Data path: $dataPath");
 
+      debugPrint("Pairing to 127.0.0.1:$adbPairingPort $adbPairingCode $dataPath");
+
+      var result = await Process.run(execPath, ['start-server', dataPath]);
+
+      debugPrint("STD OUT: ${result.stdout}");
+      debugPrint("STD ERR: ${result.stderr}");
+
       Process.run(execPath, [
         'pair',
         '127.0.0.1:$adbPairingPort',
         adbPairingCode,
         dataPath
-      ]).then((result) => {
-            if (result.stderr.toString().isEmpty)
-              {
-                sendSuccessNotification(),
-                debugPrint(
-                    "Background activity sending adb pairing success message"),
-              }
-          });
+      ]).then((result) {
+        debugPrint("STD OUT: ${result.stdout}");
+        debugPrint("STD ERR: ${result.stderr}");
+        if (result.stderr.toString().isEmpty) {
+          sendSuccessNotification();
+          debugPrint("Background activity sending adb pairing success message");
+        }
+      });
     });
   }
 }

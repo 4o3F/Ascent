@@ -29,14 +29,14 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kRegisterEventListenerConstMeta;
 
-  Future<void> closeEventListener({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kCloseEventListenerConstMeta;
-
   Future<void> createEvent(
       {required String address, required String payload, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateEventConstMeta;
+
+  Future<int> getListenerCount({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetListenerCountConstMeta;
 
   Future<String> asStringMethodEvent({required Event that, dynamic hint});
 

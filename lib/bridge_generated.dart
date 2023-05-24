@@ -94,22 +94,6 @@ class NativeImpl implements Native {
         argNames: [],
       );
 
-  Future<void> closeEventListener({dynamic hint}) {
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_close_event_listener(port_),
-      parseSuccessData: _wire2api_unit,
-      constMeta: kCloseEventListenerConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kCloseEventListenerConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "close_event_listener",
-        argNames: [],
-      );
-
   Future<void> createEvent(
       {required String address, required String payload, dynamic hint}) {
     var arg0 = _platform.api2wire_String(address);
@@ -127,6 +111,22 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "create_event",
         argNames: ["address", "payload"],
+      );
+
+  Future<int> getListenerCount({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_get_listener_count(port_),
+      parseSuccessData: _wire2api_i32,
+      constMeta: kGetListenerCountConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kGetListenerCountConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_listener_count",
+        argNames: [],
       );
 
   Future<String> asStringMethodEvent({required Event that, dynamic hint}) {
@@ -392,20 +392,6 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_register_event_listener =
       _wire_register_event_listenerPtr.asFunction<void Function(int)>();
 
-  void wire_close_event_listener(
-    int port_,
-  ) {
-    return _wire_close_event_listener(
-      port_,
-    );
-  }
-
-  late final _wire_close_event_listenerPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_close_event_listener');
-  late final _wire_close_event_listener =
-      _wire_close_event_listenerPtr.asFunction<void Function(int)>();
-
   void wire_create_event(
     int port_,
     ffi.Pointer<wire_uint_8_list> address,
@@ -425,6 +411,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_create_event = _wire_create_eventPtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_get_listener_count(
+    int port_,
+  ) {
+    return _wire_get_listener_count(
+      port_,
+    );
+  }
+
+  late final _wire_get_listener_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_get_listener_count');
+  late final _wire_get_listener_count =
+      _wire_get_listener_countPtr.asFunction<void Function(int)>();
 
   void wire_as_string__method__Event(
     int port_,

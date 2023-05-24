@@ -1,8 +1,8 @@
 use std::collections::HashMap;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use flutter_rust_bridge::support::lazy_static;
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result};
 use flutter_rust_bridge::*;
 
 lazy_static!(
@@ -22,10 +22,8 @@ pub fn count_data() -> i32 {
     GLOBAL_DATA.lock().unwrap().keys().len() as i32
 }
 
-
-
 lazy_static! {
-    static ref EVENTS: Mutex<Option<StreamSink<Event>>> = Default::default();
+    static ref EVENTS: Arc<Mutex<Vec<StreamSink<Event>>>> = Arc::new(Mutex::new(Vec::new()));
 }
 
 #[frb(dart_metadata = ("freezed"))]
@@ -42,26 +40,19 @@ impl Event {
 }
 
 pub fn register_event_listener(listener: StreamSink<Event>) -> Result<()> {
-    match EVENTS.lock() {
-        Ok(mut guard) => {
-            *guard = Some(listener);
-            println!("Event listener registered!");
-            Ok(())
-        }
-        Err(err) => Err(anyhow!("Could not register event listener: {}", err)),
-    }
-}
-
-pub fn close_event_listener() {
-    if let Ok(Some(sink)) = EVENTS.lock().map(|mut guard| guard.take()) {
-        sink.close();
-    }
+    println!("Event listener registered!");
+    EVENTS.lock().unwrap().push(listener);
+    Ok(())
 }
 
 pub fn create_event(address: String, payload: String) {
-    if let Ok(mut guard) = EVENTS.lock() {
-        if let Some(sink) = guard.as_mut() {
-            sink.add(Event { address, payload });
-        }
+    println!("Event created!");
+    let events = EVENTS.lock().unwrap();
+    for sink in events.iter() {
+        sink.add(Event { address: address.clone(), payload: payload.clone() });
     }
+}
+
+pub fn get_listener_count() -> i32 {
+    return EVENTS.lock().unwrap().len() as i32
 }

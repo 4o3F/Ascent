@@ -26,17 +26,17 @@ pub extern "C" fn wire_register_event_listener(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_close_event_listener(port_: i64) {
-    wire_close_event_listener_impl(port_)
-}
-
-#[no_mangle]
 pub extern "C" fn wire_create_event(
     port_: i64,
     address: *mut wire_uint_8_list,
     payload: *mut wire_uint_8_list,
 ) {
     wire_create_event_impl(port_, address, payload)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_get_listener_count(port_: i64) {
+    wire_get_listener_count_impl(port_)
 }
 
 #[no_mangle]
