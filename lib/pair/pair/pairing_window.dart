@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:ascent/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../ffi.dart';
 import '../../generated/l10n.dart';
@@ -34,14 +33,15 @@ class PairingWindowPage extends StatelessWidget {
         '127.0.0.1:$adbPairingPort',
         adbPairingCode,
         dataPath
-      ]).then((result) {
+      ]).then((result) async {
         debugPrint("STD OUT: ${result.stdout}");
         debugPrint("STD ERR: ${result.stderr}");
-        if (result.stderr.toString().isEmpty) {
+        if (result.stderr.toString().isEmpty && !result.stdout.toString().startsWith("Failed") && !result.stdout.toString().startsWith("failed")) {
           debugPrint("Background activity sending adb pairing success message");
-          api.createEvent(
+          await api.createEvent(
               address: AscentConstants.EVENT_TOGGLE_PAIRING_STATUS,
               payload: '');
+          await api.createEvent(address: AscentConstants.EVENT_SWITCH_UI, payload: "/connect");
         }
       });
     });

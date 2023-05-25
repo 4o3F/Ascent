@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ascent/utils/common_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -15,6 +16,8 @@ class AscentGlobalState extends GetxController {
   static AscentGlobalState INSTANCE = AscentGlobalState();
   Rx<AscentStage> ascentStage = AscentStage.LAUNCH.obs;
   Rx<AscentPages> ascentPage = AscentPages.FUNCTION.obs;
+
+  Rx<PairingStatus> pairingStatus = PairingStatus.REQUIRED.obs;
 
   Rx<String> adbLibraryPath = "".obs;
 
@@ -35,33 +38,51 @@ class AscentGlobalState extends GetxController {
     return ascentPage.value.index;
   }
 
-  PairingStatus getPairingStatus() {
+  void initPairingStatus() {
     String? pairingStatus = GetStorage().read("pairing_status");
     if (pairingStatus != null) {
       switch (pairingStatus) {
         case "REQUIRED":
-          return PairingStatus.REQUIRED;
+          this.pairingStatus.value = PairingStatus.REQUIRED;
         case "DONE":
-          return PairingStatus.DONE;
+          this.pairingStatus.value = PairingStatus.DONE;
       }
+    } else {
+      this.pairingStatus.value = PairingStatus.REQUIRED;
     }
-    return PairingStatus.REQUIRED;
   }
 
   void togglePairingStatus() {
-    String? pairingStatus = GetStorage().read(pairingStatusKey);
-    if (pairingStatus != null) {
-      switch (pairingStatus) {
-        case "REQUIRED":
-          GetStorage().write(pairingStatusKey, "DONE");
-          break;
-        case "DONE":
-          GetStorage().write(pairingStatusKey, "REQUIRED");
-          break;
-      }
-    } else {
-      GetStorage().write(pairingStatusKey, "DONE");
+    debugPrint("Toggling pairing status");
+    switch(pairingStatus.value) {
+      case PairingStatus.REQUIRED:
+        debugPrint("Toggling pairing status to DONE");
+        pairingStatus.value = PairingStatus.DONE;
+        GetStorage().write(pairingStatusKey, "DONE");
+        break;
+      case PairingStatus.DONE:
+        debugPrint("Toggling pairing status to REQUIRED");
+        pairingStatus.value = PairingStatus.REQUIRED;
+        GetStorage().write(pairingStatusKey, "REQUIRED");
+      default:
     }
+
+    // String? pairingStatus = GetStorage().read(pairingStatusKey);
+    // if (pairingStatus != null) {
+    //   switch (pairingStatus) {
+    //     case "REQUIRED":
+    //       this.pairingStatus.value = PairingStatus.DONE;
+    //       GetStorage().write(pairingStatusKey, "DONE");
+    //       break;
+    //     case "DONE":
+    //       this.pairingStatus.value = PairingStatus.REQUIRED;
+    //       GetStorage().write(pairingStatusKey, "REQUIRED");
+    //       break;
+    //   }
+    // } else {
+    //   this.pairingStatus.value = PairingStatus.DONE;
+    //   GetStorage().write(pairingStatusKey, "DONE");
+    // }
   }
 
   Future<String> getAdbLibPath() async {

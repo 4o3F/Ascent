@@ -21,6 +21,7 @@
   "stage_pairing_description": "Ascent将发送通知，请开启\n设置=>开发者选项=>无线调试\n然后选择使用配对码配对\n而后将根据通知提示输入端口和配对码\n(该过程只需要执行一次)",
   "stage_connecting": "手机连接",
   "stage_connecting_description": "Ascent将询问你无限调试的端口，此过程不需要再小窗模式下运行，输入正确的端口并连接成功后将自动开始监听祈愿历史记录链接",
+  "stage_connecting_port": "连接端口",
   "stage_watching": "监听链接",
   "stage_watching_description": "Ascent开始监听祈愿历史记录链接，您现在可以打开原神/星穹铁道，当监听到有效的链接时会发送通知"
 }

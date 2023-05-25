@@ -31,6 +31,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Phone Connecting"),
         "stage_connecting_description": MessageLookupByLibrary.simpleMessage(
             "Ascent will ask you the port for unlimited debugging. This process does not need to be run in the picture in picture mode. After entering the correct port and connecting successfully, it will automatically start watching for the wish history link."),
+        "stage_connecting_port":
+            MessageLookupByLibrary.simpleMessage("Connect port"),
         "stage_pairing": MessageLookupByLibrary.simpleMessage("Phone Pairing"),
         "stage_pairing_code":
             MessageLookupByLibrary.simpleMessage("Pairing code"),

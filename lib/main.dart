@@ -43,7 +43,7 @@ Future<void> requestPermission() async {
   debugPrint("Notification permission granted");
 }
 
-Future<void> initializeService() async {
+initializeService() async {
   await S.load(
       Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
 
@@ -97,11 +97,14 @@ initGlobalData() async {
   await api.writeData(
       key: AscentConstants.APPLICATION_DATA_PATH, value: dataPath);
   await api.writeData(key: AscentConstants.ADB_LIB_PATH, value: nativeLibPath!);
+
+  AscentGlobalState.INSTANCE.initPairingStatus();
 }
 
 initGlobalEventListener() async {
-  debugPrint("Init global event listener");
+  debugPrint("Init Global Event Listener");
   api.registerEventListener().listen((event) {
+    debugPrint("Global Event Listener received ${event.address}");
     switch(event.address) {
       case AscentConstants.EVENT_SWITCH_UI:
         Get.toNamed(event.payload);

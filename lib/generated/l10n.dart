@@ -260,6 +260,16 @@ class S {
     );
   }
 
+  /// `Connect port`
+  String get stage_connecting_port {
+    return Intl.message(
+      'Connect port',
+      name: 'stage_connecting_port',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Watching for wish link`
   String get stage_watching {
     return Intl.message(

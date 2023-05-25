@@ -18,4 +18,5 @@ final class AscentConstants {
   static const String EVENT_SWITCH_UI = "switch_ui";
 
   static const String DATABASE_PAIRING_STATUS = "database_pairing_status";
+
 }

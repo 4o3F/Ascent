@@ -29,6 +29,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "stage_connecting": MessageLookupByLibrary.simpleMessage("手机连接"),
         "stage_connecting_description": MessageLookupByLibrary.simpleMessage(
             "Ascent将询问你无限调试的端口，此过程不需要再小窗模式下运行，输入正确的端口并连接成功后将自动开始监听祈愿历史记录链接"),
+        "stage_connecting_port": MessageLookupByLibrary.simpleMessage("连接端口"),
         "stage_pairing": MessageLookupByLibrary.simpleMessage("手机配对"),
         "stage_pairing_code": MessageLookupByLibrary.simpleMessage("配对码"),
         "stage_pairing_description": MessageLookupByLibrary.simpleMessage(
