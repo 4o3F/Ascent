@@ -37,13 +37,13 @@ handleNotificationAction(NotificationResponse response) async {
   }
 }
 
-class Pairing {
-  static Pairing? _instance;
+class PairingNotification {
+  static PairingNotification? _instance;
 
-  Pairing._();
+  PairingNotification._();
 
-  static Pairing getInstance() {
-    _instance ??= Pairing._();
+  static PairingNotification getInstance() {
+    _instance ??= PairingNotification._();
     return _instance!;
   }
 
@@ -211,6 +211,8 @@ class Pairing {
           debugPrint('Observed ADB TLS pairing instance at :${srv.port}');
           adbPairingPort = srv.port.toString();
           await flutterLocalNotificationsPlugin.cancelAll();
+
+          await api.createEvent(address: AscentConstants.EVENT_PAIRING_PORT_DISCOVERED, payload: adbPairingPort);
           sendCodeNotification();
           mDnsClient.stop();
           return;
@@ -249,6 +251,7 @@ class Pairing {
         if (result.stderr.toString().isEmpty) {
           sendSuccessNotification();
           debugPrint("Background activity sending adb pairing success message");
+          api.createEvent(address: AscentConstants.EVENT_TOGGLE_PAIRING_STATUS, payload: '');
         }
       });
     });

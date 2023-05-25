@@ -1,6 +1,5 @@
 import 'package:ascent/utils/device_info_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 
 import '../../ffi.dart';
@@ -8,6 +7,13 @@ import '../../generated/l10n.dart';
 
 class PairGuidePage extends StatelessWidget {
   const PairGuidePage({Key? key}) : super(key: key);
+
+  void onStartPairing() async {
+    Get.toNamed("/pairing_window");
+    debugPrint(
+        "Sending update_stage event from main activity to ${await api.getListenerCount()} listeners");
+    api.createEvent(address: 'update_stage', payload: 'pair');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +56,7 @@ class PairGuidePage extends StatelessWidget {
             children: [
               Expanded(
                   child: TextButton(
-                onPressed: () async {
-                  debugPrint("Sending update_stage event from main activity to ${await api.getListenerCount()} listeners");
-                  api.createEvent(address: 'update_stage', payload: 'pair');
-                  Get.toNamed("/pairing_window");
-                },
+                onPressed: onStartPairing,
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0)),

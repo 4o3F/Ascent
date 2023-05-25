@@ -10,6 +10,25 @@ import '../generated/l10n.dart';
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
+  startProcess() {
+    if (AscentGlobalState.INSTANCE.getPairingStatus() ==
+        PairingStatus.REQUIRED) {
+      AscentGlobalState.INSTANCE.ascentStage.value = AscentStage.PAIR;
+      Get.toNamed("/pair");
+    } else {
+      Get.toNamed("/connecting");
+    }
+  }
+
+  String getPairingStatusStr(PairingStatus status) {
+    switch (status) {
+      case PairingStatus.DONE:
+        return S.current.stage_pairing_status_done;
+      case PairingStatus.REQUIRED:
+        return S.current.stage_pairing_status_required;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,15 +38,7 @@ class HomePage extends StatelessWidget {
           alignment: Alignment.center,
           padding: EdgeInsets.zero,
           icon: const Icon(Icons.send),
-          onPressed: () {
-            if (AscentGlobalState.INSTANCE.getPairingStatus() ==
-                PairingStatus.REQUIRED) {
-              AscentGlobalState.INSTANCE.ascentStage.value = AscentStage.PAIR;
-              Get.toNamed("/pair");
-            } else {
-              Get.toNamed("/connecting");
-            }
-          },
+          onPressed: startProcess,
         ),
       ),
       body: Column(children: [
@@ -63,6 +74,17 @@ class HomePage extends StatelessWidget {
                                       text: "${S.current.stage_pairing}",
                                       style: const TextStyle(
                                           color: Colors.blueAccent,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          "(${getPairingStatusStr(AscentGlobalState().getPairingStatus())})",
+                                      style: TextStyle(
+                                          color: (AscentGlobalState()
+                                                      .getPairingStatus() ==
+                                                  PairingStatus.DONE)
+                                              ? Colors.greenAccent
+                                              : Colors.redAccent,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ])),

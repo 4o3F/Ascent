@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:ascent/pair/pair/pairing.dart';
+import 'package:ascent/pair/pair/pairing_notification.dart';
 import 'package:ascent/route.dart';
 import 'package:ascent/state.dart';
 import 'package:ascent/utils/common_utils.dart';
@@ -71,7 +71,7 @@ Future<void> initializeService() async {
 
   await service.configure(
     androidConfiguration: AndroidConfiguration(
-      onStart: onStart,
+      onStart: onServiceStart,
       autoStart: true,
       isForegroundMode: true,
       notificationChannelId: 'ascent_service_channel',
@@ -85,12 +85,7 @@ Future<void> initializeService() async {
   // These are used to write global data for all isolates
   await initGlobalData();
 
-  // api.registerEventListener().listen((event) {
-  //   switch(event.address) {
-  //     case 'restart':
-  //       if()
-  //   }
-  // });
+  await initGlobalEventListener();
 
   service.startService();
 }
@@ -104,8 +99,22 @@ initGlobalData() async {
   await api.writeData(key: AscentConstants.ADB_LIB_PATH, value: nativeLibPath!);
 }
 
+initGlobalEventListener() async {
+  debugPrint("Init global event listener");
+  api.registerEventListener().listen((event) {
+    switch(event.address) {
+      case AscentConstants.EVENT_SWITCH_UI:
+        Get.toNamed(event.payload);
+        break;
+      case AscentConstants.EVENT_TOGGLE_PAIRING_STATUS:
+        AscentGlobalState.INSTANCE.togglePairingStatus();
+        break;
+    }
+  });
+}
+
 @pragma('vm:entry-point')
-void onStart(ServiceInstance service) async {
+void onServiceStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
   debugPrint("Background service init ensured");
 
@@ -119,8 +128,13 @@ void onStart(ServiceInstance service) async {
     debugPrint("Received event: ${event.address}");
     switch (event.address) {
       case 'update_stage':
-        Pairing.getInstance().doPairing();
+        switch(event.payload) {
+          case 'pair':
+            PairingNotification.getInstance().doPairing();
+            break;
+        }
         break;
+      default:
     }
   });
 
@@ -129,7 +143,7 @@ void onStart(ServiceInstance service) async {
     service.stopSelf();
   });
   int identity = Random().nextInt(20);
-  Timer.periodic(const Duration(seconds: 1), (timer) {
+  Timer.periodic(const Duration(seconds: 30), (timer) {
     debugPrint("Service identity: $identity");
   });
 }

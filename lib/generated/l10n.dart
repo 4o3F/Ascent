@@ -160,6 +160,46 @@ class S {
     );
   }
 
+  /// `Pairing port`
+  String get stage_pairing_port {
+    return Intl.message(
+      'Pairing port',
+      name: 'stage_pairing_port',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pairing code`
+  String get stage_pairing_code {
+    return Intl.message(
+      'Pairing code',
+      name: 'stage_pairing_code',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Paired`
+  String get stage_pairing_status_done {
+    return Intl.message(
+      'Paired',
+      name: 'stage_pairing_status_done',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unpaired`
+  String get stage_pairing_status_required {
+    return Intl.message(
+      'Unpaired',
+      name: 'stage_pairing_status_required',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Auto detecting pairing port, you can also input it manually below`
   String get stage_pairing_notification_description_port {
     return Intl.message(
