@@ -36,7 +36,7 @@ void main() async {
 
 Future<void> requestPermission() async {
   Permission alertPermission = Permission.notification;
-  if(await alertPermission.status.isDenied) {
+  if (await alertPermission.status.isDenied) {
     debugPrint("Notification permission requesting");
     alertPermission.request();
   }
@@ -48,10 +48,6 @@ initializeService() async {
       Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
 
   final service = FlutterBackgroundService();
-
-  if(await service.isRunning()) {
-    service.invoke('stop');
-  }
 
   // Create a notification channel used by foreground service to stay alive
   AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -69,25 +65,40 @@ initializeService() async {
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-      onStart: onServiceStart,
-      autoStart: true,
-      isForegroundMode: true,
-      notificationChannelId: 'ascent_service_channel',
-      initialNotificationTitle: S.current.title,
-      initialNotificationContent: S.current.service_init,
-      foregroundServiceNotificationId: 233,
-    ),
-    iosConfiguration: IosConfiguration(),
-  );
-
   // These are used to write global data for all isolates
   await initGlobalData();
 
   await initGlobalEventListener();
 
-  service.startService();
+  api.registerEventListener().listen((event) async {
+    switch (event.address) {
+      case 'update_stage':
+        switch (event.payload) {
+          case 'pair':
+            await service.configure(
+              androidConfiguration: AndroidConfiguration(
+                onStart: onServiceStart,
+                autoStart: false,
+                isForegroundMode: true,
+                notificationChannelId: 'ascent_service_channel',
+                initialNotificationTitle: S.current.title,
+                initialNotificationContent: S.current.service_init,
+                foregroundServiceNotificationId: 233,
+              ),
+              iosConfiguration: IosConfiguration(),
+            );
+            service.startService();
+            break;
+        }
+        break;
+      default:
+    }
+  });
+
+  // Do ping & pong for service alive check
+  Timer.periodic(const Duration(seconds: 3), (timer) {
+    api.createEvent(address: AscentConstants.EVENT_SERVICE_PING, payload: '');
+  });
 }
 
 initGlobalData() async {
@@ -105,7 +116,7 @@ initGlobalEventListener() async {
   debugPrint("Init Global Event Listener");
   api.registerEventListener().listen((event) {
     debugPrint("Global Event Listener received ${event.address}");
-    switch(event.address) {
+    switch (event.address) {
       case AscentConstants.EVENT_SWITCH_UI:
         Get.toNamed(event.payload);
         break;
@@ -126,21 +137,6 @@ void onServiceStart(ServiceInstance service) async {
 
   debugPrint("Background service language loaded");
 
-  debugPrint("Registering event listener from dart background service");
-  api.registerEventListener().listen((event) {
-    debugPrint("Received event: ${event.address}");
-    switch (event.address) {
-      case 'update_stage':
-        switch(event.payload) {
-          case 'pair':
-            PairingNotification.getInstance().doPairing();
-            break;
-        }
-        break;
-      default:
-    }
-  });
-
   service.on('stop').listen((event) {
     debugPrint("Background service stopping");
     service.stopSelf();
@@ -148,6 +144,25 @@ void onServiceStart(ServiceInstance service) async {
   int identity = Random().nextInt(20);
   Timer.periodic(const Duration(seconds: 30), (timer) {
     debugPrint("Service identity: $identity");
+  });
+
+  PairingNotification.getInstance().doPairing();
+
+  int lastPing = DateTime.now().millisecondsSinceEpoch;
+
+  api.registerEventListener().listen((event) {
+    if (event.address == AscentConstants.EVENT_SERVICE_PING) {
+      lastPing = DateTime.now().millisecondsSinceEpoch;
+    } else if( event.address == AscentConstants.EVENT_STOP_SERVICE) {
+      service.stopSelf();
+    }
+  });
+  
+  Timer.periodic(const Duration(seconds: 2), (timer) {
+    if(DateTime.now().millisecondsSinceEpoch - lastPing > 5000) {
+      debugPrint("Main activity stopped pinging, killing background service");
+      service.stopSelf();
+    }
   });
 }
 
@@ -183,11 +198,6 @@ class AscentMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final globalState = Get.put(AscentGlobalState.INSTANCE);
-
-    final service = FlutterBackgroundService();
-    service.isRunning().then((isRunning) => {
-          if (!isRunning) {service.startService()}
-        });
 
     return Scaffold(
       appBar: AppBar(

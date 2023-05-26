@@ -54,8 +54,7 @@ class PairingNotification {
   String adbPairingCode = "";
 
   void doPairing() async {
-
-    if(adbPairingPort.isNotEmpty || adbPairingCode.isNotEmpty) {
+    if (adbPairingPort.isNotEmpty || adbPairingCode.isNotEmpty) {
       debugPrint("Clearing adb pairing data");
       // Not empty meaning the service has started and user has tried to do something once, reset all
       adbPairingPort = "";
@@ -64,7 +63,6 @@ class PairingNotification {
       waitMDns();
       return;
     }
-
 
     AndroidNotificationChannel channel = AndroidNotificationChannel(
       'ascent_channel',
@@ -212,7 +210,9 @@ class PairingNotification {
           adbPairingPort = srv.port.toString();
           await flutterLocalNotificationsPlugin.cancelAll();
 
-          await api.createEvent(address: AscentConstants.EVENT_PAIRING_PORT_DISCOVERED, payload: adbPairingPort);
+          await api.createEvent(
+              address: AscentConstants.EVENT_PAIRING_PORT_DISCOVERED,
+              payload: adbPairingPort);
           sendCodeNotification();
           mDnsClient.stop();
           return;
@@ -233,7 +233,8 @@ class PairingNotification {
       debugPrint("Exec path: $execPath");
       debugPrint("Data path: $dataPath");
 
-      debugPrint("Pairing to 127.0.0.1:$adbPairingPort $adbPairingCode $dataPath");
+      debugPrint(
+          "Pairing to 127.0.0.1:$adbPairingPort $adbPairingCode $dataPath");
 
       var result = await Process.run(execPath, ['start-server', dataPath]);
 
@@ -248,11 +249,18 @@ class PairingNotification {
       ]).then((result) async {
         debugPrint("STD OUT: ${result.stdout}");
         debugPrint("STD ERR: ${result.stderr}");
-        if (result.stderr.toString().isEmpty && !result.stdout.toString().startsWith("Failed") && !result.stdout.toString().startsWith("failed")) {
+        if (result.stderr.toString().isEmpty &&
+            !result.stdout.toString().startsWith("Failed") &&
+            !result.stdout.toString().startsWith("failed")) {
           sendSuccessNotification();
           debugPrint("Background activity sending adb pairing success message");
-          await api.createEvent(address: AscentConstants.EVENT_TOGGLE_PAIRING_STATUS, payload: '');
-          await api.createEvent(address: AscentConstants.EVENT_SWITCH_UI, payload: "/connect");
+          await api.createEvent(
+              address: AscentConstants.EVENT_TOGGLE_PAIRING_STATUS,
+              payload: '');
+          await api.createEvent(
+              address: AscentConstants.EVENT_SWITCH_UI, payload: "/connect");
+          await api.createEvent(
+              address: AscentConstants.EVENT_STOP_SERVICE, payload: '');
         }
       });
     });

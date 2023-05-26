@@ -36,12 +36,17 @@ class PairingWindowPage extends StatelessWidget {
       ]).then((result) async {
         debugPrint("STD OUT: ${result.stdout}");
         debugPrint("STD ERR: ${result.stderr}");
-        if (result.stderr.toString().isEmpty && !result.stdout.toString().startsWith("Failed") && !result.stdout.toString().startsWith("failed")) {
+        if (result.stderr.toString().isEmpty &&
+            !result.stdout.toString().startsWith("Failed") &&
+            !result.stdout.toString().startsWith("failed")) {
           debugPrint("Background activity sending adb pairing success message");
           await api.createEvent(
               address: AscentConstants.EVENT_TOGGLE_PAIRING_STATUS,
               payload: '');
-          await api.createEvent(address: AscentConstants.EVENT_SWITCH_UI, payload: "/connect");
+          await api.createEvent(
+              address: AscentConstants.EVENT_SWITCH_UI, payload: "/connect");
+          await api.createEvent(
+              address: AscentConstants.EVENT_STOP_SERVICE, payload: '');
         }
       });
     });

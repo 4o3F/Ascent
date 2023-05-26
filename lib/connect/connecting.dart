@@ -98,7 +98,7 @@ class ConnectPage extends StatelessWidget {
 
       Process.run(execPath, [
         'shell',
-        'logcat -d | grep \'url:https://webstatic.mihoyo.com\' | tail -n 1'
+        'logcat -m 1 -e \'https://webstatic.mihoyo.com\''
       ],runInShell: false).then((result) async {
         debugPrint("STD OUT: ${result.stdout}");
         debugPrint("STD ERR: ${result.stderr}");
