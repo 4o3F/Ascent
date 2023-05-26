@@ -289,6 +289,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Wish link`
+  String get wish_link {
+    return Intl.message(
+      'Wish link',
+      name: 'wish_link',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

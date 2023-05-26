@@ -56,6 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "stage_watching_description": MessageLookupByLibrary.simpleMessage(
             "Ascent开始监听祈愿历史记录链接，您现在可以打开原神/星穹铁道，当监听到有效的链接时会发送通知"),
         "stages": MessageLookupByLibrary.simpleMessage("Ascent执行步骤"),
-        "title": MessageLookupByLibrary.simpleMessage("Ascent")
+        "title": MessageLookupByLibrary.simpleMessage("Ascent"),
+        "wish_link": MessageLookupByLibrary.simpleMessage("祈愿链接")
       };
 }

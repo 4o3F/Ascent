@@ -65,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "stage_watching_description": MessageLookupByLibrary.simpleMessage(
             "Ascent starts monitoring the history record links of wishes. You can now open Genshin Impact/Honkai: Star Rail, and when a valid link is detected, a notification will be sent."),
         "stages": MessageLookupByLibrary.simpleMessage("Ascent Stages"),
-        "title": MessageLookupByLibrary.simpleMessage("Ascent")
+        "title": MessageLookupByLibrary.simpleMessage("Ascent"),
+        "wish_link": MessageLookupByLibrary.simpleMessage("Wish link")
       };
 }

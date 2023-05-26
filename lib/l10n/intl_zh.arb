@@ -23,5 +23,6 @@
   "stage_connecting_description": "Ascent将询问你无限调试的端口，此过程不需要再小窗模式下运行，输入正确的端口并连接成功后将自动开始监听祈愿历史记录链接",
   "stage_connecting_port": "连接端口",
   "stage_watching": "监听链接",
-  "stage_watching_description": "Ascent开始监听祈愿历史记录链接，您现在可以打开原神/星穹铁道，当监听到有效的链接时会发送通知"
+  "stage_watching_description": "Ascent开始监听祈愿历史记录链接，您现在可以打开原神/星穹铁道，当监听到有效的链接时会发送通知",
+  "wish_link": "祈愿链接"
 }
