@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 
 import '../constants.dart';
@@ -12,6 +15,8 @@ import '../generated/l10n.dart';
 class ConnectLogic extends GetxController {
   Rx<int> connectPort = 0.obs;
   Rx<String> wishLink = "".obs;
+  Rx<String> connectStatus = "".obs;
+  Rx<String> lastWishLinkFetchTime = "".obs;
 }
 
 class ConnectPage extends StatelessWidget {
@@ -66,19 +71,30 @@ class ConnectPage extends StatelessWidget {
       ]).then((result) async {
         debugPrint("STD OUT: ${result.stdout}");
         debugPrint("STD ERR: ${result.stderr}");
-        if (result.stderr.toString().isEmpty && !result.stdout.toString().startsWith("Failed") && !result.stdout.toString().startsWith("failed")) {
+        if (result.stderr.toString().isEmpty &&
+            !result.stdout.toString().contains("Failed") &&
+            !result.stdout.toString().contains("failed")) {
           debugPrint(
               "Background activity sending adb connecting success message");
-          onGetWishLink(logic);
+          logic.connectStatus.value = "CONNECTED";
+          startGetWishLink(logic);
         } else {
-          await api.createEvent(
-              address: AscentConstants.EVENT_TOGGLE_PAIRING_STATUS,
-              payload: '');
-          await api.createEvent(
-              address: AscentConstants.EVENT_SWITCH_UI, payload: "/pair");
+          logic.connectStatus.value = "FAILED";
         }
       });
     });
+  }
+
+  startGetWishLink(ConnectLogic logic) async {
+    debugPrint("Start getting wish link");
+    debugPrint("Current wish link: ${logic.wishLink.value}");
+    while (logic.wishLink.value.isEmpty) {
+      debugPrint("Current wish link: ${logic.wishLink.value}");
+      onGetWishLink(logic);
+      DateTime now = DateTime.now();
+      logic.lastWishLinkFetchTime.value = DateFormat('HH:mm:ss').format(now);
+      await Future.delayed(const Duration(seconds: 1));
+    }
   }
 
   onGetWishLink(ConnectLogic logic) async {
@@ -86,7 +102,7 @@ class ConnectPage extends StatelessWidget {
       String execPath = "$adbLibPath/libadb.so";
 
       String dataPath =
-      await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
+          await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
 
       debugPrint("Exec path: $execPath");
       debugPrint("Data path: $dataPath");
@@ -96,13 +112,19 @@ class ConnectPage extends StatelessWidget {
       debugPrint("STD OUT: ${result.stdout}");
       debugPrint("STD ERR: ${result.stderr}");
 
-      Process.run(execPath, [
-        'shell',
-        'logcat -m 1 -e \'https://webstatic.mihoyo.com\''
-      ],runInShell: false).then((result) async {
+      Process.run(
+              execPath,
+              [
+                'shell',
+                'logcat -d | grep \'https://webstatic.mihoyo.com\' | tail -n 1'
+              ],
+              runInShell: false)
+          .then((result) async {
         debugPrint("STD OUT: ${result.stdout}");
         debugPrint("STD ERR: ${result.stderr}");
-        if (result.stderr.toString().isEmpty && !result.stdout.toString().startsWith("Failed") && !result.stdout.toString().startsWith("failed")) {
+        if (result.stderr.toString().isEmpty &&
+            !result.stdout.toString().startsWith("Failed") &&
+            !result.stdout.toString().startsWith("failed")) {
           RegExp regex = RegExp(r'https://(.+)');
           Match? match = regex.firstMatch(result.stdout);
           if (match != null) {
@@ -111,10 +133,51 @@ class ConnectPage extends StatelessWidget {
           } else {
             debugPrint('No match found.');
           }
-        } else {
+        } else {}
+      });
+    });
+  }
+
+  checkConnectionStatus(ConnectLogic logic) {
+    api.getData(key: AscentConstants.ADB_LIB_PATH).then((adbLibPath) async {
+      String execPath = "$adbLibPath/libadb.so";
+
+      String dataPath =
+          await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
+
+      debugPrint("Exec path: $execPath");
+      debugPrint("Data path: $dataPath");
+
+      var result = await Process.run(execPath, ['start-server', dataPath]);
+
+      debugPrint("STD OUT: ${result.stdout}");
+      debugPrint("STD ERR: ${result.stderr}");
+
+      Process.run(execPath, ['devices'], runInShell: false)
+          .then((result) async {
+        debugPrint("STD OUT: ${result.stdout}");
+        debugPrint("STD ERR: ${result.stderr}");
+        if (result.stdout.toString().contains("127.0.0.1") &&
+            !result.stdout.toString().contains("offline")) {
+          logic.connectStatus.value = "CONNECTED";
         }
       });
     });
+  }
+
+  doRepair() {
+    Get.toNamed("/pair");
+  }
+
+  String getConnectingStatusStr(ConnectLogic logic) {
+    switch (logic.connectStatus.value) {
+      case "CONNECTED":
+        return S.current.stage_connecting_status_done;
+      case "FAILED":
+        return S.current.stage_connecting_status_failed;
+      default:
+        return S.current.stage_connecting_status_waiting;
+    }
   }
 
   @override
@@ -125,31 +188,124 @@ class ConnectPage extends StatelessWidget {
 
     TextEditingController wishLink = TextEditingController();
 
-    if(logic.connectPort.value != 0) {
-      adbConnectingPort.text = logic.connectPort.value.toString();
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (logic.connectPort.value != 0) {
+        adbConnectingPort.text = logic.connectPort.value.toString();
+      }
 
-    logic.connectPort.listen((p0) {
-      adbConnectingPort.text = logic.connectPort.value.toString();
+      logic.connectPort.listen((p0) {
+        adbConnectingPort.text = logic.connectPort.value.toString();
+      });
+
+      logic.wishLink.listen((p0) {
+        wishLink.text = logic.wishLink.value.toString();
+      });
+
+      adbConnectingPort.addListener(() {
+        logic.connectPort.value = int.tryParse(adbConnectingPort.text)!;
+      });
+
+      checkConnectionStatus(logic);
+      debugPrint("Connection status: ${logic.connectStatus.value}");
+      if (logic.connectStatus.value != "CONNECTED") {
+        waitMDns(logic);
+      } else {
+        startGetWishLink(logic);
+      }
     });
 
-    logic.wishLink.listen((p0) {
-      wishLink.text = logic.wishLink.value.toString();
-    });
-
-    waitMDns(logic);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
           TextField(
             controller: adbConnectingPort,
+            onChanged: (text) {
+              debugPrint(
+                  "Setting adb connect port to ${adbConnectingPort.text}");
+              adbConnectingPort.text = text;
+            },
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: S.current.stage_connecting_port,
             ),
           ),
           const SizedBox(height: 16.0),
+          Obx(() {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                    text: S.current.stage_connecting_status,
+                    style: const TextStyle(
+                        color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: getConnectingStatusStr(logic),
+                    style: const TextStyle(
+                        color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                  )
+                ]))
+              ],
+            );
+          }),
+          const SizedBox(height: 16.0),
+          Obx(() {
+            switch (logic.connectStatus.value) {
+              case "FAILED":
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: (() => onStartConnecting(logic)),
+                      icon: const Icon(Icons.start),
+                      label: Text(S.current.stage_connecting_status_required),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: (() => doRepair()),
+                      icon: const Icon(Icons.send),
+                      label: Text(S.current.stage_connecting_status_repair),
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.redAccent),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white)),
+                    ),
+                  ],
+                );
+              case "CONNECTED":
+                return ElevatedButton.icon(
+                  onPressed: null,
+                  icon: const Icon(Icons.start),
+                  label: Text(S.current.stage_connecting_status_done),
+                );
+              default:
+                return ElevatedButton.icon(
+                  onPressed: (() => onStartConnecting(logic)),
+                  icon: const Icon(Icons.start),
+                  label: Text(S.current.stage_connecting_status_required),
+                );
+            }
+          }),
+          const SizedBox(height: 16.0),
+          Obx(() {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                    text: S.current.stage_watching_last_time +
+                        logic.lastWishLinkFetchTime.value,
+                    style: const TextStyle(
+                        color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                  )
+                ]))
+              ],
+            );
+          }),
           TextField(
             controller: wishLink,
             keyboardType: TextInputType.multiline,
@@ -157,12 +313,33 @@ class ConnectPage extends StatelessWidget {
               labelText: S.current.wish_link,
             ),
           ),
-          const SizedBox(height: 16.0),
-          ElevatedButton.icon(
-            onPressed: (() => onStartConnecting(logic)),
-            icon: const Icon(Icons.check),
-            label: Text(S.current.stage_connecting),
-          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: (() {
+                  logic.wishLink.value = "";
+                  startGetWishLink(logic);
+                }),
+                icon: const Icon(Icons.start),
+                label: Text(S.current.stage_watching_restart),
+              ),
+              ElevatedButton.icon(
+                onPressed: (() async {
+                  await Clipboard.setData(ClipboardData(text: logic.wishLink.value)).then((value) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.current.copied)));
+                  });
+                }),
+                icon: const Icon(Icons.send),
+                label: Text(S.current.copy_link),
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Colors.greenAccent),
+                    foregroundColor:
+                    MaterialStateProperty.all<Color>(Colors.white)),
+              ),
+            ],
+          )
         ],
       ),
     );

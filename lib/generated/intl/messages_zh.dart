@@ -22,6 +22,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "copied": MessageLookupByLibrary.simpleMessage("已复制"),
+        "copy_link": MessageLookupByLibrary.simpleMessage("复制祈愿链接到剪贴板"),
         "drawer_about": MessageLookupByLibrary.simpleMessage("关于"),
         "drawer_function": MessageLookupByLibrary.simpleMessage("应用"),
         "notification_action": MessageLookupByLibrary.simpleMessage("输入"),
@@ -30,6 +32,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "stage_connecting_description": MessageLookupByLibrary.simpleMessage(
             "Ascent将询问你无限调试的端口，此过程不需要再小窗模式下运行，输入正确的端口并连接成功后将自动开始监听祈愿历史记录链接"),
         "stage_connecting_port": MessageLookupByLibrary.simpleMessage("连接端口"),
+        "stage_connecting_status":
+            MessageLookupByLibrary.simpleMessage("连接状态: "),
+        "stage_connecting_status_done":
+            MessageLookupByLibrary.simpleMessage("已连接"),
+        "stage_connecting_status_failed":
+            MessageLookupByLibrary.simpleMessage("连接失败"),
+        "stage_connecting_status_repair":
+            MessageLookupByLibrary.simpleMessage("重新配对"),
+        "stage_connecting_status_required":
+            MessageLookupByLibrary.simpleMessage("连接"),
+        "stage_connecting_status_waiting":
+            MessageLookupByLibrary.simpleMessage("等待连接"),
         "stage_pairing": MessageLookupByLibrary.simpleMessage("手机配对"),
         "stage_pairing_code": MessageLookupByLibrary.simpleMessage("配对码"),
         "stage_pairing_description": MessageLookupByLibrary.simpleMessage(
@@ -55,6 +69,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "stage_watching": MessageLookupByLibrary.simpleMessage("监听链接"),
         "stage_watching_description": MessageLookupByLibrary.simpleMessage(
             "Ascent开始监听祈愿历史记录链接，您现在可以打开原神/星穹铁道，当监听到有效的链接时会发送通知"),
+        "stage_watching_last_time":
+            MessageLookupByLibrary.simpleMessage("最终一次检测祈愿链接于: "),
+        "stage_watching_restart":
+            MessageLookupByLibrary.simpleMessage("重新开始检测祈愿链接"),
         "stages": MessageLookupByLibrary.simpleMessage("Ascent执行步骤"),
         "title": MessageLookupByLibrary.simpleMessage("Ascent"),
         "wish_link": MessageLookupByLibrary.simpleMessage("祈愿链接")

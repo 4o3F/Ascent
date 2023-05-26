@@ -22,6 +22,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "copied": MessageLookupByLibrary.simpleMessage("Copied"),
+        "copy_link":
+            MessageLookupByLibrary.simpleMessage("Copy wish link to clipboard"),
         "drawer_about": MessageLookupByLibrary.simpleMessage("About"),
         "drawer_function": MessageLookupByLibrary.simpleMessage("Application"),
         "notification_action": MessageLookupByLibrary.simpleMessage("Input"),
@@ -33,6 +36,18 @@ class MessageLookup extends MessageLookupByLibrary {
             "Ascent will ask you the port for unlimited debugging. This process does not need to be run in the picture in picture mode. After entering the correct port and connecting successfully, it will automatically start watching for the wish history link."),
         "stage_connecting_port":
             MessageLookupByLibrary.simpleMessage("Connect port"),
+        "stage_connecting_status":
+            MessageLookupByLibrary.simpleMessage("Connection status: "),
+        "stage_connecting_status_done":
+            MessageLookupByLibrary.simpleMessage("Connected"),
+        "stage_connecting_status_failed":
+            MessageLookupByLibrary.simpleMessage("Connection failed"),
+        "stage_connecting_status_repair":
+            MessageLookupByLibrary.simpleMessage("Repair"),
+        "stage_connecting_status_required":
+            MessageLookupByLibrary.simpleMessage("Connect"),
+        "stage_connecting_status_waiting":
+            MessageLookupByLibrary.simpleMessage("Waiting to connect"),
         "stage_pairing": MessageLookupByLibrary.simpleMessage("Phone Pairing"),
         "stage_pairing_code":
             MessageLookupByLibrary.simpleMessage("Pairing code"),
@@ -64,6 +79,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Watching for wish link"),
         "stage_watching_description": MessageLookupByLibrary.simpleMessage(
             "Ascent starts monitoring the history record links of wishes. You can now open Genshin Impact/Honkai: Star Rail, and when a valid link is detected, a notification will be sent."),
+        "stage_watching_last_time": MessageLookupByLibrary.simpleMessage(
+            "Last time fetching wish link: "),
+        "stage_watching_restart":
+            MessageLookupByLibrary.simpleMessage("Restart wish link watch"),
         "stages": MessageLookupByLibrary.simpleMessage("Ascent Stages"),
         "title": MessageLookupByLibrary.simpleMessage("Ascent"),
         "wish_link": MessageLookupByLibrary.simpleMessage("Wish link")

@@ -72,6 +72,9 @@ class PairingWindowPage extends StatelessWidget {
         children: [
           TextField(
             controller: adbPairingPort,
+            onChanged: (text) {
+              adbPairingPort.text = text;
+            },
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: S.current.stage_pairing_port,
@@ -80,6 +83,9 @@ class PairingWindowPage extends StatelessWidget {
           const SizedBox(height: 16.0),
           TextField(
             controller: adbPairingCode,
+            onChanged: (text) {
+              adbPairingCode.text = text;
+            },
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: S.current.stage_pairing_code,

@@ -250,6 +250,66 @@ class S {
     );
   }
 
+  /// `Connection status: `
+  String get stage_connecting_status {
+    return Intl.message(
+      'Connection status: ',
+      name: 'stage_connecting_status',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connected`
+  String get stage_connecting_status_done {
+    return Intl.message(
+      'Connected',
+      name: 'stage_connecting_status_done',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Waiting to connect`
+  String get stage_connecting_status_waiting {
+    return Intl.message(
+      'Waiting to connect',
+      name: 'stage_connecting_status_waiting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connection failed`
+  String get stage_connecting_status_failed {
+    return Intl.message(
+      'Connection failed',
+      name: 'stage_connecting_status_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect`
+  String get stage_connecting_status_required {
+    return Intl.message(
+      'Connect',
+      name: 'stage_connecting_status_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Repair`
+  String get stage_connecting_status_repair {
+    return Intl.message(
+      'Repair',
+      name: 'stage_connecting_status_repair',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Ascent will ask you the port for unlimited debugging. This process does not need to be run in the picture in picture mode. After entering the correct port and connecting successfully, it will automatically start watching for the wish history link.`
   String get stage_connecting_description {
     return Intl.message(
@@ -285,6 +345,46 @@ class S {
     return Intl.message(
       'Ascent starts monitoring the history record links of wishes. You can now open Genshin Impact/Honkai: Star Rail, and when a valid link is detected, a notification will be sent.',
       name: 'stage_watching_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last time fetching wish link: `
+  String get stage_watching_last_time {
+    return Intl.message(
+      'Last time fetching wish link: ',
+      name: 'stage_watching_last_time',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restart wish link watch`
+  String get stage_watching_restart {
+    return Intl.message(
+      'Restart wish link watch',
+      name: 'stage_watching_restart',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy wish link to clipboard`
+  String get copy_link {
+    return Intl.message(
+      'Copy wish link to clipboard',
+      name: 'copy_link',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copied`
+  String get copied {
+    return Intl.message(
+      'Copied',
+      name: 'copied',
       desc: '',
       args: [],
     );
