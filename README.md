@@ -1,16 +1,10 @@
-# ascent
+# Ascent
+> WARNING: This application is still under development, please raise an issue for any problem you've encountered
 
-A new Flutter project.
+A tool for retrieving wish link from Mihoyo games on Android with a single device
 
-## Getting Started
+By compling adb to ARM and changing some of it's functions to make it runnable on Android, this application enabled you to directly pair and connect your devices's wireless debugging.
 
-This project is a starting point for a Flutter application.
+While this application focus on being a tool for Mihoyo game wish link retrieve, the same process can also be useful for other Android applications that need adb shell access to start, such as Ice Box,etc. 
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Fork and PR are welcomed ;)
