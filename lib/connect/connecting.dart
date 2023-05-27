@@ -14,8 +14,6 @@ import '../generated/l10n.dart';
 import '../logger.dart';
 
 class ConnectLogic extends GetxController {
-  //Rx<int> connectPort = 0.obs;
-  //Rx<String> wishLink = "".obs;
   Rx<String> connectStatus = "".obs;
   Rx<String> lastWishLinkFetchTime = "".obs;
   TextEditingController adbConnectingPort = TextEditingController();
@@ -43,7 +41,8 @@ class ConnectPage extends StatelessWidget {
         await for (final SrvResourceRecord srv
             in mDnsClient.lookup<SrvResourceRecord>(
                 ResourceRecordQuery.service(ptr.domainName))) {
-          AscentLogger.INSTANCE.log('Observed ADB TLS connect instance at :${srv.port}');
+          AscentLogger.INSTANCE
+              .log('Observed ADB TLS connect instance at :${srv.port}');
           logic.adbConnectingPort.text = srv.port.toString();
           mDnsClient.stop();
           return;
@@ -91,9 +90,9 @@ class ConnectPage extends StatelessWidget {
   startGetWishLink(ConnectLogic logic) async {
     AscentLogger.INSTANCE.log("Start getting wish link");
     AscentLogger.INSTANCE.log("Current wish link: ${logic.wishLink.text}");
-    while (logic.wishLink.text.isEmpty) {
+    while (logic.wishLink.text.isEmpty && logic.connectStatus.value == "CONNECTED") {
       AscentLogger.INSTANCE.log("Current wish link: ${logic.wishLink.text}");
-      onGetWishLink(logic);
+      await onGetWishLink(logic);
       DateTime now = DateTime.now();
       logic.lastWishLinkFetchTime.value = DateFormat('HH:mm:ss').format(now);
       await Future.delayed(const Duration(seconds: 1));
@@ -101,71 +100,63 @@ class ConnectPage extends StatelessWidget {
   }
 
   onGetWishLink(ConnectLogic logic) async {
-    api.getData(key: AscentConstants.ADB_LIB_PATH).then((adbLibPath) async {
-      String execPath = "$adbLibPath/libadb.so";
+    String adbLibPath = await api.getData(key: AscentConstants.ADB_LIB_PATH);
+    String execPath = "$adbLibPath/libadb.so";
 
-      String dataPath =
-          await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
+    String dataPath =
+        await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
 
-      AscentLogger.INSTANCE.log("Exec path: $execPath");
-      AscentLogger.INSTANCE.log("Data path: $dataPath");
+    ProcessResult result =
+        await Process.run(execPath, ['start-server', dataPath]);
 
-      var result = await Process.run(execPath, ['start-server', dataPath]);
+    AscentLogger.INSTANCE.log(
+        "START SERVER\nSTD OUT: ${result.stdout}\nSTD ERR: ${result.stderr}");
 
-      AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
-      AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
-
-      Process.run(
-              execPath,
-              [
-                'shell',
-                'logcat -d | grep \'https://webstatic.mihoyo.com\' | tail -n 1'
-              ],
-              runInShell: false)
-          .then((result) async {
-        AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
-        AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
-        if (result.stderr.toString().isEmpty &&
-            !result.stdout.toString().startsWith("Failed") &&
-            !result.stdout.toString().startsWith("failed")) {
-          RegExp regex = RegExp(r'https://(.+)');
-          Match? match = regex.firstMatch(result.stdout);
-          if (match != null) {
-            String url = match.group(0)!;
-            logic.wishLink.text = url;
-          } else {
-            AscentLogger.INSTANCE.log('No match found.');
-          }
-        } else {}
-      });
-    });
+    result = await Process.run(
+        execPath,
+        [
+          'shell',
+          'logcat -d | grep \'https://webstatic.mihoyo.com\' | tail -n 1'
+        ],
+        runInShell: false);
+    AscentLogger.INSTANCE.log(
+        "LOGCAT GREP\nSTD OUT: ${result.stdout}\nSTD ERR: ${result.stderr}");
+    if (result.stderr.toString().isEmpty &&
+        !result.stdout.toString().contains("Failed") &&
+        !result.stdout.toString().contains("failed")) {
+      RegExp regex = RegExp(r'https://(.+)');
+      Match? match = regex.firstMatch(result.stdout);
+      if (match != null) {
+        String url = match.group(0)!;
+        logic.wishLink.text = url;
+      } else {
+        AscentLogger.INSTANCE.log('No matching wish link found');
+      }
+    } else {
+      logic.connectStatus.value = "FAILED";
+    }
   }
 
-  checkConnectionStatus(ConnectLogic logic) {
-    api.getData(key: AscentConstants.ADB_LIB_PATH).then((adbLibPath) async {
-      String execPath = "$adbLibPath/libadb.so";
+  checkConnectionStatus(ConnectLogic logic) async {
+    String adbLibPath = await api.getData(key: AscentConstants.ADB_LIB_PATH);
+    String execPath = "$adbLibPath/libadb.so";
 
-      String dataPath =
-          await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
+    String dataPath =
+        await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
 
-      AscentLogger.INSTANCE.log("Exec path: $execPath");
-      AscentLogger.INSTANCE.log("Data path: $dataPath");
+    ProcessResult result =
+        await Process.run(execPath, ['start-server', dataPath]);
 
-      var result = await Process.run(execPath, ['start-server', dataPath]);
+    AscentLogger.INSTANCE.log(
+        "START SERVER\nSTD OUT: ${result.stdout}\nSTD ERR: ${result.stderr}");
 
-      AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
-      AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
-
-      Process.run(execPath, ['devices'], runInShell: false)
-          .then((result) async {
-        AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
-        AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
-        if (result.stdout.toString().contains("127.0.0.1") &&
-            !result.stdout.toString().contains("offline")) {
-          logic.connectStatus.value = "CONNECTED";
-        }
-      });
-    });
+    result = await Process.run(execPath, ['devices'], runInShell: false);
+    AscentLogger.INSTANCE.log(
+        "GET DEVICES\nSTD OUT: ${result.stdout}\nSTD ERR: ${result.stderr}");
+    if (result.stdout.toString().contains("127.0.0.1") &&
+        !result.stdout.toString().contains("offline")) {
+      logic.connectStatus.value = "CONNECTED";
+    }
   }
 
   doRepair() {
@@ -183,14 +174,15 @@ class ConnectPage extends StatelessWidget {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     final logic = Get.put(ConnectLogic());
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-
-      checkConnectionStatus(logic);
-      AscentLogger.INSTANCE.log("Connection status: ${logic.connectStatus.value}");
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await checkConnectionStatus(logic);
+      AscentLogger.INSTANCE
+          .log("Connection status: ${logic.connectStatus.value}");
       if (logic.connectStatus.value != "CONNECTED") {
         waitMDns(logic);
       } else {
@@ -305,17 +297,20 @@ class ConnectPage extends StatelessWidget {
               ),
               ElevatedButton.icon(
                 onPressed: (() async {
-                  await Clipboard.setData(ClipboardData(text: logic.wishLink.text)).then((value) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.current.copied)));
+                  await Clipboard.setData(
+                          ClipboardData(text: logic.wishLink.text))
+                      .then((value) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(S.current.copied)));
                   });
                 }),
                 icon: const Icon(Icons.send),
                 label: Text(S.current.copy_link),
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Colors.greenAccent),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.greenAccent),
                     foregroundColor:
-                    MaterialStateProperty.all<Color>(Colors.white)),
+                        MaterialStateProperty.all<Color>(Colors.white)),
               ),
             ],
           )

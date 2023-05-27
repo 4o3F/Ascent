@@ -25,6 +25,9 @@ void main() async {
   // Storage initialize
   await GetStorage.init();
 
+  // Clean up the log file
+  await doLogCleaning();
+
   // Logger initialize
   await AscentLogger.INSTANCE.init();
 
@@ -40,6 +43,11 @@ void main() async {
   await requestPermission();
 
   runApp(const Ascent());
+}
+
+doLogCleaning() async {
+  String logFilePath = "${(await getApplicationDocumentsDirectory()).path}/ascent.log";
+  File(logFilePath).writeAsStringSync("", mode: FileMode.write);
 }
 
 Future<void> requestPermission() async {

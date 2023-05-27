@@ -13,6 +13,9 @@ import '../../logger.dart';
 
 @pragma('vm:entry-point')
 handleNotificationAction(NotificationResponse response) async {
+  // Logger initialize
+  await AscentLogger.INSTANCE.init();
+
   AscentLogger.INSTANCE.log("Notification response received");
 
   AscentLogger.INSTANCE.log(response.notificationResponseType.name);
