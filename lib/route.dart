@@ -1,4 +1,4 @@
-import 'package:ascent/about/view.dart';
+import 'package:ascent/about/about.dart';
 import 'package:ascent/connect/connecting.dart';
 import 'package:ascent/home/view.dart';
 import 'package:ascent/pair/guide/pairing_guide.dart';

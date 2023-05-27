@@ -9,16 +9,17 @@ import 'package:multicast_dns/multicast_dns.dart';
 
 import '../../ffi.dart';
 import '../../generated/l10n.dart';
+import '../../logger.dart';
 
 @pragma('vm:entry-point')
 handleNotificationAction(NotificationResponse response) async {
-  debugPrint("Notification response received");
+  AscentLogger.INSTANCE.log("Notification response received");
 
-  debugPrint(response.notificationResponseType.name);
-  debugPrint("Notification response payload: ${response.payload}");
+  AscentLogger.INSTANCE.log(response.notificationResponseType.name);
+  AscentLogger.INSTANCE.log("Notification response payload: ${response.payload}");
 
   if (response.input == null) {
-    debugPrint("Notification action response without input");
+    AscentLogger.INSTANCE.log("Notification action response without input");
     return;
   }
 
@@ -55,7 +56,7 @@ class PairingNotification {
 
   void doPairing() async {
     if (adbPairingPort.isNotEmpty || adbPairingCode.isNotEmpty) {
-      debugPrint("Clearing adb pairing data");
+      AscentLogger.INSTANCE.log("Clearing adb pairing data");
       // Not empty meaning the service has started and user has tried to do something once, reset all
       adbPairingPort = "";
       adbPairingCode = "";
@@ -82,20 +83,20 @@ class PairingNotification {
         onDidReceiveNotificationResponse: handleNotificationAction,
         onDidReceiveBackgroundNotificationResponse: handleNotificationAction);
 
-    debugPrint("Registering event listener from dart pairing service");
+    AscentLogger.INSTANCE.log("Registering event listener from dart pairing service");
     api.registerEventListener().listen((event) async {
-      debugPrint("Pairing Background received event ${event.address}");
+      AscentLogger.INSTANCE.log("Pairing Background received event ${event.address}");
       switch (event.address) {
         case AscentConstants.EVENT_PAIRING_PORT_RECEIVED:
           await flutterLocalNotificationsPlugin.cancelAll();
           adbPairingPort = event.payload;
-          debugPrint("Adb pairing port set to $adbPairingPort");
+          AscentLogger.INSTANCE.log("Adb pairing port set to $adbPairingPort");
           sendCodeNotification();
           break;
         case AscentConstants.EVENT_PAIRING_CODE_RECEIVED:
           await flutterLocalNotificationsPlugin.cancelAll();
           adbPairingCode = event.payload;
-          debugPrint("Adb pairing code set to $adbPairingCode");
+          AscentLogger.INSTANCE.log("Adb pairing code set to $adbPairingCode");
           doPairShell();
           break;
         default:
@@ -107,7 +108,7 @@ class PairingNotification {
   }
 
   void sendPortNotification() {
-    debugPrint("Send port notification");
+    AscentLogger.INSTANCE.log("Send port notification");
     S
         .load(Locale.fromSubtags(
             languageCode: Platform.localeName.split('_').first))
@@ -137,7 +138,7 @@ class PairingNotification {
   }
 
   void sendCodeNotification() {
-    debugPrint("Send code notification");
+    AscentLogger.INSTANCE.log("Send code notification");
 
     S
         .load(Locale.fromSubtags(
@@ -168,7 +169,7 @@ class PairingNotification {
   }
 
   void sendSuccessNotification() {
-    debugPrint("Send success notification");
+    AscentLogger.INSTANCE.log("Send success notification");
 
     S
         .load(Locale.fromSubtags(
@@ -196,17 +197,17 @@ class PairingNotification {
     });
     await mDnsClient.start();
     const String adbTlsMdns = "_adb-tls-pairing._tcp";
-    debugPrint("mDns started");
+    AscentLogger.INSTANCE.log("mDns started");
 
     while (adbPairingPort.isEmpty) {
-      debugPrint("ADB pairing mDNS listening...");
+      AscentLogger.INSTANCE.log("ADB pairing mDNS listening...");
       await for (final PtrResourceRecord ptr
           in mDnsClient.lookup<PtrResourceRecord>(
               ResourceRecordQuery.serverPointer(adbTlsMdns))) {
         await for (final SrvResourceRecord srv
             in mDnsClient.lookup<SrvResourceRecord>(
                 ResourceRecordQuery.service(ptr.domainName))) {
-          debugPrint('Observed ADB TLS pairing instance at :${srv.port}');
+          AscentLogger.INSTANCE.log('Observed ADB TLS pairing instance at :${srv.port}');
           adbPairingPort = srv.port.toString();
           await flutterLocalNotificationsPlugin.cancelAll();
 
@@ -230,16 +231,16 @@ class PairingNotification {
       String dataPath =
           await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
 
-      debugPrint("Exec path: $execPath");
-      debugPrint("Data path: $dataPath");
+      AscentLogger.INSTANCE.log("Exec path: $execPath");
+      AscentLogger.INSTANCE.log("Data path: $dataPath");
 
-      debugPrint(
+      AscentLogger.INSTANCE.log(
           "Pairing to 127.0.0.1:$adbPairingPort $adbPairingCode $dataPath");
 
       var result = await Process.run(execPath, ['start-server', dataPath]);
 
-      debugPrint("STD OUT: ${result.stdout}");
-      debugPrint("STD ERR: ${result.stderr}");
+      AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+      AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
 
       Process.run(execPath, [
         'pair',
@@ -247,13 +248,13 @@ class PairingNotification {
         adbPairingCode,
         dataPath
       ]).then((result) async {
-        debugPrint("STD OUT: ${result.stdout}");
-        debugPrint("STD ERR: ${result.stderr}");
+        AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+        AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
         if (result.stderr.toString().isEmpty &&
             !result.stdout.toString().startsWith("Failed") &&
             !result.stdout.toString().startsWith("failed")) {
           sendSuccessNotification();
-          debugPrint("Background activity sending adb pairing success message");
+          AscentLogger.INSTANCE.log("Background activity sending adb pairing success message");
           await api.createEvent(
               address: AscentConstants.EVENT_TOGGLE_PAIRING_STATUS,
               payload: '');

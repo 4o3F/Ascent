@@ -11,12 +11,15 @@ import 'package:multicast_dns/multicast_dns.dart';
 import '../constants.dart';
 import '../ffi.dart';
 import '../generated/l10n.dart';
+import '../logger.dart';
 
 class ConnectLogic extends GetxController {
-  Rx<int> connectPort = 0.obs;
-  Rx<String> wishLink = "".obs;
+  //Rx<int> connectPort = 0.obs;
+  //Rx<String> wishLink = "".obs;
   Rx<String> connectStatus = "".obs;
   Rx<String> lastWishLinkFetchTime = "".obs;
+  TextEditingController adbConnectingPort = TextEditingController();
+  TextEditingController wishLink = TextEditingController();
 }
 
 class ConnectPage extends StatelessWidget {
@@ -31,17 +34,17 @@ class ConnectPage extends StatelessWidget {
     });
     await mDnsClient.start();
     const String adbTlsMdns = "_adb-tls-connect._tcp";
-    debugPrint("mDns started");
+    AscentLogger.INSTANCE.log("mDns started");
 
-    while (logic.connectPort.value == 0) {
+    while (logic.adbConnectingPort.text.isEmpty) {
       await for (final PtrResourceRecord ptr
           in mDnsClient.lookup<PtrResourceRecord>(
               ResourceRecordQuery.serverPointer(adbTlsMdns))) {
         await for (final SrvResourceRecord srv
             in mDnsClient.lookup<SrvResourceRecord>(
                 ResourceRecordQuery.service(ptr.domainName))) {
-          debugPrint('Observed ADB TLS connect instance at :${srv.port}');
-          logic.connectPort.value = srv.port;
+          AscentLogger.INSTANCE.log('Observed ADB TLS connect instance at :${srv.port}');
+          logic.adbConnectingPort.text = srv.port.toString();
           mDnsClient.stop();
           return;
         }
@@ -57,24 +60,24 @@ class ConnectPage extends StatelessWidget {
       String dataPath =
           await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
 
-      debugPrint("Exec path: $execPath");
-      debugPrint("Data path: $dataPath");
+      AscentLogger.INSTANCE.log("Exec path: $execPath");
+      AscentLogger.INSTANCE.log("Data path: $dataPath");
 
       var result = await Process.run(execPath, ['start-server', dataPath]);
 
-      debugPrint("STD OUT: ${result.stdout}");
-      debugPrint("STD ERR: ${result.stderr}");
+      AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+      AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
 
       Process.run(execPath, [
         'connect',
-        '127.0.0.1:${logic.connectPort.value}',
+        '127.0.0.1:${logic.adbConnectingPort.text}',
       ]).then((result) async {
-        debugPrint("STD OUT: ${result.stdout}");
-        debugPrint("STD ERR: ${result.stderr}");
+        AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+        AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
         if (result.stderr.toString().isEmpty &&
             !result.stdout.toString().contains("Failed") &&
             !result.stdout.toString().contains("failed")) {
-          debugPrint(
+          AscentLogger.INSTANCE.log(
               "Background activity sending adb connecting success message");
           logic.connectStatus.value = "CONNECTED";
           startGetWishLink(logic);
@@ -86,10 +89,10 @@ class ConnectPage extends StatelessWidget {
   }
 
   startGetWishLink(ConnectLogic logic) async {
-    debugPrint("Start getting wish link");
-    debugPrint("Current wish link: ${logic.wishLink.value}");
-    while (logic.wishLink.value.isEmpty) {
-      debugPrint("Current wish link: ${logic.wishLink.value}");
+    AscentLogger.INSTANCE.log("Start getting wish link");
+    AscentLogger.INSTANCE.log("Current wish link: ${logic.wishLink.text}");
+    while (logic.wishLink.text.isEmpty) {
+      AscentLogger.INSTANCE.log("Current wish link: ${logic.wishLink.text}");
       onGetWishLink(logic);
       DateTime now = DateTime.now();
       logic.lastWishLinkFetchTime.value = DateFormat('HH:mm:ss').format(now);
@@ -104,13 +107,13 @@ class ConnectPage extends StatelessWidget {
       String dataPath =
           await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
 
-      debugPrint("Exec path: $execPath");
-      debugPrint("Data path: $dataPath");
+      AscentLogger.INSTANCE.log("Exec path: $execPath");
+      AscentLogger.INSTANCE.log("Data path: $dataPath");
 
       var result = await Process.run(execPath, ['start-server', dataPath]);
 
-      debugPrint("STD OUT: ${result.stdout}");
-      debugPrint("STD ERR: ${result.stderr}");
+      AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+      AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
 
       Process.run(
               execPath,
@@ -120,8 +123,8 @@ class ConnectPage extends StatelessWidget {
               ],
               runInShell: false)
           .then((result) async {
-        debugPrint("STD OUT: ${result.stdout}");
-        debugPrint("STD ERR: ${result.stderr}");
+        AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+        AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
         if (result.stderr.toString().isEmpty &&
             !result.stdout.toString().startsWith("Failed") &&
             !result.stdout.toString().startsWith("failed")) {
@@ -129,9 +132,9 @@ class ConnectPage extends StatelessWidget {
           Match? match = regex.firstMatch(result.stdout);
           if (match != null) {
             String url = match.group(0)!;
-            logic.wishLink.value = url;
+            logic.wishLink.text = url;
           } else {
-            debugPrint('No match found.');
+            AscentLogger.INSTANCE.log('No match found.');
           }
         } else {}
       });
@@ -145,18 +148,18 @@ class ConnectPage extends StatelessWidget {
       String dataPath =
           await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
 
-      debugPrint("Exec path: $execPath");
-      debugPrint("Data path: $dataPath");
+      AscentLogger.INSTANCE.log("Exec path: $execPath");
+      AscentLogger.INSTANCE.log("Data path: $dataPath");
 
       var result = await Process.run(execPath, ['start-server', dataPath]);
 
-      debugPrint("STD OUT: ${result.stdout}");
-      debugPrint("STD ERR: ${result.stderr}");
+      AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+      AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
 
       Process.run(execPath, ['devices'], runInShell: false)
           .then((result) async {
-        debugPrint("STD OUT: ${result.stdout}");
-        debugPrint("STD ERR: ${result.stderr}");
+        AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+        AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
         if (result.stdout.toString().contains("127.0.0.1") &&
             !result.stdout.toString().contains("offline")) {
           logic.connectStatus.value = "CONNECTED";
@@ -184,29 +187,10 @@ class ConnectPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final logic = Get.put(ConnectLogic());
 
-    TextEditingController adbConnectingPort = TextEditingController();
-
-    TextEditingController wishLink = TextEditingController();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (logic.connectPort.value != 0) {
-        adbConnectingPort.text = logic.connectPort.value.toString();
-      }
-
-      logic.connectPort.listen((p0) {
-        adbConnectingPort.text = logic.connectPort.value.toString();
-      });
-
-      logic.wishLink.listen((p0) {
-        wishLink.text = logic.wishLink.value.toString();
-      });
-
-      adbConnectingPort.addListener(() {
-        logic.connectPort.value = int.tryParse(adbConnectingPort.text)!;
-      });
 
       checkConnectionStatus(logic);
-      debugPrint("Connection status: ${logic.connectStatus.value}");
+      AscentLogger.INSTANCE.log("Connection status: ${logic.connectStatus.value}");
       if (logic.connectStatus.value != "CONNECTED") {
         waitMDns(logic);
       } else {
@@ -219,12 +203,7 @@ class ConnectPage extends StatelessWidget {
       child: Column(
         children: [
           TextField(
-            controller: adbConnectingPort,
-            onChanged: (text) {
-              debugPrint(
-                  "Setting adb connect port to ${adbConnectingPort.text}");
-              adbConnectingPort.text = text;
-            },
+            controller: logic.adbConnectingPort,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: S.current.stage_connecting_port,
@@ -307,7 +286,7 @@ class ConnectPage extends StatelessWidget {
             );
           }),
           TextField(
-            controller: wishLink,
+            controller: logic.wishLink,
             keyboardType: TextInputType.multiline,
             decoration: InputDecoration(
               labelText: S.current.wish_link,
@@ -318,7 +297,7 @@ class ConnectPage extends StatelessWidget {
             children: [
               ElevatedButton.icon(
                 onPressed: (() {
-                  logic.wishLink.value = "";
+                  logic.wishLink.text = "";
                   startGetWishLink(logic);
                 }),
                 icon: const Icon(Icons.start),
@@ -326,7 +305,7 @@ class ConnectPage extends StatelessWidget {
               ),
               ElevatedButton.icon(
                 onPressed: (() async {
-                  await Clipboard.setData(ClipboardData(text: logic.wishLink.value)).then((value) {
+                  await Clipboard.setData(ClipboardData(text: logic.wishLink.text)).then((value) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.current.copied)));
                   });
                 }),

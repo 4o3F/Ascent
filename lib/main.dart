@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:ascent/logger.dart';
 import 'package:ascent/pair/pair/pairing_notification.dart';
 import 'package:ascent/route.dart';
 import 'package:ascent/state.dart';
@@ -23,8 +24,15 @@ import 'generated/l10n.dart';
 void main() async {
   // Storage initialize
   await GetStorage.init();
+
+  // Logger initialize
+  await AscentLogger.INSTANCE.init();
+
   // Make sure widgets are loaded
   WidgetsFlutterBinding.ensureInitialized();
+
+  // These are used to write global data for all isolates
+  await initGlobalData();
 
   // Background service initialize
   await initializeService();
@@ -37,15 +45,16 @@ void main() async {
 Future<void> requestPermission() async {
   Permission alertPermission = Permission.notification;
   if (await alertPermission.status.isDenied) {
-    debugPrint("Notification permission requesting");
+    AscentLogger.INSTANCE.log("Notification permission requesting");
     alertPermission.request();
   }
-  debugPrint("Notification permission granted");
+  AscentLogger.INSTANCE.log("Notification permission granted");
 }
 
 initializeService() async {
   await S.load(
       Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
+
 
   final service = FlutterBackgroundService();
 
@@ -64,9 +73,6 @@ initializeService() async {
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
-
-  // These are used to write global data for all isolates
-  await initGlobalData();
 
   await initGlobalEventListener();
 
@@ -102,7 +108,7 @@ initializeService() async {
 }
 
 initGlobalData() async {
-  debugPrint("Init global data");
+  AscentLogger.INSTANCE.log("Init global data");
   String? nativeLibPath = await getLibPath();
   String dataPath = (await getApplicationDocumentsDirectory()).path;
   await api.writeData(
@@ -113,9 +119,9 @@ initGlobalData() async {
 }
 
 initGlobalEventListener() async {
-  debugPrint("Init Global Event Listener");
+  AscentLogger.INSTANCE.log("Init Global Event Listener");
   api.registerEventListener().listen((event) {
-    debugPrint("Global Event Listener received ${event.address}");
+    //AscentLogger.INSTANCE.log("Global Event Listener received ${event.address}");
     switch (event.address) {
       case AscentConstants.EVENT_SWITCH_UI:
         Get.toNamed(event.payload);
@@ -130,20 +136,24 @@ initGlobalEventListener() async {
 @pragma('vm:entry-point')
 void onServiceStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
-  debugPrint("Background service init ensured");
+
+  // Logger initialize
+  await AscentLogger.INSTANCE.init();
+
+  AscentLogger.INSTANCE.log("Background service init ensured");
 
   await S.load(
       Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
 
-  debugPrint("Background service language loaded");
+  AscentLogger.INSTANCE.log("Background service language loaded");
 
   service.on('stop').listen((event) {
-    debugPrint("Background service stopping");
+    AscentLogger.INSTANCE.log("Background service stopping");
     service.stopSelf();
   });
   int identity = Random().nextInt(20);
   Timer.periodic(const Duration(seconds: 30), (timer) {
-    debugPrint("Service identity: $identity");
+    AscentLogger.INSTANCE.log("Service identity: $identity");
   });
 
   PairingNotification.getInstance().doPairing();
@@ -153,14 +163,14 @@ void onServiceStart(ServiceInstance service) async {
   api.registerEventListener().listen((event) {
     if (event.address == AscentConstants.EVENT_SERVICE_PING) {
       lastPing = DateTime.now().millisecondsSinceEpoch;
-    } else if( event.address == AscentConstants.EVENT_STOP_SERVICE) {
+    } else if (event.address == AscentConstants.EVENT_STOP_SERVICE) {
       service.stopSelf();
     }
   });
-  
+
   Timer.periodic(const Duration(seconds: 2), (timer) {
-    if(DateTime.now().millisecondsSinceEpoch - lastPing > 5000) {
-      debugPrint("Main activity stopped pinging, killing background service");
+    if (DateTime.now().millisecondsSinceEpoch - lastPing > 5000) {
+      AscentLogger.INSTANCE.log("Main activity stopped pinging, killing background service");
       service.stopSelf();
     }
   });

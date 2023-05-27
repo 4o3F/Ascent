@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../constants.dart';
 import '../../ffi.dart';
 import '../../generated/l10n.dart';
+import '../../logger.dart';
 
 class PairGuidePage extends StatelessWidget {
   const PairGuidePage({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class PairGuidePage extends StatelessWidget {
   void onStartPairing() async {
     await api.createEvent(address: AscentConstants.EVENT_STOP_SERVICE, payload: '');
     Get.toNamed("/pairing_window");
-    debugPrint(
+    AscentLogger.INSTANCE.log(
         "Sending update_stage event from main activity to ${await api.getListenerCount()} listeners");
     api.createEvent(address: 'update_stage', payload: 'pair');
   }

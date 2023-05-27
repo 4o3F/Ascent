@@ -6,6 +6,8 @@ import 'package:flutter_background_service_android/flutter_background_service_an
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+import 'logger.dart';
+
 enum AscentStage { LAUNCH, PAIR, CONNECT, WATCHING, FINISHED }
 
 enum AscentPages { FUNCTION, ABOUT }
@@ -53,15 +55,15 @@ class AscentGlobalState extends GetxController {
   }
 
   void togglePairingStatus() {
-    debugPrint("Toggling pairing status");
+    AscentLogger.INSTANCE.log("Toggling pairing status");
     switch(pairingStatus.value) {
       case PairingStatus.REQUIRED:
-        debugPrint("Toggling pairing status to DONE");
+        AscentLogger.INSTANCE.log("Toggling pairing status to DONE");
         pairingStatus.value = PairingStatus.DONE;
         GetStorage().write(pairingStatusKey, "DONE");
         break;
       case PairingStatus.DONE:
-        debugPrint("Toggling pairing status to REQUIRED");
+        AscentLogger.INSTANCE.log("Toggling pairing status to REQUIRED");
         pairingStatus.value = PairingStatus.REQUIRED;
         GetStorage().write(pairingStatusKey, "REQUIRED");
       default:

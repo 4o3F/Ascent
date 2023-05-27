@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../ffi.dart';
 import '../../generated/l10n.dart';
+import '../../logger.dart';
 
 class PairingWindowPage extends StatelessWidget {
   const PairingWindowPage({Key? key}) : super(key: key);
@@ -17,16 +18,16 @@ class PairingWindowPage extends StatelessWidget {
       String dataPath =
           await api.getData(key: AscentConstants.APPLICATION_DATA_PATH);
 
-      debugPrint("Exec path: $execPath");
-      debugPrint("Data path: $dataPath");
+      AscentLogger.INSTANCE.log("Exec path: $execPath");
+      AscentLogger.INSTANCE.log("Data path: $dataPath");
 
-      debugPrint(
+      AscentLogger.INSTANCE.log(
           "Pairing to 127.0.0.1:$adbPairingPort $adbPairingCode $dataPath");
 
       var result = await Process.run(execPath, ['start-server', dataPath]);
 
-      debugPrint("STD OUT: ${result.stdout}");
-      debugPrint("STD ERR: ${result.stderr}");
+      AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+      AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
 
       Process.run(execPath, [
         'pair',
@@ -34,12 +35,12 @@ class PairingWindowPage extends StatelessWidget {
         adbPairingCode,
         dataPath
       ]).then((result) async {
-        debugPrint("STD OUT: ${result.stdout}");
-        debugPrint("STD ERR: ${result.stderr}");
+        AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
+        AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
         if (result.stderr.toString().isEmpty &&
             !result.stdout.toString().startsWith("Failed") &&
             !result.stdout.toString().startsWith("failed")) {
-          debugPrint("Background activity sending adb pairing success message");
+          AscentLogger.INSTANCE.log("Background activity sending adb pairing success message");
           await api.createEvent(
               address: AscentConstants.EVENT_TOGGLE_PAIRING_STATUS,
               payload: '');
@@ -50,6 +51,10 @@ class PairingWindowPage extends StatelessWidget {
         }
       });
     });
+  }
+
+  void updateAdbPairingPort(String text) {
+
   }
 
   @override
@@ -72,9 +77,6 @@ class PairingWindowPage extends StatelessWidget {
         children: [
           TextField(
             controller: adbPairingPort,
-            onChanged: (text) {
-              adbPairingPort.text = text;
-            },
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: S.current.stage_pairing_port,
@@ -83,9 +85,6 @@ class PairingWindowPage extends StatelessWidget {
           const SizedBox(height: 16.0),
           TextField(
             controller: adbPairingCode,
-            onChanged: (text) {
-              adbPairingCode.text = text;
-            },
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: S.current.stage_pairing_code,
