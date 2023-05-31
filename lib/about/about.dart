@@ -86,7 +86,7 @@ class AboutPage extends StatelessWidget {
                     color: Colors.orangeAccent, fontWeight: FontWeight.bold),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    launchUrlString("https://github.com/4o3F");
+                    launchUrlString("https://github.com/4o3F", mode: LaunchMode.externalApplication);
                   }),
           ])),
           RichText(

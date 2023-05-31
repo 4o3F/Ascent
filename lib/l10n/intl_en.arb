@@ -34,5 +34,6 @@
   "stage_watching_restart": "Restart wish link watch",
   "copy_link": "Copy wish link to clipboard",
   "copied": "Copied",
-  "wish_link": "Wish link"
+  "wish_link": "Wish link",
+  "upload_to_feixiaoqiu": "Upload to Feixiaoqiu"
 }

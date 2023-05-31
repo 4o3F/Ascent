@@ -399,6 +399,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Upload to Feixiaoqiu`
+  String get upload_to_feixiaoqiu {
+    return Intl.message(
+      'Upload to Feixiaoqiu',
+      name: 'upload_to_feixiaoqiu',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

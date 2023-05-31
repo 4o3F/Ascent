@@ -34,5 +34,6 @@
   "stage_watching_restart": "重新开始检测祈愿链接",
   "copy_link": "复制祈愿链接到剪贴板",
   "copied": "已复制",
-  "wish_link": "祈愿链接"
+  "wish_link": "祈愿链接",
+  "upload_to_feixiaoqiu": "一键上传到非小酋数据分析"
 }

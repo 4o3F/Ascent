@@ -85,6 +85,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Restart wish link watch"),
         "stages": MessageLookupByLibrary.simpleMessage("Ascent Stages"),
         "title": MessageLookupByLibrary.simpleMessage("Ascent"),
+        "upload_to_feixiaoqiu":
+            MessageLookupByLibrary.simpleMessage("Upload to Feixiaoqiu"),
         "wish_link": MessageLookupByLibrary.simpleMessage("Wish link")
       };
 }

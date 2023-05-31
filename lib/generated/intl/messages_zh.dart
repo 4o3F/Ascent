@@ -75,6 +75,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("重新开始检测祈愿链接"),
         "stages": MessageLookupByLibrary.simpleMessage("Ascent执行步骤"),
         "title": MessageLookupByLibrary.simpleMessage("Ascent"),
+        "upload_to_feixiaoqiu":
+            MessageLookupByLibrary.simpleMessage("一键上传到非小酋数据分析"),
         "wish_link": MessageLookupByLibrary.simpleMessage("祈愿链接")
       };
 }

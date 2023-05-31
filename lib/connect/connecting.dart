@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:multicast_dns/multicast_dns.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../constants.dart';
 import '../ffi.dart';
@@ -90,7 +91,8 @@ class ConnectPage extends StatelessWidget {
   startGetWishLink(ConnectLogic logic) async {
     AscentLogger.INSTANCE.log("Start getting wish link");
     AscentLogger.INSTANCE.log("Current wish link: ${logic.wishLink.text}");
-    while (logic.wishLink.text.isEmpty && logic.connectStatus.value == "CONNECTED") {
+    while (logic.wishLink.text.isEmpty &&
+        logic.connectStatus.value == "CONNECTED") {
       AscentLogger.INSTANCE.log("Current wish link: ${logic.wishLink.text}");
       await onGetWishLink(logic);
       DateTime now = DateTime.now();
@@ -173,7 +175,6 @@ class ConnectPage extends StatelessWidget {
         return S.current.stage_connecting_status_waiting;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -306,6 +307,44 @@ class ConnectPage extends StatelessWidget {
                 }),
                 icon: const Icon(Icons.send),
                 label: Text(S.current.copy_link),
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.greenAccent),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white)),
+              ),
+              ElevatedButton.icon(
+                onPressed: (() async {
+                  Uri uri = Uri.parse(logic.wishLink.value.text);
+                  String path = "";
+                  Map<String, String> params = {};
+                  if (uri.queryParameters["game_biz"]!.startsWith("hk4e")) {
+                    path = "/rank_url_upload_init/";
+                    params["region"] = uri.queryParameters["region"]!;
+                  } else {
+                    path = "/n/#/xt";
+                  }
+
+                  params["game_biz"] = uri.queryParameters["game_biz"]!;
+                  params["autoKey"] = uri.queryParameters["authkey"]!;
+
+                  Uri feixiaoqiu = Uri(
+                    scheme: "https",
+                    host: "feixiaoqiu.com",
+                    path: path,
+                    queryParameters: params
+                  );
+
+                  String url = feixiaoqiu.toString();
+                  AscentLogger.INSTANCE.log(url);
+                  url = url.replaceAll("n/%23/xt", "n/#/xt");
+                  AscentLogger.INSTANCE.log(url);
+
+                  launchUrlString(url,
+                      mode: LaunchMode.externalApplication);
+                }),
+                icon: const Icon(Icons.cloud_upload),
+                label: Text(S.current.upload_to_feixiaoqiu),
                 style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.greenAccent),
