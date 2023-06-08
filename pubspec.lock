@@ -17,6 +17,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.13.0"
+  app_installer:
+    dependency: transitive
+    description:
+      name: app_installer
+      sha256: e125a0c44666b6f1c2e96b48347e798e127654b5eb5281b005ccf0f3a320d621
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.1.0"
   archive:
     dependency: transitive
     description:
@@ -241,6 +249,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "7.0.0"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      sha256: "7d328c4d898a61efc3cd93655a0955858e29a0aa647f0f9e02d59b3bb275e2e8"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.6"
   fake_async:
     dependency: transitive
     description:
@@ -294,6 +310,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_autoupdate:
+    dependency: "direct main"
+    description:
+      name: flutter_autoupdate
+      sha256: afefa1f30d10ed1dacd1e0d558e7ce214b02be515f0d0127a7320946dfc689ac
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   flutter_background_service:
     dependency: "direct main"
     description:
@@ -565,6 +589,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
+  package_info_plus:
+    dependency: "direct main"
+    description:
+      name: package_info_plus
+      sha256: ceb027f6bc6a60674a233b4a90a7658af1aebdea833da0b5b53c1e9821a78c7b
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.2"
+  package_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: package_info_plus_platform_interface
+      sha256: "9bc8ba46813a4cc42c66ab781470711781940780fd8beddd0c3da62506d3a6c6"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.1"
   path:
     dependency: transitive
     description:
@@ -970,6 +1010,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.4"
+  version:
+    dependency: "direct main"
+    description:
+      name: version
+      sha256: b8d9fc75327de5da108942502043f0b7d6500fbded3137560ec2254dc4b9f8ba
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.3"
   watcher:
     dependency: transitive
     description:

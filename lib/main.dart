@@ -7,6 +7,7 @@ import 'package:ascent/logger.dart';
 import 'package:ascent/pair/pair/pairing_notification.dart';
 import 'package:ascent/route.dart';
 import 'package:ascent/state.dart';
+import 'package:ascent/updater.dart';
 import 'package:ascent/utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -42,7 +44,16 @@ void main() async {
 
   await requestPermission();
 
+  await initUpdater();
+
   runApp(const Ascent());
+}
+
+initUpdater() async {
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  String currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+  AscentUpdater updater = AscentUpdater(currentVersion);
+  updater.checkUpdate();
 }
 
 doLogCleaning() async {
@@ -132,7 +143,7 @@ initGlobalEventListener() async {
     //AscentLogger.INSTANCE.log("Global Event Listener received ${event.address}");
     switch (event.address) {
       case AscentConstants.EVENT_SWITCH_UI:
-        Get.toNamed(event.payload);
+        Get.offAndToNamed(event.payload);
         break;
       case AscentConstants.EVENT_TOGGLE_PAIRING_STATUS:
         AscentGlobalState.INSTANCE.togglePairingStatus();

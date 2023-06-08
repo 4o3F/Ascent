@@ -1,4 +1,6 @@
 final class AscentConstants {
+  static const String UPDATE_URL = "https://feixiaoqiu.com/ascent/version.json";
+
   static const String ADB_PAIRING_PORT = "adb_pairing_port";
 
   static const String ADB_PAIRING_CODE = "adb_pairing_code";

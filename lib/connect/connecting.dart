@@ -315,33 +315,38 @@ class ConnectPage extends StatelessWidget {
               ),
               ElevatedButton.icon(
                 onPressed: (() async {
-                  Uri uri = Uri.parse(logic.wishLink.value.text);
-                  String path = "";
-                  Map<String, String> params = {};
-                  if (uri.queryParameters["game_biz"]!.startsWith("hk4e")) {
-                    path = "/rank_url_upload_init/";
-                    params["region"] = uri.queryParameters["region"]!;
-                  } else {
-                    path = "/n/#/xt";
+                  AscentLogger.INSTANCE.log("Calling up system browser");
+                  try {
+                    Uri uri = Uri.parse(logic.wishLink.value.text);
+                    String path = "";
+                    Map<String, String> params = {};
+                    if (uri.queryParameters["game_biz"]!.startsWith("hk4e")) {
+                      path = "/rank_url_upload_init/";
+                      params["region"] = uri.queryParameters["region"]!;
+                    } else {
+                      path = "/n/#/xt";
+                    }
+
+                    params["game_biz"] = uri.queryParameters["game_biz"]!;
+                    params["autoKey"] = uri.queryParameters["authkey"]!;
+
+                    Uri feixiaoqiu = Uri(
+                        scheme: "https",
+                        host: "feixiaoqiu.com",
+                        path: path,
+                        queryParameters: params
+                    );
+
+                    String url = feixiaoqiu.toString();
+                    AscentLogger.INSTANCE.log(url);
+                    url = url.replaceAll("n/%23/xt", "n/#/xt");
+                    AscentLogger.INSTANCE.log(url);
+
+                    launchUrlString(url,
+                        mode: LaunchMode.externalApplication);
+                  } catch (exception) {
+                    AscentLogger.INSTANCE.log(exception.toString());
                   }
-
-                  params["game_biz"] = uri.queryParameters["game_biz"]!;
-                  params["autoKey"] = uri.queryParameters["authkey"]!;
-
-                  Uri feixiaoqiu = Uri(
-                    scheme: "https",
-                    host: "feixiaoqiu.com",
-                    path: path,
-                    queryParameters: params
-                  );
-
-                  String url = feixiaoqiu.toString();
-                  AscentLogger.INSTANCE.log(url);
-                  url = url.replaceAll("n/%23/xt", "n/#/xt");
-                  AscentLogger.INSTANCE.log(url);
-
-                  launchUrlString(url,
-                      mode: LaunchMode.externalApplication);
                 }),
                 icon: const Icon(Icons.cloud_upload),
                 label: Text(S.current.upload_to_feixiaoqiu),
