@@ -28,7 +28,8 @@ class AscentLogger {
         // Print an emoji for each log message
         printTime: false,
         noBoxingByDefault: true,
-      ));
+      ),
+    );
     fileLogger.d("Log file at: $logFile");
   }
 

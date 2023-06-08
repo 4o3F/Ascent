@@ -24,8 +24,9 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "copied": MessageLookupByLibrary.simpleMessage("已复制"),
         "copy_link": MessageLookupByLibrary.simpleMessage("复制祈愿链接到剪贴板"),
-        "drawer_about": MessageLookupByLibrary.simpleMessage("关于"),
+        "drawer_about": MessageLookupByLibrary.simpleMessage("关于/反馈"),
         "drawer_function": MessageLookupByLibrary.simpleMessage("应用"),
+        "no_update": MessageLookupByLibrary.simpleMessage("暂不更新"),
         "notification_action": MessageLookupByLibrary.simpleMessage("输入"),
         "service_init": MessageLookupByLibrary.simpleMessage("后台服务启动中"),
         "stage_connecting": MessageLookupByLibrary.simpleMessage("手机连接"),
@@ -75,6 +76,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("重新开始检测祈愿链接"),
         "stages": MessageLookupByLibrary.simpleMessage("Ascent执行步骤"),
         "title": MessageLookupByLibrary.simpleMessage("Ascent"),
+        "update": MessageLookupByLibrary.simpleMessage("更新"),
+        "update_needed": MessageLookupByLibrary.simpleMessage("有新版本"),
         "upload_to_feixiaoqiu":
             MessageLookupByLibrary.simpleMessage("一键上传到非小酋数据分析"),
         "wish_link": MessageLookupByLibrary.simpleMessage("祈愿链接")

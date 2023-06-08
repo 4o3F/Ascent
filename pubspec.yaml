@@ -71,6 +71,7 @@ dev_dependencies:
   ffigen: ^7.2.4
   build_runner: ^2.4.4
   freezed: ^2.3.4
+  intl_utils: ^2.8.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

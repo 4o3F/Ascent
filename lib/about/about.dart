@@ -54,12 +54,14 @@ class AboutPage extends StatelessWidget {
       AscentLogger.INSTANCE.log("Exec path: $execPath");
       AscentLogger.INSTANCE.log("Data path: $dataPath");
 
-      ProcessResult result = await Process.run(execPath, ['start-server', dataPath]);
+      ProcessResult result =
+          await Process.run(execPath, ['start-server', dataPath]);
 
       AscentLogger.INSTANCE.log("STD OUT: ${result.stdout}");
       AscentLogger.INSTANCE.log("STD ERR: ${result.stderr}");
 
-      result = await Process.run(execPath, ['shell', 'logcat -d'], runInShell: false, stdoutEncoding: null);
+      result = await Process.run(execPath, ['shell', 'logcat -d'],
+          runInShell: false, stdoutEncoding: null);
       String logcatLogs = utf8.decode(result.stdout, allowMalformed: true);
       AscentLogger.INSTANCE.log("LOGCAT LOG: ${result.stdout}");
     });
@@ -86,9 +88,26 @@ class AboutPage extends StatelessWidget {
                     color: Colors.orangeAccent, fontWeight: FontWeight.bold),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    launchUrlString("https://github.com/4o3F", mode: LaunchMode.externalApplication);
+                    launchUrlString("https://403f.cafe",
+                        mode: LaunchMode.externalApplication);
                   }),
           ])),
+          RichText(
+              text: TextSpan(children: [
+                const TextSpan(
+                    text: "QQ Group: ",
+                    style: TextStyle(
+                        color: Colors.blueAccent, fontWeight: FontWeight.normal)),
+                TextSpan(
+                    text: "855857816",
+                    style: const TextStyle(
+                        color: Colors.orangeAccent, fontWeight: FontWeight.bold),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launchUrlString("http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=_Z-TH87QJHYhYCHjRkIk9580cCpMF_Mg&authKey=HgHsa4RtYARy4ITUdRevW4KeK4ogBm0%2Ffqi8GOxEs4NNeBmgi34WeQZ4Q1%2FxPch9&noverify=0&group_code=817701820",
+                            mode: LaunchMode.externalApplication);
+                      }),
+              ])),
           RichText(
               text: TextSpan(children: [
             const TextSpan(

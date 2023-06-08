@@ -70,6 +70,36 @@ class S {
     );
   }
 
+  /// `Update needed`
+  String get update_needed {
+    return Intl.message(
+      'Update needed',
+      name: 'update_needed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update`
+  String get update {
+    return Intl.message(
+      'Update',
+      name: 'update',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update later`
+  String get no_update {
+    return Intl.message(
+      'Update later',
+      name: 'no_update',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Application`
   String get drawer_function {
     return Intl.message(
@@ -80,10 +110,10 @@ class S {
     );
   }
 
-  /// `About`
+  /// `About/Issues`
   String get drawer_about {
     return Intl.message(
-      'About',
+      'About/Issues',
       name: 'drawer_about',
       desc: '',
       args: [],

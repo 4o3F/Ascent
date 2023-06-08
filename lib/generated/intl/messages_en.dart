@@ -25,8 +25,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "copied": MessageLookupByLibrary.simpleMessage("Copied"),
         "copy_link":
             MessageLookupByLibrary.simpleMessage("Copy wish link to clipboard"),
-        "drawer_about": MessageLookupByLibrary.simpleMessage("About"),
+        "drawer_about": MessageLookupByLibrary.simpleMessage("About/Issues"),
         "drawer_function": MessageLookupByLibrary.simpleMessage("Application"),
+        "no_update": MessageLookupByLibrary.simpleMessage("Update later"),
         "notification_action": MessageLookupByLibrary.simpleMessage("Input"),
         "service_init": MessageLookupByLibrary.simpleMessage(
             "Background service initializing"),
@@ -85,6 +86,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Restart wish link watch"),
         "stages": MessageLookupByLibrary.simpleMessage("Ascent Stages"),
         "title": MessageLookupByLibrary.simpleMessage("Ascent"),
+        "update": MessageLookupByLibrary.simpleMessage("Update"),
+        "update_needed": MessageLookupByLibrary.simpleMessage("Update needed"),
         "upload_to_feixiaoqiu":
             MessageLookupByLibrary.simpleMessage("Upload to Feixiaoqiu"),
         "wish_link": MessageLookupByLibrary.simpleMessage("Wish link")
