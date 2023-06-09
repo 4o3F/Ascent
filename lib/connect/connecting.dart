@@ -49,7 +49,7 @@ class ConnectPage extends StatelessWidget {
           return;
         }
       }
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 300));
     }
   }
 
@@ -80,6 +80,12 @@ class ConnectPage extends StatelessWidget {
           AscentLogger.INSTANCE.log(
               "Background activity sending adb connecting success message");
           logic.connectStatus.value = "CONNECTED";
+
+          await Process.run(execPath, [
+            'shell',
+            'logcat -c',
+          ]);
+
           startGetWishLink(logic);
         } else {
           logic.connectStatus.value = "FAILED";
@@ -97,7 +103,7 @@ class ConnectPage extends StatelessWidget {
       await onGetWishLink(logic);
       DateTime now = DateTime.now();
       logic.lastWishLinkFetchTime.value = DateFormat('HH:mm:ss').format(now);
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 300));
     }
   }
 
@@ -334,16 +340,14 @@ class ConnectPage extends StatelessWidget {
                         scheme: "https",
                         host: "feixiaoqiu.com",
                         path: path,
-                        queryParameters: params
-                    );
+                        queryParameters: params);
 
                     String url = feixiaoqiu.toString();
                     AscentLogger.INSTANCE.log(url);
                     url = url.replaceAll("n/%23/xt", "n/#/xt");
                     AscentLogger.INSTANCE.log(url);
 
-                    launchUrlString(url,
-                        mode: LaunchMode.externalApplication);
+                    launchUrlString(url, mode: LaunchMode.externalApplication);
                   } catch (exception) {
                     AscentLogger.INSTANCE.log(exception.toString());
                   }

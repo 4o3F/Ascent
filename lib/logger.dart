@@ -12,8 +12,23 @@ class AscentLogger {
     String logFile =
         "${(await getApplicationDocumentsDirectory()).path}/ascent.log";
     fileLogger = Logger(
+        printer: PrettyPrinter(
+          methodCount: 2,
+          // number of method calls to be displayed
+          errorMethodCount: 8,
+          // number of method calls if stacktrace is provided
+          lineLength: 2048,
+          // width of the output
+          colors: true,
+          // Colorful log messages
+          printEmojis: true,
+          // Print an emoji for each log message
+          printTime: true,
+          noBoxingByDefault: true,
+        ),
         output: AscentLogOutput(logFile),
-        filter: AscentLogFilter());
+        filter: AscentLogFilter()
+    );
     consoleLogger = Logger(
       printer: PrettyPrinter(
         methodCount: 2,
@@ -26,7 +41,7 @@ class AscentLogger {
         // Colorful log messages
         printEmojis: true,
         // Print an emoji for each log message
-        printTime: false,
+        printTime: true,
         noBoxingByDefault: true,
       ),
     );
@@ -55,8 +70,6 @@ class AscentLogOutput extends LogOutput {
 
   @override
   void output(OutputEvent event) {
-    // 在这里，你可以将日志写入文件或其他适当的输出位置
-    print(event.lines.join('\n'));
     logFile.writeAsStringSync('${event.lines.join('\n')}\n',
         mode: FileMode.append);
   }
