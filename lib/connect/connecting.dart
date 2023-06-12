@@ -124,7 +124,7 @@ class ConnectPage extends StatelessWidget {
         execPath,
         [
           'shell',
-          'logcat -d | grep -E \'https://webstatic.mihoyo.com|https://api-os-takumi.mihoyo.com|https://webstatic-sea.mihoyo.com\' | grep -i \'gacha\' | tail -n 1'
+          'logcat -d | grep -E \'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi).(mihoyo.com|hoyoverse.com)\' | grep -i \'gacha\' | tail -n 1'
         ],
         runInShell: false);
     AscentLogger.INSTANCE.log(
