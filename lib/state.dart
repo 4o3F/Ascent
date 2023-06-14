@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 import 'logger.dart';
 
@@ -22,6 +23,8 @@ class AscentGlobalState extends GetxController {
   Rx<PairingStatus> pairingStatus = PairingStatus.REQUIRED.obs;
 
   Rx<String> adbLibraryPath = "".obs;
+
+  Mixpanel? mixpanel;
 
   final String pairingStatusKey = "pairing_status";
 
@@ -96,5 +99,11 @@ class AscentGlobalState extends GetxController {
     } else {
       return adbLibraryPath.value;
     }
+  }
+
+  initMixPanel() async {
+    Mixpanel mixpanel = await Mixpanel.init("e82ee944685ea82f6e3684468fdb48bd",
+        trackAutomaticEvents: true);
+    this.mixpanel = mixpanel;
   }
 }

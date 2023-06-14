@@ -581,6 +581,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
+  mixpanel_flutter:
+    dependency: "direct main"
+    description:
+      name: mixpanel_flutter
+      sha256: f12cd54f1e211230a58c0102e2399b445d8dd417b290ea3c3709d4e54a3ed00b
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.1.1"
   multicast_dns:
     dependency: "direct main"
     description:

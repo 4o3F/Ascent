@@ -53,10 +53,6 @@ class PairingWindowPage extends StatelessWidget {
     });
   }
 
-  void updateAdbPairingPort(String text) {
-
-  }
-
   @override
   Widget build(BuildContext context) {
     TextEditingController adbPairingPort = TextEditingController();

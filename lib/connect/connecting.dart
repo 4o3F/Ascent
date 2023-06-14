@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ascent/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -81,6 +81,10 @@ class ConnectPage extends StatelessWidget {
               "Background activity sending adb connecting success message");
           logic.connectStatus.value = "CONNECTED";
 
+          if(AscentGlobalState.INSTANCE.mixpanel != null) {
+            AscentGlobalState.INSTANCE.mixpanel!.track("Successfully connected ADB");
+          }
+
           await Process.run(execPath, [
             'shell',
             'logcat -c',
@@ -105,6 +109,10 @@ class ConnectPage extends StatelessWidget {
       logic.lastWishLinkFetchTime.value = DateFormat('HH:mm:ss').format(now);
       await Future.delayed(const Duration(milliseconds: 300));
     }
+
+    if(AscentGlobalState.INSTANCE.mixpanel != null) {
+      AscentGlobalState.INSTANCE.mixpanel!.track("Successfully fetched wish link");
+    }
   }
 
   onGetWishLink(ConnectLogic logic) async {
@@ -124,7 +132,7 @@ class ConnectPage extends StatelessWidget {
         execPath,
         [
           'shell',
-          'logcat -d | grep -E \'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi).(mihoyo.com|hoyoverse.com)\' | grep -i \'gacha\' | tail -n 1'
+          'logcat -d | grep -E \'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi).(mihoyo\\.com|hoyoverse\\.com)\' | grep -i \'gacha\' | tail -n 1'
         ],
         runInShell: false);
     AscentLogger.INSTANCE.log(
@@ -185,6 +193,10 @@ class ConnectPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final logic = Get.put(ConnectLogic());
+
+    if(AscentGlobalState.INSTANCE.mixpanel != null) {
+      AscentGlobalState.INSTANCE.mixpanel!.track("Open connect page");
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await checkConnectionStatus(logic);

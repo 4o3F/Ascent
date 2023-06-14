@@ -15,6 +15,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -46,8 +47,12 @@ void main() async {
 
   await initUpdater();
 
+  await AscentGlobalState.INSTANCE.initMixPanel();
+
   runApp(const Ascent());
 }
+
+
 
 initUpdater() async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -57,7 +62,8 @@ initUpdater() async {
 }
 
 doLogCleaning() async {
-  String logFilePath = "${(await getApplicationDocumentsDirectory()).path}/ascent.log";
+  String logFilePath =
+      "${(await getApplicationDocumentsDirectory()).path}/ascent.log";
   File(logFilePath).writeAsStringSync("", mode: FileMode.write);
 }
 
@@ -73,7 +79,6 @@ Future<void> requestPermission() async {
 initializeService() async {
   await S.load(
       Locale.fromSubtags(languageCode: Platform.localeName.split('_').first));
-
 
   final service = FlutterBackgroundService();
 
@@ -189,7 +194,8 @@ void onServiceStart(ServiceInstance service) async {
 
   Timer.periodic(const Duration(seconds: 2), (timer) {
     if (DateTime.now().millisecondsSinceEpoch - lastPing > 5000) {
-      AscentLogger.INSTANCE.log("Main activity stopped pinging, killing background service");
+      AscentLogger.INSTANCE
+          .log("Main activity stopped pinging, killing background service");
       service.stopSelf();
     }
   });

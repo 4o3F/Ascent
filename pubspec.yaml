@@ -57,6 +57,7 @@ dependencies:
   flutter_autoupdate: ^1.0.0
   version: ^2.0.3
   package_info_plus: ^4.0.2
+  mixpanel_flutter: ^2.1.1
 
 dev_dependencies:
   flutter_test:
