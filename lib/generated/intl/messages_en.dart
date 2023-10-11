@@ -55,7 +55,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "stage_pairing_description": MessageLookupByLibrary.simpleMessage(
             "Ascent will send notifications, please enable \nSettings => Developer options => Wireless Debugging\nThen select \"Pair with pairing code.\"\nAfterwards, follow the notification prompts to enter the port and pairing code.\n(This process only needs to be performed once.)"),
         "stage_pairing_guide_error": MessageLookupByLibrary.simpleMessage(
-            "Guide for your brand can\'t be found, please contact developers"),
+            "Guide for your brand can\'t be found, if you wish to help complete this, please contact developers"),
         "stage_pairing_guide_error_brand":
             MessageLookupByLibrary.simpleMessage("Brand"),
         "stage_pairing_guide_error_version":

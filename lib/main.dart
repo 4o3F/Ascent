@@ -25,6 +25,8 @@ import 'ffi.dart';
 import 'generated/l10n.dart';
 
 void main() async {
+  HttpOverrides.global = MyHttpOverrides();
+
   // Storage initialize
   await GetStorage.init();
 
@@ -271,5 +273,13 @@ class AscentMain extends StatelessWidget {
         getPages: AscentRoutes.getPages,
       ),
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
   }
 }

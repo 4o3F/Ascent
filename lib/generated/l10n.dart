@@ -150,10 +150,10 @@ class S {
     );
   }
 
-  /// `Guide for your brand can't be found, please contact developers`
+  /// `Guide for your brand can't be found, if you wish to help complete this, please contact developers`
   String get stage_pairing_guide_error {
     return Intl.message(
-      'Guide for your brand can\'t be found, please contact developers',
+      'Guide for your brand can\'t be found, if you wish to help complete this, please contact developers',
       name: 'stage_pairing_guide_error',
       desc: '',
       args: [],

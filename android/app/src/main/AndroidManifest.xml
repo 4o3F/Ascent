@@ -5,7 +5,8 @@
     <application
         android:label="Ascent"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+    >
         <activity
             android:name=".MainActivity"
             android:supportsPictureInPicture="true"

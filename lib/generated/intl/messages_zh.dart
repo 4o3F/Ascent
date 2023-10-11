@@ -50,7 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "stage_pairing_description": MessageLookupByLibrary.simpleMessage(
             "Ascent将发送通知，请开启\n设置=>开发者选项=>无线调试\n然后选择使用配对码配对\n而后将根据通知提示输入端口和配对码\n(该过程只需要执行一次)"),
         "stage_pairing_guide_error":
-            MessageLookupByLibrary.simpleMessage("机型教程未找到，请联系开发者"),
+            MessageLookupByLibrary.simpleMessage("机型教程未找到，若您愿意协助完善请联系开发者"),
         "stage_pairing_guide_error_brand":
             MessageLookupByLibrary.simpleMessage("品牌"),
         "stage_pairing_guide_error_version":

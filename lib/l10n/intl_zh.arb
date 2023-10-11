@@ -10,7 +10,7 @@
   "notification_action": "输入",
   "stages": "Ascent执行步骤",
   "stage_pairing": "手机配对",
-  "stage_pairing_guide_error": "机型教程未找到，请联系开发者",
+  "stage_pairing_guide_error": "机型教程未找到，若您愿意协助完善请联系开发者",
   "stage_pairing_guide_error_brand": "品牌",
   "stage_pairing_guide_error_version": "版本",
   "stage_pairing_start": "开始配对",
