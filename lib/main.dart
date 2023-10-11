@@ -25,7 +25,7 @@ import 'ffi.dart';
 import 'generated/l10n.dart';
 
 void main() async {
-  HttpOverrides.global = MyHttpOverrides();
+  // HttpOverrides.global = MyHttpOverrides();
 
   // Storage initialize
   await GetStorage.init();
