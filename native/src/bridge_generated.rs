@@ -22,97 +22,36 @@ use std::sync::Arc;
 
 // Section: wire functions
 
-fn wire_write_data_impl(
+fn wire_do_pair_impl(
     port_: MessagePort,
-    key: impl Wire2Api<String> + UnwindSafe,
-    value: impl Wire2Api<String> + UnwindSafe,
+    port: impl Wire2Api<String> + UnwindSafe,
+    code: impl Wire2Api<String> + UnwindSafe,
+    data_folder: impl Wire2Api<String> + UnwindSafe,
 ) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, (), _>(
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, bool, _>(
         WrapInfo {
-            debug_name: "write_data",
+            debug_name: "do_pair",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
-            let api_key = key.wire2api();
-            let api_value = value.wire2api();
-            move |task_callback| Result::<_, ()>::Ok(write_data(api_key, api_value))
+            let api_port = port.wire2api();
+            let api_code = code.wire2api();
+            let api_data_folder = data_folder.wire2api();
+            move |task_callback| do_pair(api_port, api_code, api_data_folder)
         },
     )
 }
-fn wire_get_data_impl(port_: MessagePort, key: impl Wire2Api<String> + UnwindSafe) {
+fn wire_do_connect_impl(port_: MessagePort, port: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, String, _>(
         WrapInfo {
-            debug_name: "get_data",
+            debug_name: "do_connect",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
-            let api_key = key.wire2api();
-            move |task_callback| Result::<_, ()>::Ok(get_data(api_key))
-        },
-    )
-}
-fn wire_count_data_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, i32, _>(
-        WrapInfo {
-            debug_name: "count_data",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || move |task_callback| Result::<_, ()>::Ok(count_data()),
-    )
-}
-fn wire_register_event_listener_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, (), _>(
-        WrapInfo {
-            debug_name: "register_event_listener",
-            port: Some(port_),
-            mode: FfiCallMode::Stream,
-        },
-        move || {
-            move |task_callback| register_event_listener(task_callback.stream_sink::<_, Event>())
-        },
-    )
-}
-fn wire_create_event_impl(
-    port_: MessagePort,
-    address: impl Wire2Api<String> + UnwindSafe,
-    payload: impl Wire2Api<String> + UnwindSafe,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, (), _>(
-        WrapInfo {
-            debug_name: "create_event",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_address = address.wire2api();
-            let api_payload = payload.wire2api();
-            move |task_callback| Result::<_, ()>::Ok(create_event(api_address, api_payload))
-        },
-    )
-}
-fn wire_get_listener_count_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, i32, _>(
-        WrapInfo {
-            debug_name: "get_listener_count",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || move |task_callback| Result::<_, ()>::Ok(get_listener_count()),
-    )
-}
-fn wire_as_string__method__Event_impl(port_: MessagePort, that: impl Wire2Api<Event> + UnwindSafe) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, String, _>(
-        WrapInfo {
-            debug_name: "as_string__method__Event",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_that = that.wire2api();
-            move |task_callback| Result::<_, ()>::Ok(Event::as_string(&api_that))
+            let api_port = port.wire2api();
+            move |task_callback| do_connect(api_port)
         },
     )
 }
@@ -146,22 +85,6 @@ impl Wire2Api<u8> for u8 {
 }
 
 // Section: impl IntoDart
-
-impl support::IntoDart for Event {
-    fn into_dart(self) -> support::DartAbi {
-        vec![
-            self.address.into_into_dart().into_dart(),
-            self.payload.into_into_dart().into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for Event {}
-impl rust2dart::IntoIntoDart<Event> for Event {
-    fn into_into_dart(self) -> Self {
-        self
-    }
-}
 
 // Section: executor
 

@@ -18,13 +18,15 @@ void main() async {
         supportedLocales: GlobalState.supportedLocale,
         path: GlobalState.localizationAssetPath,
         fallbackLocale: GlobalState.supportedLocale[0],
-        child: AscentApp(),
+        child: const AscentApp(),
       ),
     ),
   );
 }
 
 class AscentApp extends StatelessWidget {
+  const AscentApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

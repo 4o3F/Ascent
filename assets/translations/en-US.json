@@ -1,0 +1,45 @@
+{
+  "title": "Ascent",
+  "navigation": {
+    "home": "Home",
+    "pair": "Pair",
+    "connect": "Connect",
+    "info": "Info"
+  },
+  "home": {
+    "developer_option": {
+      "status": "Developer Option Status: ",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "pairing": {
+      "name": "Pair",
+      "status": "ADB Pair Status: ",
+      "paired": "Paired",
+      "wait_pairing": "Wait Pairing"
+    },
+    "connect": {
+      "name": "Connect",
+      "status": "ADB Connect Status: ",
+      "connected": "Connected",
+      "wait_connect": "Wait Connecting"
+    }
+  },
+  "pair": {
+    "guide": {
+      "prepare_guide": "Please follow the guide in notification for following ADB pairing process",
+      "pair": "Start Pairing",
+      "reset": "Reset Pair Cert"
+    },
+    "notification_title": "Ascent Pairing",
+    "notification_description": {
+      "guide_port": "Open wireless debugging and click 'Pair device with pairing code'\nEnter the pairing port by clicking the following button",
+      "guide_code": "Please enter the pairing code (6 bit) below the button",
+      "error_init": "Foreground service start failed, please contact developer",
+      "pair_port": "Port: ",
+      "pair_code": "Code: ",
+      "pair_success": "Pairing success, please return to Ascent"
+    },
+    "notification_reply_button": "Enter data here"
+  }
+}

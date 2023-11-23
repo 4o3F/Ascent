@@ -1,6 +1,8 @@
 import 'dart:isolate';
 
+import 'package:ascent/ffi.dart';
 import 'package:ascent/global_state.dart';
+import 'package:ascent/pages/pair/logic.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -25,6 +27,7 @@ class PairTaskHandler extends TaskHandler {
   String port = "";
   String code = "";
   final MDnsClient mDnsClient = MDnsClient();
+  SendPort? sendPort;
 
   Future<void> loadTranslations() async {
     //this will only set EasyLocalizationController.savedLocale
@@ -66,7 +69,7 @@ class PairTaskHandler extends TaskHandler {
           waitCode();
         }
       }
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 500));
     }
   }
 
@@ -83,7 +86,17 @@ class PairTaskHandler extends TaskHandler {
   }
 
   Future<void> doPair() async {
-
+    try {
+      await api.doPair(
+          port: port, code: code, dataFolder: GlobalState.dataDir.path);
+    } catch (error) {
+      print(error);
+    }
+    FlutterForegroundTask.updateService(
+      notificationTitle: tr('pair.notification_title'),
+      notificationText: tr('pair.notification_description.pair_success'),
+    );
+    sendPort?.send('pair_complete');
   }
 
   @override
@@ -95,8 +108,10 @@ class PairTaskHandler extends TaskHandler {
   @override
   void onStart(DateTime timestamp, SendPort? sendPort) {
     loadTranslations();
+    GlobalState.init();
     // Start mdns listener
     startMDNS();
+    this.sendPort = sendPort;
   }
 
   @override
@@ -110,6 +125,8 @@ class PairTaskHandler extends TaskHandler {
         }
         break;
       case PairStatus.WAIT_CODE:
+        code = reply;
+        doPair();
         break;
     }
   }
@@ -133,13 +150,28 @@ class PairForegroundTask {
     }
   }
 
-  Future<void> startPairForegroundTask() async {
+  Future<bool> startPairForegroundTask() async {
     // Request permission
     await requestPermission();
     // Stop any foreground service still running
     if (await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.stopService();
     }
+
+    final ReceivePort? receivePort = FlutterForegroundTask.receivePort;
+    if (receivePort == null) {
+      return false;
+    }
+    receivePort.listen((dynamic data) {
+      if (data is String) {
+        switch (data) {
+          case 'pair_complete':
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              GlobalState.hasCert.value = true;
+            });
+        }
+      }
+    });
 
     // Init foreground task
     FlutterForegroundTask.init(
@@ -150,9 +182,10 @@ class PairForegroundTask {
           priority: NotificationPriority.HIGH,
           buttons: [
             NotificationButton(
-                id: 'replyButton',
-                text: tr("pair.notification_reply_button"),
-                isReply: true)
+              id: 'replyButton',
+              text: tr("pair.notification_reply_button"),
+              isReply: true,
+            )
           ]),
       iosNotificationOptions: const IOSNotificationOptions(
         showNotification: false,
@@ -173,5 +206,6 @@ class PairForegroundTask {
       notificationText: tr('pair.notification_description.guide_port'),
       callback: startCallback,
     );
+    return true;
   }
 }

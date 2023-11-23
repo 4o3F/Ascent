@@ -15,8 +15,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    logic.hasCert.value =
-        File("${GlobalState.dataDir.path}/cert.pem").existsSync();
     GlobalState.platform.invokeMethod('getDeveloperOptionEnabled').then(
         (value) =>
             logic.developerOptionEnabled.value = (value.toString() == "true"));
@@ -57,7 +55,7 @@ class HomePage extends StatelessWidget {
                       "home.pairing.status",
                       style: TextStyle(fontSize: 20),
                     ).tr(),
-                    logic.hasCert.value
+                    GlobalState.hasCert.value
                         ? const Text(
                             "home.pairing.paired",
                             style: TextStyle(
@@ -77,7 +75,7 @@ class HomePage extends StatelessWidget {
                   title: tr('home.pairing.name'),
                   bgColor: Colors.cyan.withOpacity(0.8),
                   isEnable: (logic.developerOptionEnabled.value &&
-                      !logic.hasCert.value),
+                      !GlobalState.hasCert.value),
                   onTap: () {
                     Get.toNamed("/pair");
                   },
@@ -89,7 +87,7 @@ class HomePage extends StatelessWidget {
                   title: tr('home.connect.name'),
                   bgColor: Colors.indigoAccent.withOpacity(0.8),
                   isEnable:
-                  (logic.developerOptionEnabled.value && logic.hasCert.value),
+                  (logic.developerOptionEnabled.value && GlobalState.hasCert.value),
                   onTap: () {
                     Get.toNamed("/connect");
                   },

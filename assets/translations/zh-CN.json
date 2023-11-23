@@ -35,9 +35,11 @@
     "notification_description": {
       "guide_port": "打开无线调试并点击使用配对码配对设备\n通过下面的按钮输入无线调试配对端口",
       "guide_code": "请通过下面的按钮输入无线调试配对码",
+      "error_init": "前台服务启动失败，请联系开发者",
       "pair_port": "端口: ",
-      "pair_code": "配对码: "
+      "pair_code": "配对码: ",
+      "pair_success": "配对成功，请返回Ascent主程序"
     },
-    "notification_reply_button": "输入数据"
+    "notification_reply_button": "点此输入数据"
   }
 }

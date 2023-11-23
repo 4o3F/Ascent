@@ -7,55 +7,21 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:uuid/uuid.dart';
-import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 
 import 'dart:ffi' as ffi;
 
-part 'bridge_generated.freezed.dart';
-
 abstract class Native {
-  Future<void> writeData(
-      {required String key, required String value, dynamic hint});
+  Future<bool> doPair(
+      {required String port,
+      required String code,
+      required String dataFolder,
+      dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kWriteDataConstMeta;
+  FlutterRustBridgeTaskConstMeta get kDoPairConstMeta;
 
-  Future<String> getData({required String key, dynamic hint});
+  Future<String> doConnect({required String port, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kGetDataConstMeta;
-
-  Future<int> countData({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kCountDataConstMeta;
-
-  Stream<Event> registerEventListener({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kRegisterEventListenerConstMeta;
-
-  Future<void> createEvent(
-      {required String address, required String payload, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kCreateEventConstMeta;
-
-  Future<int> getListenerCount({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kGetListenerCountConstMeta;
-
-  Future<String> asStringMethodEvent({required Event that, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kAsStringMethodEventConstMeta;
-}
-
-@freezed
-class Event with _$Event {
-  const Event._();
-  const factory Event({
-    required Native bridge,
-    required String address,
-    required String payload,
-  }) = _Event;
-  Future<String> asString({dynamic hint}) => bridge.asStringMethodEvent(
-        that: this,
-      );
+  FlutterRustBridgeTaskConstMeta get kDoConnectConstMeta;
 }
 
 class NativeImpl implements Native {
@@ -67,132 +33,46 @@ class NativeImpl implements Native {
   factory NativeImpl.wasm(FutureOr<WasmModule> module) =>
       NativeImpl(module as ExternalLibrary);
   NativeImpl.raw(this._platform);
-  Future<void> writeData(
-      {required String key, required String value, dynamic hint}) {
-    var arg0 = _platform.api2wire_String(key);
-    var arg1 = _platform.api2wire_String(value);
+  Future<bool> doPair(
+      {required String port,
+      required String code,
+      required String dataFolder,
+      dynamic hint}) {
+    var arg0 = _platform.api2wire_String(port);
+    var arg1 = _platform.api2wire_String(code);
+    var arg2 = _platform.api2wire_String(dataFolder);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_write_data(port_, arg0, arg1),
-      parseSuccessData: _wire2api_unit,
-      parseErrorData: null,
-      constMeta: kWriteDataConstMeta,
-      argValues: [key, value],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kWriteDataConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "write_data",
-        argNames: ["key", "value"],
-      );
-
-  Future<String> getData({required String key, dynamic hint}) {
-    var arg0 = _platform.api2wire_String(key);
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_get_data(port_, arg0),
-      parseSuccessData: _wire2api_String,
-      parseErrorData: null,
-      constMeta: kGetDataConstMeta,
-      argValues: [key],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kGetDataConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "get_data",
-        argNames: ["key"],
-      );
-
-  Future<int> countData({dynamic hint}) {
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_count_data(port_),
-      parseSuccessData: _wire2api_i32,
-      parseErrorData: null,
-      constMeta: kCountDataConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kCountDataConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "count_data",
-        argNames: [],
-      );
-
-  Stream<Event> registerEventListener({dynamic hint}) {
-    return _platform.executeStream(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_register_event_listener(port_),
-      parseSuccessData: (d) => _wire2api_event(d),
+      callFfi: (port_) => _platform.inner.wire_do_pair(port_, arg0, arg1, arg2),
+      parseSuccessData: _wire2api_bool,
       parseErrorData: _wire2api_FrbAnyhowException,
-      constMeta: kRegisterEventListenerConstMeta,
-      argValues: [],
+      constMeta: kDoPairConstMeta,
+      argValues: [port, code, dataFolder],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kRegisterEventListenerConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kDoPairConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "register_event_listener",
-        argNames: [],
+        debugName: "do_pair",
+        argNames: ["port", "code", "dataFolder"],
       );
 
-  Future<void> createEvent(
-      {required String address, required String payload, dynamic hint}) {
-    var arg0 = _platform.api2wire_String(address);
-    var arg1 = _platform.api2wire_String(payload);
+  Future<String> doConnect({required String port, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(port);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_create_event(port_, arg0, arg1),
-      parseSuccessData: _wire2api_unit,
-      parseErrorData: null,
-      constMeta: kCreateEventConstMeta,
-      argValues: [address, payload],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kCreateEventConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "create_event",
-        argNames: ["address", "payload"],
-      );
-
-  Future<int> getListenerCount({dynamic hint}) {
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_get_listener_count(port_),
-      parseSuccessData: _wire2api_i32,
-      parseErrorData: null,
-      constMeta: kGetListenerCountConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kGetListenerCountConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "get_listener_count",
-        argNames: [],
-      );
-
-  Future<String> asStringMethodEvent({required Event that, dynamic hint}) {
-    var arg0 = _platform.api2wire_box_autoadd_event(that);
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) =>
-          _platform.inner.wire_as_string__method__Event(port_, arg0),
+      callFfi: (port_) => _platform.inner.wire_do_connect(port_, arg0),
       parseSuccessData: _wire2api_String,
-      parseErrorData: null,
-      constMeta: kAsStringMethodEventConstMeta,
-      argValues: [that],
+      parseErrorData: _wire2api_FrbAnyhowException,
+      constMeta: kDoConnectConstMeta,
+      argValues: [port],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kAsStringMethodEventConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kDoConnectConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "as_string__method__Event",
-        argNames: ["that"],
+        debugName: "do_connect",
+        argNames: ["port"],
       );
 
   void dispose() {
@@ -208,19 +88,8 @@ class NativeImpl implements Native {
     return raw as String;
   }
 
-  Event _wire2api_event(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return Event(
-      bridge: this,
-      address: _wire2api_String(arr[0]),
-      payload: _wire2api_String(arr[1]),
-    );
-  }
-
-  int _wire2api_i32(dynamic raw) {
-    return raw as int;
+  bool _wire2api_bool(dynamic raw) {
+    return raw as bool;
   }
 
   int _wire2api_u8(dynamic raw) {
@@ -229,10 +98,6 @@ class NativeImpl implements Native {
 
   Uint8List _wire2api_uint_8_list(dynamic raw) {
     return raw as Uint8List;
-  }
-
-  void _wire2api_unit(dynamic raw) {
-    return;
   }
 }
 
@@ -256,13 +121,6 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
   }
 
   @protected
-  ffi.Pointer<wire_Event> api2wire_box_autoadd_event(Event raw) {
-    final ptr = inner.new_box_autoadd_event_0();
-    _api_fill_to_wire_event(raw, ptr.ref);
-    return ptr;
-  }
-
-  @protected
   ffi.Pointer<wire_uint_8_list> api2wire_uint_8_list(Uint8List raw) {
     final ans = inner.new_uint_8_list_0(raw.length);
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
@@ -271,16 +129,6 @@ class NativePlatform extends FlutterRustBridgeBase<NativeWire> {
 // Section: finalizer
 
 // Section: api_fill_to_wire
-
-  void _api_fill_to_wire_box_autoadd_event(
-      Event apiObj, ffi.Pointer<wire_Event> wireObj) {
-    _api_fill_to_wire_event(apiObj, wireObj.ref);
-  }
-
-  void _api_fill_to_wire_event(Event apiObj, wire_Event wireObj) {
-    wireObj.address = api2wire_String(apiObj.address);
-    wireObj.payload = api2wire_String(apiObj.payload);
-  }
 }
 
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names
@@ -379,131 +227,47 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
-  void wire_write_data(
+  void wire_do_pair(
     int port_,
-    ffi.Pointer<wire_uint_8_list> key,
-    ffi.Pointer<wire_uint_8_list> value,
+    ffi.Pointer<wire_uint_8_list> port,
+    ffi.Pointer<wire_uint_8_list> code,
+    ffi.Pointer<wire_uint_8_list> data_folder,
   ) {
-    return _wire_write_data(
+    return _wire_do_pair(
       port_,
-      key,
-      value,
+      port,
+      code,
+      data_folder,
     );
   }
 
-  late final _wire_write_dataPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_write_data');
-  late final _wire_write_data = _wire_write_dataPtr.asFunction<
-      void Function(
-          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
-
-  void wire_get_data(
-    int port_,
-    ffi.Pointer<wire_uint_8_list> key,
-  ) {
-    return _wire_get_data(
-      port_,
-      key,
-    );
-  }
-
-  late final _wire_get_dataPtr = _lookup<
+  late final _wire_do_pairPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
-              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_get_data');
-  late final _wire_get_data = _wire_get_dataPtr
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_do_pair');
+  late final _wire_do_pair = _wire_do_pairPtr.asFunction<
+      void Function(int, ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_do_connect(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> port,
+  ) {
+    return _wire_do_connect(
+      port_,
+      port,
+    );
+  }
+
+  late final _wire_do_connectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_do_connect');
+  late final _wire_do_connect = _wire_do_connectPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
-
-  void wire_count_data(
-    int port_,
-  ) {
-    return _wire_count_data(
-      port_,
-    );
-  }
-
-  late final _wire_count_dataPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_count_data');
-  late final _wire_count_data =
-      _wire_count_dataPtr.asFunction<void Function(int)>();
-
-  void wire_register_event_listener(
-    int port_,
-  ) {
-    return _wire_register_event_listener(
-      port_,
-    );
-  }
-
-  late final _wire_register_event_listenerPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_register_event_listener');
-  late final _wire_register_event_listener =
-      _wire_register_event_listenerPtr.asFunction<void Function(int)>();
-
-  void wire_create_event(
-    int port_,
-    ffi.Pointer<wire_uint_8_list> address,
-    ffi.Pointer<wire_uint_8_list> payload,
-  ) {
-    return _wire_create_event(
-      port_,
-      address,
-      payload,
-    );
-  }
-
-  late final _wire_create_eventPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_create_event');
-  late final _wire_create_event = _wire_create_eventPtr.asFunction<
-      void Function(
-          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
-
-  void wire_get_listener_count(
-    int port_,
-  ) {
-    return _wire_get_listener_count(
-      port_,
-    );
-  }
-
-  late final _wire_get_listener_countPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_get_listener_count');
-  late final _wire_get_listener_count =
-      _wire_get_listener_countPtr.asFunction<void Function(int)>();
-
-  void wire_as_string__method__Event(
-    int port_,
-    ffi.Pointer<wire_Event> that,
-  ) {
-    return _wire_as_string__method__Event(
-      port_,
-      that,
-    );
-  }
-
-  late final _wire_as_string__method__EventPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_Event>)>>('wire_as_string__method__Event');
-  late final _wire_as_string__method__Event = _wire_as_string__method__EventPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_Event>)>();
-
-  ffi.Pointer<wire_Event> new_box_autoadd_event_0() {
-    return _new_box_autoadd_event_0();
-  }
-
-  late final _new_box_autoadd_event_0Ptr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Event> Function()>>(
-          'new_box_autoadd_event_0');
-  late final _new_box_autoadd_event_0 = _new_box_autoadd_event_0Ptr
-      .asFunction<ffi.Pointer<wire_Event> Function()>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
@@ -544,13 +308,9 @@ final class wire_uint_8_list extends ffi.Struct {
   external int len;
 }
 
-final class wire_Event extends ffi.Struct {
-  external ffi.Pointer<wire_uint_8_list> address;
-
-  external ffi.Pointer<wire_uint_8_list> payload;
-}
-
 typedef DartPostCObjectFnType = ffi.Pointer<
     ffi.NativeFunction<
         ffi.Bool Function(DartPort port_id, ffi.Pointer<ffi.Void> message)>>;
 typedef DartPort = ffi.Int64;
+
+const int MAX_PEER_INFO_SIZE = 8192;
