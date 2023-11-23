@@ -5,5 +5,39 @@
     "pair": "配对",
     "connect": "连接",
     "info": "关于"
+  },
+  "home": {
+    "developer_option": {
+      "status": "开发者选项状态: ",
+      "enabled": "已启用",
+      "disabled": "未启用"
+    },
+    "pairing": {
+      "name": "配对",
+      "status": "无线调试配对状态: ",
+      "paired": "已配对",
+      "wait_pairing": "未配对"
+    },
+    "connect": {
+      "name": "连接",
+      "status": "无线调试连接状态: ",
+      "connected": "已连接",
+      "wait_connect": "等待连接"
+    }
+  },
+  "pair": {
+    "guide": {
+      "prepare_guide": "接下来的无线调试配对过程请跟随通知栏中的提示进行",
+      "pair": "开始配对",
+      "reset": "重置配对状态"
+    },
+    "notification_title": "Ascent配对",
+    "notification_description": {
+      "guide_port": "打开无线调试并点击使用配对码配对设备\n通过下面的按钮输入无线调试配对端口",
+      "guide_code": "请通过下面的按钮输入无线调试配对码",
+      "pair_port": "端口: ",
+      "pair_code": "配对码: "
+    },
+    "notification_reply_button": "输入数据"
   }
 }

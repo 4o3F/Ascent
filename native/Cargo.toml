@@ -1,0 +1,22 @@
+[package]
+name = "native"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+flutter_rust_bridge = "1"
+anyhow = "1.0.75"
+bytebuffer = "2.2.0"
+hex = "0.4.3"
+hkdf = "0.12.3"
+spake2 = "0.4.0"
+tokio = { version = "1.32.0", features = ["full"] }
+sha2 = "0.10.8"
+boring = { git = "https://github.com/4o3F/boring.git" }
+tokio-boring = { git = "https://github.com/4o3F/boring.git" }
+
+
+[lib]
+crate-type = ["staticlib", "cdylib"]

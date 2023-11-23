@@ -1,0 +1,178 @@
+2023/11/22 22:09:50 [[34mDEBUG[0m] configs=[Opts { rust_input_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src/api.rs", dart_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\lib/bridge_generated.dart", dart_decl_output_path: None, c_output_path: ["C:\\Users\\403F\\AppData\\Local\\Temp\\.tmpH54dAw.h"], rust_crate_dir: "D:\\DOCUMENTS\\4o3F\\Ascent\\native", rust_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs", class_name: "Native", dart_format_line_length: 80, dart_enums_style: false, skip_add_mod_to_lib: false, llvm_path: ["/opt/homebrew/opt/llvm", "/usr/local/opt/llvm", "/usr/lib/llvm-9", "/usr/lib/llvm-10", "/usr/lib/llvm-11", "/usr/lib/llvm-12", "/usr/lib/llvm-13", "/usr/lib/llvm-14", "/usr/lib/", "/usr/lib64/", "C:/Program Files/llvm", "C:/msys64/mingw64"], llvm_compiler_opts: "", manifest_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native\\Cargo.toml", dart_root: Some("D:\\DOCUMENTS\\4o3F\\Ascent"), build_runner: true, block_index: BlockIndex(0), skip_deps_check: false, wasm_enabled: false, inline_rust: false, bridge_in_method: true, extra_headers: "", dart3: true, keep_going: false }]
+2023/11/22 22:09:50 [[32mINFO[0m] Running cargo expand in 'D:/DOCUMENTS/4o3F/Ascent/native'
+2023/11/22 22:09:50 [[34mDEBUG[0m] execute command: bin=cargo args="expand --theme=none --ugly" current_dir=Some("D:/DOCUMENTS/4o3F/Ascent/native") cmd="cargo" "expand" "--theme=none" "--ugly"
+2023/11/22 22:10:37 [[34mDEBUG[0m] configs=[Opts { rust_input_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src/api.rs", dart_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\lib/bridge_generated.dart", dart_decl_output_path: None, c_output_path: ["C:\\Users\\403F\\AppData\\Local\\Temp\\.tmpaCZmpo.h"], rust_crate_dir: "D:\\DOCUMENTS\\4o3F\\Ascent\\native", rust_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs", class_name: "Native", dart_format_line_length: 80, dart_enums_style: false, skip_add_mod_to_lib: false, llvm_path: ["/opt/homebrew/opt/llvm", "/usr/local/opt/llvm", "/usr/lib/llvm-9", "/usr/lib/llvm-10", "/usr/lib/llvm-11", "/usr/lib/llvm-12", "/usr/lib/llvm-13", "/usr/lib/llvm-14", "/usr/lib/", "/usr/lib64/", "C:/Program Files/llvm", "C:/msys64/mingw64"], llvm_compiler_opts: "", manifest_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native\\Cargo.toml", dart_root: Some("D:\\DOCUMENTS\\4o3F\\Ascent"), build_runner: true, block_index: BlockIndex(0), skip_deps_check: false, wasm_enabled: false, inline_rust: false, bridge_in_method: true, extra_headers: "", dart3: true, keep_going: false }]
+2023/11/22 22:10:37 [[32mINFO[0m] Running cargo expand in 'D:/DOCUMENTS/4o3F/Ascent/native'
+2023/11/22 22:10:37 [[34mDEBUG[0m] execute command: bin=cargo args="expand --theme=none --ugly" current_dir=Some("D:/DOCUMENTS/4o3F/Ascent/native") cmd="cargo" "expand" "--theme=none" "--ugly"
+2023/11/22 22:12:00 [[34mDEBUG[0m] configs=[Opts { rust_input_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src/api.rs", dart_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\lib/native/bridge_generated.dart", dart_decl_output_path: None, c_output_path: ["C:\\Users\\403F\\AppData\\Local\\Temp\\.tmpLJDUXR.h"], rust_crate_dir: "D:\\DOCUMENTS\\4o3F\\Ascent\\native", rust_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs", class_name: "Native", dart_format_line_length: 80, dart_enums_style: false, skip_add_mod_to_lib: false, llvm_path: ["/opt/homebrew/opt/llvm", "/usr/local/opt/llvm", "/usr/lib/llvm-9", "/usr/lib/llvm-10", "/usr/lib/llvm-11", "/usr/lib/llvm-12", "/usr/lib/llvm-13", "/usr/lib/llvm-14", "/usr/lib/", "/usr/lib64/", "C:/Program Files/llvm", "C:/msys64/mingw64"], llvm_compiler_opts: "", manifest_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native\\Cargo.toml", dart_root: Some("D:\\DOCUMENTS\\4o3F\\Ascent"), build_runner: true, block_index: BlockIndex(0), skip_deps_check: false, wasm_enabled: false, inline_rust: false, bridge_in_method: true, extra_headers: "", dart3: true, keep_going: false }]
+2023/11/22 22:12:00 [[32mINFO[0m] Running cargo expand in 'D:/DOCUMENTS/4o3F/Ascent/native'
+2023/11/22 22:12:00 [[34mDEBUG[0m] execute command: bin=cargo args="expand --theme=none --ugly" current_dir=Some("D:/DOCUMENTS/4o3F/Ascent/native") cmd="cargo" "expand" "--theme=none" "--ugly"
+2023/11/22 22:12:51 [[34mDEBUG[0m] configs=[Opts { rust_input_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src/api.rs", dart_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\lib/native/bridge_generated.dart", dart_decl_output_path: None, c_output_path: ["C:\\Users\\403F\\AppData\\Local\\Temp\\.tmp0IWOcz.h"], rust_crate_dir: "D:\\DOCUMENTS\\4o3F\\Ascent\\native", rust_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs", class_name: "Native", dart_format_line_length: 80, dart_enums_style: false, skip_add_mod_to_lib: false, llvm_path: ["/opt/homebrew/opt/llvm", "/usr/local/opt/llvm", "/usr/lib/llvm-9", "/usr/lib/llvm-10", "/usr/lib/llvm-11", "/usr/lib/llvm-12", "/usr/lib/llvm-13", "/usr/lib/llvm-14", "/usr/lib/", "/usr/lib64/", "C:/Program Files/llvm", "C:/msys64/mingw64"], llvm_compiler_opts: "", manifest_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native\\Cargo.toml", dart_root: Some("D:\\DOCUMENTS\\4o3F\\Ascent"), build_runner: true, block_index: BlockIndex(0), skip_deps_check: false, wasm_enabled: false, inline_rust: false, bridge_in_method: true, extra_headers: "", dart3: true, keep_going: false }]
+2023/11/22 22:12:51 [[32mINFO[0m] Running cargo expand in 'D:/DOCUMENTS/4o3F/Ascent/native'
+2023/11/22 22:12:51 [[34mDEBUG[0m] execute command: bin=cargo args="expand --theme=none --ugly" current_dir=Some("D:/DOCUMENTS/4o3F/Ascent/native") cmd="cargo" "expand" "--theme=none" "--ugly"
+2023/11/22 22:12:52 [[34mDEBUG[0m] command="cargo" "expand" "--theme=none" "--ugly" stdout=#![feature(prelude_import)]
+#[prelude_import]
+use std::prelude::rust_2021::*;
+#[macro_use]
+extern crate std;
+mod api {
+    use std::collections::HashMap;
+    use std::sync::{Arc, Mutex};
+    use flutter_rust_bridge::support::lazy_static;
+    use anyhow::Result;
+    use flutter_rust_bridge::*;
+    #[allow(missing_copy_implementations)]
+    #[allow(non_camel_case_types)]
+    #[allow(dead_code)]
+    struct GLOBAL_DATA {
+        __private_field: (),
+    }
+    #[doc(hidden)]
+    static GLOBAL_DATA: GLOBAL_DATA = GLOBAL_DATA { __private_field: () };
+    impl ::lazy_static::__Deref for GLOBAL_DATA {
+        type Target = Mutex<HashMap<String, String>>;
+        fn deref(&self) -> &Mutex<HashMap<String, String>> {
+            #[inline(always)]
+            fn __static_ref_initialize() -> Mutex<HashMap<String, String>> {
+                Mutex::new(HashMap::<String, String>::new())
+            }
+            #[inline(always)]
+            fn __stability() -> &'static Mutex<HashMap<String, String>> {
+                static LAZY:
+                    ::lazy_static::lazy::Lazy<Mutex<HashMap<String, String>>> =
+                    ::lazy_static::lazy::Lazy::INIT;
+                LAZY.get(__static_ref_initialize)
+            }
+            __stability()
+        }
+    }
+    impl ::lazy_static::LazyStatic for GLOBAL_DATA {
+        fn initialize(lazy: &Self) { let _ = &**lazy; }
+    }
+    pub fn write_data(key: String, value: String) {
+        GLOBAL_DATA.lock().unwrap().insert(key, value);
+    }
+    pub fn get_data(key: String) -> String {
+        GLOBAL_DATA.lock().unwrap().get(key.as_str()).unwrap().clone()
+    }
+    pub fn count_data() -> i32 {
+        GLOBAL_DATA.lock().unwrap().keys().len() as i32
+    }
+    #[allow(missing_copy_implementations)]
+    #[allow(non_camel_case_types)]
+    #[allow(dead_code)]
+    struct EVENTS {
+        __private_field: (),
+    }
+    #[doc(hidden)]
+    static EVENTS: EVENTS = EVENTS { __private_field: () };
+    impl ::lazy_static::__Deref for EVENTS {
+        type Target = Arc<Mutex<Vec<StreamSink<Event>>>>;
+        fn deref(&self) -> &Arc<Mutex<Vec<StreamSink<Event>>>> {
+            #[inline(always)]
+            fn __static_ref_initialize()
+                -> Arc<Mutex<Vec<StreamSink<Event>>>> {
+                Arc::new(Mutex::new(Vec::new()))
+            }
+            #[inline(always)]
+            fn __stability() -> &'static Arc<Mutex<Vec<StreamSink<Event>>>> {
+                static LAZY:
+                    ::lazy_static::lazy::Lazy<Arc<Mutex<Vec<StreamSink<Event>>>>>
+                    =
+                    ::lazy_static::lazy::Lazy::INIT;
+                LAZY.get(__static_ref_initialize)
+            }
+            __stability()
+        }
+    }
+    impl ::lazy_static::LazyStatic for EVENTS {
+        fn initialize(lazy: &Self) { let _ = &**lazy; }
+    }
+    /// frb_marker: #[frb(dart_metadata = ("freezed"))]
+    pub struct Event {
+        pub address: String,
+        pub payload: String,
+    }
+    #[automatically_derived]
+    impl ::core::clone::Clone for Event {
+        #[inline]
+        fn clone(&self) -> Event {
+            Event {
+                address: ::core::clone::Clone::clone(&self.address),
+                payload: ::core::clone::Clone::clone(&self.payload),
+            }
+        }
+    }
+    impl Event {
+        pub fn as_string(&self) -> String {
+            {
+                let res =
+                    ::alloc::fmt::format(format_args!("{0}: {1}", self.address,
+                            self.payload));
+                res
+            }
+        }
+    }
+    pub fn register_event_listener(listener: StreamSink<Event>)
+        -> Result<()> {
+        { ::std::io::_print(format_args!("Event listener registered!\n")); };
+        EVENTS.lock().unwrap().push(listener);
+        Ok(())
+    }
+    pub fn create_event(address: String, payload: String) {
+        { ::std::io::_print(format_args!("Event created!\n")); };
+        let events = EVENTS.lock().unwrap();
+        for sink in events.iter() {
+            sink.add(Event {
+                    address: address.clone(),
+                    payload: payload.clone(),
+                });
+        }
+    }
+    pub fn get_listener_count() -> i32 {
+        return EVENTS.lock().unwrap().len() as i32
+    }
+}
+ stderr=    Checking native v0.1.0 (D:\DOCUMENTS\4o3F\Ascent\native)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.12s
+
+
+2023/11/22 22:12:59 [[34mDEBUG[0m] Trying to parse "\\\\?\\D:\\DOCUMENTS\\4o3F\\Ascent\\native\\src\\api.rs"
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(write_data)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(get_data)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(count_data)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(register_event_listener)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(create_event)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(get_listener_count)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(as_string__method__Event)
+2023/11/22 22:12:59 [[32mINFO[0m] Phase: Validate config(s)
+2023/11/22 22:12:59 [[32mINFO[0m] Picked config: Opts { rust_input_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src/api.rs", dart_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\lib/native/bridge_generated.dart", dart_decl_output_path: None, c_output_path: ["C:\\Users\\403F\\AppData\\Local\\Temp\\.tmp0IWOcz.h"], rust_crate_dir: "D:\\DOCUMENTS\\4o3F\\Ascent\\native", rust_output_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs", class_name: "Native", dart_format_line_length: 80, dart_enums_style: false, skip_add_mod_to_lib: false, llvm_path: ["/opt/homebrew/opt/llvm", "/usr/local/opt/llvm", "/usr/lib/llvm-9", "/usr/lib/llvm-10", "/usr/lib/llvm-11", "/usr/lib/llvm-12", "/usr/lib/llvm-13", "/usr/lib/llvm-14", "/usr/lib/", "/usr/lib64/", "C:/Program Files/llvm", "C:/msys64/mingw64"], llvm_compiler_opts: "", manifest_path: "D:\\DOCUMENTS\\4o3F\\Ascent\\native\\Cargo.toml", dart_root: Some("D:\\DOCUMENTS\\4o3F\\Ascent"), build_runner: true, block_index: BlockIndex(0), skip_deps_check: false, wasm_enabled: false, inline_rust: false, bridge_in_method: true, extra_headers: "", dart3: true, keep_going: false }
+2023/11/22 22:12:59 [[32mINFO[0m] Phase: Parse source code to AST, then to IR
+2023/11/22 22:12:59 [[34mDEBUG[0m] Trying to parse "\\\\?\\D:\\DOCUMENTS\\4o3F\\Ascent\\native\\src\\api.rs"
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(write_data)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(get_data)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(count_data)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(register_event_listener)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(create_event)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(get_listener_count)
+2023/11/22 22:12:59 [[34mDEBUG[0m] parse_function function name: Ident(as_string__method__Event)
+2023/11/22 22:12:59 [[32mINFO[0m] Phase: Transform IR
+2023/11/22 22:12:59 [[34mDEBUG[0m] transform_func_input_add_boxed wrap Boxed to field=IrField { ty: StructRef(IrTypeStructRef { name: "Event", freezed: true, empty: false, is_exception: false }), name: IrIdent { raw: "that" }, is_final: true, comments: [], default: None, settings: IrFieldSettings { is_in_mirrored_enum: false } }
+2023/11/22 22:12:59 [[32mINFO[0m] Phase: Generate Rust code
+2023/11/22 22:12:59 [[32mINFO[0m] Inject `mod bridge_generated;` into "D:\\DOCUMENTS\\4o3F\\Ascent\\native\\src\\lib.rs"
+2023/11/22 22:12:59 [[34mDEBUG[0m] execute format_rust path=["D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs"]
+2023/11/22 22:12:59 [[34mDEBUG[0m] execute command: bin=rustfmt args="D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs" current_dir=None cmd="rustfmt" "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs"
+2023/11/22 22:12:59 [[34mDEBUG[0m] command="rustfmt" "D:\\DOCUMENTS\\4o3F\\Ascent\\native/src\\bridge_generated.rs" stdout= stderr=
+2023/11/22 22:12:59 [[32mINFO[0m] Phase: Generate Dart code
+2023/11/22 22:12:59 [[34mDEBUG[0m] Guessing toolchain the runner is run into
+2023/11/22 22:12:59 [[34mDEBUG[0m] execute command: bin=powershell args="-noprofile -command & \"flutter\" \"--version\"" current_dir=None cmd="powershell" "-noprofile" "-command" "& \"flutter\" \"--version\""
+2023/11/22 22:13:00 [[34mDEBUG[0m] command="powershell" "-noprofile" "-command" "& \"flutter\" \"--version\"" stdout=Flutter 3.16.0 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision db7ef5bf9f (7 days ago) • 2023-11-15 11:25:44 -0800
+Engine • revision 74d16627b9
+Tools • Dart 3.2.0 • DevTools 2.28.2
+ stderr=
+2023/11/22 22:13:00 [[34mDEBUG[0m] Checking presence of ffi in dependencies at D:\DOCUMENTS\4o3F\Ascent
+2023/11/22 22:13:00 [[34mDEBUG[0m] Checking presence of ffi in dependencies at D:\DOCUMENTS\4o3F\Ascent
+2023/11/22 22:13:00 [[34mDEBUG[0m] Checking presence of ffigen in dev_dependencies at D:\DOCUMENTS\4o3F\Ascent
+2023/11/22 22:13:00 [[34mDEBUG[0m] Checking presence of ffigen in dev_dependencies at D:\DOCUMENTS\4o3F\Ascent
+2023/11/22 22:13:00 [[31mERROR[0m] Fatal error encountered. Rerun with RUST_BACKTRACE=1 or RUST_BACKTRACE=full for more details.

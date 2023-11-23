@@ -5,12 +5,9 @@ import 'package:easy_localization/easy_localization.dart' as easy_localization;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'logic.dart';
 
 class BottomNavigationBarComponent extends StatelessWidget {
   BottomNavigationBarComponent({Key? key}) : super(key: key);
-
-  final logic = Get.put(BottomNavigationBarLogic());
 
   @override
   Widget build(BuildContext context) {

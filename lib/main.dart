@@ -10,15 +10,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Load localizations
   await EasyLocalization.ensureInitialized();
+  // Set some final global data
+  GlobalState.init();
   runApp(
     WithForegroundTask(
       child: EasyLocalization(
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('zh', 'CN'),
-        ],
-        path: 'assets/translations',
-        fallbackLocale: const Locale('en', 'US'),
+        supportedLocales: GlobalState.supportedLocale,
+        path: GlobalState.localizationAssetPath,
+        fallbackLocale: GlobalState.supportedLocale[0],
         child: AscentApp(),
       ),
     ),
@@ -36,15 +35,17 @@ class AscentApp extends StatelessWidget {
         home: Column(
           children: [
             Expanded(
-              child: GetMaterialApp(
-                initialRoute: Routes.defaultRoute,
-                getPages: Routes.routes,
-                defaultTransition: Transition.fade,
-                debugShowCheckedModeBanner: false,
-                routingCallback: (routing) {
-                  // Switch current route, mainly used for updating bottom navigation tab
-                  GlobalState.currentRoute.value = routing!.current;
-                },
+              child: Scaffold(
+                body: GetMaterialApp(
+                  initialRoute: Routes.defaultRoute,
+                  getPages: Routes.routes,
+                  defaultTransition: Transition.fade,
+                  debugShowCheckedModeBanner: false,
+                  routingCallback: (routing) {
+                    // Switch current route, mainly used for updating bottom navigation tab
+                    GlobalState.currentRoute.value = routing!.current;
+                  },
+                ),
               ),
             ),
             BottomNavigationBarComponent()
