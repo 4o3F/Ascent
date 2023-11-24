@@ -1,7 +1,8 @@
 use std::fs;
+
 use anyhow::Result;
-use tokio::runtime::Runtime;
 use regex::Regex;
+use tokio::runtime::Runtime;
 
 use crate::{connect, pair};
 
@@ -24,8 +25,29 @@ pub fn do_filter(file_path: String) -> Result<String> {
     rt.block_on(async {
         let bytes = fs::read(file_path).unwrap();
         let data = String::from_utf8_lossy(bytes.as_slice()).to_string();
-        let re = Regex::new(r"https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\.com|hoyoverse\.com)(.*)authkey=(.*)").unwrap();
+        let re = Regex::new(r"https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\.com|hoyoverse\.com).*authkey=.*\s.*game_biz.*/").unwrap();
         let matches = re.find(data.as_str()).unwrap();
-        Ok(String::from(matches.as_str()))
+        let data = String::from(matches.as_str());
+        let mut front_half: String = String::new();
+        let mut back_half: String = String::new();
+
+        for (_, c) in data.chars().enumerate() {
+            if !c.is_ascii_alphanumeric() && !c.is_ascii_punctuation() {
+                break;
+            }
+            front_half.push(c);
+        }
+
+        for (_, c) in data.chars().rev().enumerate() {
+            if !c.is_ascii_alphanumeric() && !c.is_ascii_punctuation() {
+                break;
+            }
+            back_half.push(c);
+        }
+        //reverse back_half
+        back_half = back_half.chars().rev().collect();
+
+        let result = front_half + back_half.as_str();
+        Ok(result)
     })
 }
