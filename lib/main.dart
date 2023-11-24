@@ -1,9 +1,16 @@
+import 'dart:io';
+
+import 'package:ascent/ffi.dart';
 import 'package:ascent/global_state.dart';
 import 'package:ascent/routes.dart';
+import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
+import 'package:receive_intent/receive_intent.dart' as intent;
+import 'package:uri_to_file/uri_to_file.dart';
 import 'components/bottom_navigation_bar/view.dart';
 
 void main() async {
@@ -27,8 +34,64 @@ void main() async {
 class AscentApp extends StatelessWidget {
   const AscentApp({super.key});
 
+  Future<void> initReceiveIntent() async {
+    try {
+      final receivedIntent = await intent.ReceiveIntent.getInitialIntent();
+      if (receivedIntent != null && receivedIntent.action != null) {
+        if (receivedIntent.action == "android.intent.action.SEND" &&
+            receivedIntent.extra != null) {
+          String path = (await toFile(
+                  receivedIntent.extra?["android.intent.extra.STREAM"]))
+              .path;
+          String link = await api.doFilter(filePath: path);
+          Get.dialog(BrnScrollableTextDialog(
+            title: tr("connect.link_action.title"),
+            contentText: link,
+            submitText: tr("connect.link_action.copy_button"),
+            submitBgColor: Colors.greenAccent,
+            onSubmitClick: () {
+              Clipboard.setData(ClipboardData(text: link));
+              BrnToast.showInCenter(
+                text: tr("connect.link_action.copied"),
+                context: Get.context!,
+              );
+            },
+          ));
+        }
+      }
+    } on PlatformException catch (_, e) {}
+
+    GlobalState.intentSubscription ??= intent.ReceiveIntent.receivedIntentStream
+        .listen((intent.Intent? receivedIntent) async {
+      if (receivedIntent != null && receivedIntent.action != null) {
+        if (receivedIntent.action == "android.intent.action.SEND" &&
+            receivedIntent.extra != null) {
+          String path = (await toFile(
+                  receivedIntent.extra?["android.intent.extra.STREAM"]))
+              .path;
+          String link = await api.doFilter(filePath: path);
+          print("Intent as stream received");
+          Get.dialog(BrnScrollableTextDialog(
+            title: tr("connect.link_action.title"),
+            contentText: link,
+            submitText: tr("connect.link_action.copy_button"),
+            submitBgColor: Colors.greenAccent,
+            onSubmitClick: () {
+              Clipboard.setData(ClipboardData(text: link));
+              BrnToast.showInCenter(
+                text: tr("connect.link_action.copied"),
+                context: Get.context!,
+              );
+            },
+          ));
+        }
+      }
+    }, onError: (err) {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    initReceiveIntent();
     return MaterialApp(
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,

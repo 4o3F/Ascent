@@ -19,6 +19,7 @@ class HomePage extends StatelessWidget {
     GlobalState.platform.invokeMethod('getDeveloperOptionEnabled').then(
             (value) =>
         logic.developerOptionEnabled.value = (value.toString() == "true"));
+
     return Material(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),

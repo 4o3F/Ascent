@@ -23,6 +23,10 @@ abstract class Native {
       {required String port, required String dataFolder, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kDoConnectConstMeta;
+
+  Future<String> doFilter({required String filePath, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kDoFilterConstMeta;
 }
 
 class NativeImpl implements Native {
@@ -76,6 +80,24 @@ class NativeImpl implements Native {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "do_connect",
         argNames: ["port", "dataFolder"],
+      );
+
+  Future<String> doFilter({required String filePath, dynamic hint}) {
+    var arg0 = _platform.api2wire_String(filePath);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_do_filter(port_, arg0),
+      parseSuccessData: _wire2api_String,
+      parseErrorData: _wire2api_FrbAnyhowException,
+      constMeta: kDoFilterConstMeta,
+      argValues: [filePath],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kDoFilterConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "do_filter",
+        argNames: ["filePath"],
       );
 
   void dispose() {
@@ -274,6 +296,23 @@ class NativeWire implements FlutterRustBridgeWireBase {
   late final _wire_do_connect = _wire_do_connectPtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_do_filter(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> file_path,
+  ) {
+    return _wire_do_filter(
+      port_,
+      file_path,
+    );
+  }
+
+  late final _wire_do_filterPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_do_filter');
+  late final _wire_do_filter = _wire_do_filterPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,

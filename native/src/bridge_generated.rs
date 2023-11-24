@@ -60,6 +60,19 @@ fn wire_do_connect_impl(
         },
     )
 }
+fn wire_do_filter_impl(port_: MessagePort, file_path: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, String, _>(
+        WrapInfo {
+            debug_name: "do_filter",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_file_path = file_path.wire2api();
+            move |task_callback| do_filter(api_file_path)
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

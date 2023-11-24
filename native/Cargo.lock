@@ -592,6 +592,7 @@ dependencies = [
  "hex",
  "hkdf",
  "log",
+ "regex",
  "sha2",
  "spake2",
  "tokio",

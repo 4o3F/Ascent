@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -14,6 +15,7 @@ class GlobalState {
   static const String localizationAssetPath = "assets/translations";
   static Rx<bool> hasCert = false.obs;
   static late Mixpanel mixpanel;
+  static StreamSubscription? intentSubscription;
 
   static const List<Locale> supportedLocale = [
     Locale('en', 'US'),

@@ -17,6 +17,7 @@ sha2 = "0.10.8"
 boring = { git = "https://github.com/4o3F/boring.git", branch = "cmake-msvc" }
 tokio-boring = { git = "https://github.com/4o3F/boring.git", branch = "cmake-msvc" }
 log = "0.4.20"
+regex = { version = "1.10.2", features = [] }
 
 
 [lib]
