@@ -16,8 +16,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GlobalState.platform.invokeMethod('getDeveloperOptionEnabled').then(
-        (value) =>
-            logic.developerOptionEnabled.value = (value.toString() == "true"));
+            (value) =>
+        logic.developerOptionEnabled.value = (value.toString() == "true"));
     return Material(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),

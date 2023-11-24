@@ -41,5 +41,24 @@
       "pair_success": "配对成功，请返回Ascent主程序"
     },
     "notification_reply_button": "点此输入数据"
+  },
+  "connect": {
+    "guide": {
+      "prepare_guide": "连接后请直接打开游戏\n成功获得链接后将在通知中提示",
+      "connect": "开始连接",
+      "in_progress": "等待中..."
+    },
+    "notification_title": "Ascent连接",
+    "notification_description": {
+      "connecting": "连接无线调试中,请点击按钮输入无线调试端口",
+      "waiting": "等待链接中",
+      "success": "获取成功，请返回Ascent主程序"
+    },
+    "notification_reply_button": "点此输入数据",
+    "link_action": {
+      "title": "抽卡链接",
+      "copy_button": "复制",
+      "copied": "已复制"
+    }
   }
 }

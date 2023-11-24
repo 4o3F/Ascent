@@ -42,7 +42,11 @@ fn wire_do_pair_impl(
         },
     )
 }
-fn wire_do_connect_impl(port_: MessagePort, port: impl Wire2Api<String> + UnwindSafe) {
+fn wire_do_connect_impl(
+    port_: MessagePort,
+    port: impl Wire2Api<String> + UnwindSafe,
+    data_folder: impl Wire2Api<String> + UnwindSafe,
+) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, String, _>(
         WrapInfo {
             debug_name: "do_connect",
@@ -51,7 +55,8 @@ fn wire_do_connect_impl(port_: MessagePort, port: impl Wire2Api<String> + Unwind
         },
         move || {
             let api_port = port.wire2api();
-            move |task_callback| do_connect(api_port)
+            let api_data_folder = data_folder.wire2api();
+            move |task_callback| do_connect(api_port, api_data_folder)
         },
     )
 }

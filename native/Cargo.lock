@@ -591,6 +591,7 @@ dependencies = [
  "flutter_rust_bridge",
  "hex",
  "hkdf",
+ "log",
  "sha2",
  "spake2",
  "tokio",

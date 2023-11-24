@@ -19,7 +19,8 @@ abstract class Native {
 
   FlutterRustBridgeTaskConstMeta get kDoPairConstMeta;
 
-  Future<String> doConnect({required String port, dynamic hint});
+  Future<String> doConnect(
+      {required String port, required String dataFolder, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kDoConnectConstMeta;
 }
@@ -57,14 +58,16 @@ class NativeImpl implements Native {
         argNames: ["port", "code", "dataFolder"],
       );
 
-  Future<String> doConnect({required String port, dynamic hint}) {
+  Future<String> doConnect(
+      {required String port, required String dataFolder, dynamic hint}) {
     var arg0 = _platform.api2wire_String(port);
+    var arg1 = _platform.api2wire_String(dataFolder);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_do_connect(port_, arg0),
+      callFfi: (port_) => _platform.inner.wire_do_connect(port_, arg0, arg1),
       parseSuccessData: _wire2api_String,
       parseErrorData: _wire2api_FrbAnyhowException,
       constMeta: kDoConnectConstMeta,
-      argValues: [port],
+      argValues: [port, dataFolder],
       hint: hint,
     ));
   }
@@ -72,7 +75,7 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kDoConnectConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "do_connect",
-        argNames: ["port"],
+        argNames: ["port", "dataFolder"],
       );
 
   void dispose() {
@@ -255,19 +258,22 @@ class NativeWire implements FlutterRustBridgeWireBase {
   void wire_do_connect(
     int port_,
     ffi.Pointer<wire_uint_8_list> port,
+    ffi.Pointer<wire_uint_8_list> data_folder,
   ) {
     return _wire_do_connect(
       port_,
       port,
+      data_folder,
     );
   }
 
   late final _wire_do_connectPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_do_connect');
-  late final _wire_do_connect = _wire_do_connectPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_do_connect');
+  late final _wire_do_connect = _wire_do_connectPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,

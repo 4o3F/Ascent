@@ -2,9 +2,8 @@ import 'dart:isolate';
 
 import 'package:ascent/ffi.dart';
 import 'package:ascent/global_state.dart';
-import 'package:ascent/pages/pair/logic.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import 'package:easy_localization/src/easy_localization_controller.dart';
@@ -21,8 +20,6 @@ enum PairStatus { WAIT_PORT, WAIT_CODE }
 
 // This will run in the foreground service isolated
 class PairTaskHandler extends TaskHandler {
-  final Localization L = Localization.instance;
-
   PairStatus status = PairStatus.WAIT_PORT;
   String port = "";
   String code = "";
@@ -77,7 +74,6 @@ class PairTaskHandler extends TaskHandler {
   Future<void> waitCode() async {
     // Stop mDnsClient for it has no use
     mDnsClient.stop();
-    // TODO: Test whether update can be called inside isolate
     FlutterForegroundTask.updateService(
       notificationTitle:
           "${tr('pair.notification_title')} ${tr('pair.notification_description.pair_port')} $port",
@@ -86,12 +82,8 @@ class PairTaskHandler extends TaskHandler {
   }
 
   Future<void> doPair() async {
-    try {
-      await api.doPair(
-          port: port, code: code, dataFolder: GlobalState.dataDir.path);
-    } catch (error) {
-      print(error);
-    }
+    await api.doPair(
+        port: port, code: code, dataFolder: GlobalState.dataDir.path);
     FlutterForegroundTask.updateService(
       notificationTitle: tr('pair.notification_title'),
       notificationText: tr('pair.notification_description.pair_success'),

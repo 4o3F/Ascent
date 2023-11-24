@@ -1,6 +1,7 @@
 use std::io::Read;
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use log::info;
 
 const ADB_HEADER_LENGTH: usize = 24;
 const SYSTEM_IDENTITY_STRING_HOST: &str = "host::\u{0}";
@@ -66,7 +67,7 @@ fn generate_message(command: i32, arg0: i32, arg1: i32, data: Vec<u8>) -> bytebu
     message
 }
 
-pub async fn connect(port: String) -> anyhow::Result<String> {
+pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String> {
     let host = String::from("127.0.0.1:") + port.as_str();
     let host = host.as_str();
     let mut stream = tokio::net::TcpStream::connect(host).await.unwrap();
@@ -94,18 +95,21 @@ pub async fn connect(port: String) -> anyhow::Result<String> {
         if message.command != A_STLS as u32 {
             panic!("Not STLS command");
         }
-        println!("STLS Received")
+        info!("STLS Received")
     }
     // Send STLS packet
     {
         let stls_message = generate_message(A_STLS, A_STLS_VERSION, 0, Vec::new());
         stream.write_all(stls_message.as_bytes()).await.unwrap();
-        println!("STLS Sent")
+        info!("STLS Sent")
     }
 
-    println!("TLS Handshake begin");
-    let cert_path = std::path::Path::new("cert.pem");
-    let pkey_path = std::path::Path::new("pkey.pem");
+    info!("TLS Handshake begin");
+    let data_folder = data_folder;
+    let cert_path = data_folder.clone() + "/cert.pem";
+    let pkey_path = data_folder.clone() + "/pkey.pem";
+    let cert_path = std::path::Path::new(cert_path.as_str());
+    let pkey_path = std::path::Path::new(pkey_path.as_str());
     // Load cert and pkey from file
     let cert_file = std::fs::File::open(cert_path).unwrap();
     let pkey_file = std::fs::File::open(pkey_path).unwrap();
@@ -126,14 +130,14 @@ pub async fn connect(port: String) -> anyhow::Result<String> {
     connector.set_options(boring::ssl::SslOptions::NO_TLSV1_2);
     connector.set_options(boring::ssl::SslOptions::NO_TLSV1_1);
     connector.set_keylog_callback(move |_, line| {
-        println!("{}", line);
+        info!("{}", line);
     });
     let mut config = connector.build().configure().unwrap();
     //config.set_verify_hostname(false);
     config.set_use_server_name_indication(false);
     //config.set_verify_callback(boring::ssl::SslVerifyMode::PEER, |_, _| true);
     let mut stream = tokio_boring::connect(config, host, stream).await.unwrap();
-    println!("TLS Handshake success");
+    info!("TLS Handshake success");
     // Read CNXN
     {
         let mut message_raw = vec![0u8; ADB_HEADER_LENGTH];
@@ -143,18 +147,18 @@ pub async fn connect(port: String) -> anyhow::Result<String> {
         header.set_endian(bytebuffer::Endian::LittleEndian);
 
         let message = Message::parse(&mut header);
-        println!("CNXN Received");
+        info!("CNXN Received");
         let mut data_raw = vec![0u8; message.data_length as usize];
         stream.read_exact(data_raw.as_mut_slice()).await.unwrap();
         let data = String::from_utf8(data_raw).unwrap();
-        println!("CNXN data: {}", data)
+        info!("CNXN data: {}", data)
     }
     // Send OPEN
     {
-        let shell_cmd = "shell:logcat | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\\.com|hoyoverse\\.com)' | grep -i 'gacha'\u{0}";
+        let shell_cmd = "shell:logcat -b all -c && logcat | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\\.com|hoyoverse\\.com)' | grep -i 'gacha'\u{0}";
         let open_message = generate_message(A_OPEN, 233, 0, Vec::from(shell_cmd.as_bytes()));
         stream.write_all(open_message.as_bytes()).await.unwrap();
-        println!("OPEN Sent");
+        info!("OPEN Sent");
     }
     // Read OKAY
     {
@@ -168,7 +172,7 @@ pub async fn connect(port: String) -> anyhow::Result<String> {
         if message.command != A_OKAY as u32 {
             panic!("Not OKAY command");
         }
-        println!("OKAY Received");
+        info!("OKAY Received");
     }
     // Read WRTE
     {
@@ -182,18 +186,21 @@ pub async fn connect(port: String) -> anyhow::Result<String> {
         if message.command != A_WRTE as u32 {
             panic!("Not WRTE command");
         }
-        println!("WRTE Received");
+        info!("WRTE Received");
         let mut data_raw = vec![0u8; message.data_length as usize];
         stream.read_exact(data_raw.as_mut_slice()).await.unwrap();
         link = String::from_utf8(data_raw).unwrap();
-        println!("WRTE data: {}", link)
+        info!("WRTE data: {}", link)
     }
     // Send OKAY
     {
         let okay_message = generate_message(A_OKAY, 233, 0, Vec::new());
         stream.write_all(okay_message.as_bytes()).await.unwrap();
-        println!("OKAY Sent");
+        info!("OKAY Sent");
     }
+
+    stream.flush().await.unwrap();
+    stream.shutdown().await.unwrap();
 
     Ok(link)
 }

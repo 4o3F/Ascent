@@ -12,8 +12,12 @@ pub extern "C" fn wire_do_pair(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_do_connect(port_: i64, port: *mut wire_uint_8_list) {
-    wire_do_connect_impl(port_, port)
+pub extern "C" fn wire_do_connect(
+    port_: i64,
+    port: *mut wire_uint_8_list,
+    data_folder: *mut wire_uint_8_list,
+) {
+    wire_do_connect_impl(port_, port, data_folder)
 }
 
 // Section: allocate functions
