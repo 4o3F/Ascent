@@ -131,6 +131,8 @@ class ConnectForegroundTask {
   }
 
   Future<bool> startConnectForegroundTask(ConnectLogic logic) async {
+    GlobalState.mixpanel.track("Connect Begin");
+    GlobalState.mixpanel.flush();
     await requestPermission();
     if (await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.stopService();
@@ -149,7 +151,7 @@ class ConnectForegroundTask {
           Get.dialog(BrnScrollableTextDialog(
             title: tr("connect.link_action.title"),
             contentText: logic.link.value,
-            submitText: tr("connect.link_action.copy"),
+            submitText: tr("connect.link_action.copy_button"),
             submitBgColor: Colors.greenAccent,
             onSubmitClick: () {
               Clipboard.setData(ClipboardData(text: logic.link.value));
@@ -159,6 +161,10 @@ class ConnectForegroundTask {
               );
             },
           ));
+          GlobalState.mixpanel.track("Connect Complete", properties: {
+            'Game': logic.link.value.contains('hkrpg') ? 'hkrpg' : 'gs',
+          });
+          GlobalState.mixpanel.flush();
         }
       }
     });

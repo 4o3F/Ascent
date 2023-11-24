@@ -5,6 +5,7 @@ import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'logic.dart';
 
@@ -90,6 +91,18 @@ class HomePage extends StatelessWidget {
                   (logic.developerOptionEnabled.value && GlobalState.hasCert.value),
                   onTap: () {
                     Get.toNamed("/connect");
+                  },
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                BrnBigGhostButton(
+                  title: tr('home.star'),
+                  onTap: () async {
+                    final Uri url = Uri.parse("https://github.com/4o3F");
+                    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                      await launchUrl(url);
+                    }
                   },
                 ),
               ],

@@ -143,6 +143,8 @@ class PairForegroundTask {
   }
 
   Future<bool> startPairForegroundTask() async {
+    GlobalState.mixpanel.track("Pair Begin");
+    GlobalState.mixpanel.flush();
     // Request permission
     await requestPermission();
     // Stop any foreground service still running
@@ -160,6 +162,8 @@ class PairForegroundTask {
           case 'pair_complete':
             WidgetsBinding.instance.addPostFrameCallback((_) {
               GlobalState.hasCert.value = true;
+              GlobalState.mixpanel.track("Pair Complete");
+              GlobalState.mixpanel.flush();
             });
         }
       }

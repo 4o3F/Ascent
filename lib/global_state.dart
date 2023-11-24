@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 class GlobalState {
@@ -12,6 +13,7 @@ class GlobalState {
   static late final Directory dataDir;
   static const String localizationAssetPath = "assets/translations";
   static Rx<bool> hasCert = false.obs;
+  static late Mixpanel mixpanel;
 
   static const List<Locale> supportedLocale = [
     Locale('en', 'US'),
@@ -24,5 +26,7 @@ class GlobalState {
     if (kDebugMode) {
       print("Data directory: ${dataDir.path}");
     }
+    mixpanel = await Mixpanel.init("1bad86a59f59ee1d395c31b61bf9202a",
+        trackAutomaticEvents: true);
   }
 }

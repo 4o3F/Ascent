@@ -7,6 +7,7 @@
     "info": "关于"
   },
   "home": {
+    "star": "如果你喜欢Ascent 请给个Star吧 ;D",
     "developer_option": {
       "status": "开发者选项状态: ",
       "enabled": "已启用",
@@ -45,7 +46,7 @@
   "connect": {
     "guide": {
       "prepare_guide": "连接后请直接打开游戏\n成功获得链接后将在通知中提示",
-      "connect": "开始连接",
+      "connect": "开始连接...",
       "in_progress": "等待中..."
     },
     "notification_title": "Ascent连接",
