@@ -40,10 +40,11 @@ class AscentApp extends StatelessWidget {
       if (receivedIntent != null && receivedIntent.action != null) {
         if (receivedIntent.action == "android.intent.action.SEND" &&
             receivedIntent.extra != null) {
-          String path = (await toFile(
-                  receivedIntent.extra?["android.intent.extra.STREAM"]))
-              .path;
+          File file = await toFile(
+              receivedIntent.extra?["android.intent.extra.STREAM"]);
+          String path = file.path;
           String link = await api.doFilter(filePath: path);
+          file.deleteSync();
           Get.dialog(BrnScrollableTextDialog(
             title: tr("connect.link_action.title"),
             contentText: link,
@@ -66,11 +67,11 @@ class AscentApp extends StatelessWidget {
       if (receivedIntent != null && receivedIntent.action != null) {
         if (receivedIntent.action == "android.intent.action.SEND" &&
             receivedIntent.extra != null) {
-          String path = (await toFile(
-                  receivedIntent.extra?["android.intent.extra.STREAM"]))
-              .path;
+          File file = await toFile(
+              receivedIntent.extra?["android.intent.extra.STREAM"]);
+          String path = file.path;
           String link = await api.doFilter(filePath: path);
-          print("Intent as stream received");
+          file.deleteSync();
           Get.dialog(BrnScrollableTextDialog(
             title: tr("connect.link_action.title"),
             contentText: link,
