@@ -25,7 +25,7 @@ pub fn do_filter(file_path: String) -> Result<String> {
     rt.block_on(async {
         let bytes = fs::read(file_path).unwrap();
         let data = String::from_utf8_lossy(bytes.as_slice()).to_string();
-        let re = Regex::new(r"https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\.com|hoyoverse\.com).*authkey=.*\s.*game_biz.*/").unwrap();
+        let re = Regex::new(r"https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\.com|hoyoverse\.com).*authkey=.*\s.*game_biz.*(plat_type|#/log)").unwrap();
         let matches = re.find(data.as_str()).unwrap();
         let data = String::from(matches.as_str());
         let mut front_half: String = String::new();
