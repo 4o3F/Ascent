@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:ascent/ffi.dart';
@@ -9,9 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:receive_intent/receive_intent.dart' as intent;
 import 'package:uri_to_file/uri_to_file.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'components/bottom_navigation_bar/view.dart';
+import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +34,40 @@ void main() async {
     ),
   );
 }
+
+Future<void> checkUpdate() async {
+  String url = GlobalState.locale == "zh_CN"
+      ? "https://gist.gitmirror.com/4o3F/d44252ab04227a81b8270fe85a50691a/raw"
+      : "https://gist.github.com/4o3F/d44252ab04227a81b8270fe85a50691a/raw";
+  http.Response response = await http.get(Uri.parse(url));
+  Map parsed = json.decode(response.body);
+  String version = parsed['version'];
+  Version newVersion = Version.parse(version);
+  Version currentVersion = Version.parse(GlobalState.version);
+  if (newVersion > currentVersion) {
+    String updateInfo =
+        parsed['info'][GlobalState.locale] ?? parsed['info']['en_US'];
+    Uri url = Uri.parse(GlobalState.locale == "zh_CN" ? parsed['url']['backup'] : parsed['url']['main']);
+    BrnEnhanceOperationDialog dialog = BrnEnhanceOperationDialog(
+      context: Get.context!,
+      titleText: tr('update.title') + version,
+      descText: updateInfo,
+      mainButtonText: tr('update.ok'),
+      secondaryButtonText: tr('update.cancel'),
+      onMainButtonClick: () async {
+        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+          await launchUrl(url);
+        }
+      },
+      onSecondaryButtonClick: () {
+        Get.back(closeOverlays: true);
+      },
+    );
+    dialog.show();
+  }
+}
+
+Future<void> doUpdate(String url) async {}
 
 class AscentApp extends StatelessWidget {
   const AscentApp({super.key});
@@ -60,7 +98,10 @@ class AscentApp extends StatelessWidget {
           ));
         }
       }
-    } on PlatformException catch (_, e) {}
+    } on PlatformException catch (_, e) {
+      GlobalState.mixpanel
+          .track('Platform error', properties: {'error': e.toString()});
+    }
 
     GlobalState.intentSubscription ??= intent.ReceiveIntent.receivedIntentStream
         .listen((intent.Intent? receivedIntent) async {
@@ -87,12 +128,17 @@ class AscentApp extends StatelessWidget {
           ));
         }
       }
-    }, onError: (err) {});
+    }, onError: (err) {
+      GlobalState.mixpanel
+          .track('Platform error', properties: {'error': err.toString()});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     initReceiveIntent();
+    GlobalState.locale = context.deviceLocale.toString();
+    checkUpdate();
     return MaterialApp(
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,

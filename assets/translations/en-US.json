@@ -61,5 +61,10 @@
       "copy_button": "Copy",
       "copied": "Copied"
     }
+  },
+  "update": {
+    "title": "New version ",
+    "ok": "Update",
+    "cancel": "Not now"
   }
 }

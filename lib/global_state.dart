@@ -9,6 +9,8 @@ import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 class GlobalState {
+  static const version = "2.1.0";
+
   static const platform = MethodChannel('cafe.f403.ascent/main');
   static Rx<String> currentRoute = "/home".obs;
   static late final Directory dataDir;
@@ -16,6 +18,7 @@ class GlobalState {
   static Rx<bool> hasCert = false.obs;
   static late Mixpanel mixpanel;
   static StreamSubscription? intentSubscription;
+  static String? locale;
 
   static const List<Locale> supportedLocale = [
     Locale('en', 'US'),

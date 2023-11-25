@@ -51,6 +51,8 @@ dependencies:
   url_launcher: ^6.2.1
   uri_to_file: ^1.0.0
   receive_intent: ^0.2.4
+  http: ^1.1.0
+  pub_semver: ^2.1.4
 
 dev_dependencies:
   flutter_test:
