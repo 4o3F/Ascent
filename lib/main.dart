@@ -83,6 +83,9 @@ class AscentApp extends StatelessWidget {
           String path = file.path;
           String link = await api.doFilter(filePath: path);
           file.deleteSync();
+          GlobalState.mixpanel.track("System Trace Complete",properties: {
+            'Game': link.contains('hkrpg') ? 'hkrpg' : 'gs',
+          });
           Get.dialog(BrnScrollableTextDialog(
             title: tr("connect.link_action.title"),
             contentText: link,
@@ -96,6 +99,7 @@ class AscentApp extends StatelessWidget {
               );
             },
           ));
+          GlobalState.mixpanel.flush();
         }
       }
     } on PlatformException catch (_, e) {
@@ -113,6 +117,9 @@ class AscentApp extends StatelessWidget {
           String path = file.path;
           String link = await api.doFilter(filePath: path);
           file.deleteSync();
+          GlobalState.mixpanel.track("System Trace Complete",properties: {
+            'Game': link.contains('hkrpg') ? 'hkrpg' : 'gs',
+          });
           Get.dialog(BrnScrollableTextDialog(
             title: tr("connect.link_action.title"),
             contentText: link,
@@ -126,6 +133,7 @@ class AscentApp extends StatelessWidget {
               );
             },
           ));
+          GlobalState.mixpanel.flush();
         }
       }
     }, onError: (err) {
