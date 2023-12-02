@@ -1,12 +1,15 @@
-use std::fs;
+use std::{env, fs};
 
+use android_logger::Config;
 use anyhow::Result;
+use log::{debug, LevelFilter};
 use regex::Regex;
 use tokio::runtime::Runtime;
 
 use crate::{connect, pair};
 
 pub fn do_pair(port: String, code: String, data_folder: String) -> Result<bool> {
+    debug!("Do pair native called");
     let rt = Runtime::new().unwrap();
     rt.block_on(async {
         pair::pair(port, code, data_folder).await
@@ -50,4 +53,17 @@ pub fn do_filter(file_path: String) -> Result<String> {
         let result = front_half + back_half.as_str();
         Ok(result)
     })
+}
+
+pub fn init_logger() {
+    env::set_var("RUST_BACKTRACE", "1");
+    if cfg!(debug_assertions) {
+        android_logger::init_once(
+            Config::default().with_max_level(LevelFilter::Trace).with_tag("flutter_native"),
+        );
+    } else {
+        android_logger::init_once(
+            Config::default().with_max_level(LevelFilter::Error).with_tag("flutter_native"),
+        );
+    }
 }

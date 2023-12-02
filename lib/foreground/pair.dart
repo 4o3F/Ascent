@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:ascent/ffi.dart';
@@ -82,13 +83,29 @@ class PairTaskHandler extends TaskHandler {
   }
 
   Future<void> doPair() async {
-    await api.doPair(
-        port: port, code: code, dataFolder: GlobalState.dataDir.path);
-    FlutterForegroundTask.updateService(
-      notificationTitle: tr('pair.notification_title'),
-      notificationText: tr('pair.notification_description.pair_success'),
-    );
-    sendPort?.send('pair_complete');
+    String errorMessage = "";
+    api
+        .doPair(port: port, code: code, dataFolder: GlobalState.dataDir.path)
+        .catchError((error) {
+      errorMessage = error.toString();
+      return false;
+    }).then((value) {
+      if (value) {
+        FlutterForegroundTask.updateService(
+          notificationTitle: tr('pair.notification_title'),
+          notificationText: tr('pair.notification_description.pair_success'),
+        );
+        sendPort?.send('pair_complete');
+      } else {
+        FlutterForegroundTask.updateService(
+          notificationTitle: tr('pair.notification_title'),
+          notificationText:
+              tr('pair.notification_description.pair_fail') + errorMessage,
+        );
+        File("${GlobalState.dataDir.path}/cert.pem").deleteSync();
+        File("${GlobalState.dataDir.path}/pkey.pem").deleteSync();
+      }
+    });
   }
 
   @override

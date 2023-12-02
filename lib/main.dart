@@ -47,7 +47,9 @@ Future<void> checkUpdate() async {
   if (newVersion > currentVersion) {
     String updateInfo =
         parsed['info'][GlobalState.locale] ?? parsed['info']['en_US'];
-    Uri url = Uri.parse(GlobalState.locale == "zh_CN" ? parsed['url']['backup'] : parsed['url']['main']);
+    Uri url = Uri.parse(GlobalState.locale == "zh_CN"
+        ? parsed['url']['backup']
+        : parsed['url']['main']);
     BrnEnhanceOperationDialog dialog = BrnEnhanceOperationDialog(
       context: Get.context!,
       titleText: tr('update.title') + version,
@@ -83,7 +85,7 @@ class AscentApp extends StatelessWidget {
           String path = file.path;
           String link = await api.doFilter(filePath: path);
           file.deleteSync();
-          GlobalState.mixpanel.track("System Trace Complete",properties: {
+          GlobalState.mixpanel.track("System Trace Complete", properties: {
             'Game': link.contains('hkrpg') ? 'hkrpg' : 'gs',
           });
           Get.dialog(BrnScrollableTextDialog(
@@ -117,7 +119,7 @@ class AscentApp extends StatelessWidget {
           String path = file.path;
           String link = await api.doFilter(filePath: path);
           file.deleteSync();
-          GlobalState.mixpanel.track("System Trace Complete",properties: {
+          GlobalState.mixpanel.track("System Trace Complete", properties: {
             'Game': link.contains('hkrpg') ? 'hkrpg' : 'gs',
           });
           Get.dialog(BrnScrollableTextDialog(
@@ -147,6 +149,7 @@ class AscentApp extends StatelessWidget {
     initReceiveIntent();
     GlobalState.locale = context.deviceLocale.toString();
     checkUpdate();
+    api.initLogger();
     return MaterialApp(
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,

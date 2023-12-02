@@ -25,6 +25,11 @@ pub extern "C" fn wire_do_filter(port_: i64, file_path: *mut wire_uint_8_list) {
     wire_do_filter_impl(port_, file_path)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_init_logger(port_: i64) {
+    wire_init_logger_impl(port_)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

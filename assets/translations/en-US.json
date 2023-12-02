@@ -39,7 +39,8 @@
       "error_init": "Foreground service start failed, please contact developer",
       "pair_port": "Port: ",
       "pair_code": "Code: ",
-      "pair_success": "Pairing success, please return to Ascent"
+      "pair_success": "Pairing success, please return to Ascent",
+      "pair_fail": "Pair failed, please go back and redo\n"
     },
     "notification_reply_button": "Enter data here"
   },

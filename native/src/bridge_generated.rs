@@ -73,6 +73,16 @@ fn wire_do_filter_impl(port_: MessagePort, file_path: impl Wire2Api<String> + Un
         },
     )
 }
+fn wire_init_logger_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap::<_, _, _, (), _>(
+        WrapInfo {
+            debug_name: "init_logger",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Result::<_, ()>::Ok(init_logger()),
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

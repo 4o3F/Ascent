@@ -39,7 +39,8 @@
       "error_init": "前台服务启动失败，请联系开发者",
       "pair_port": "端口: ",
       "pair_code": "配对码: ",
-      "pair_success": "配对成功，请返回Ascent主程序"
+      "pair_success": "配对成功，请返回Ascent主程序",
+      "pair_fail": "配对失败，请重新操作，错误信息"
     },
     "notification_reply_button": "点此输入数据"
   },

@@ -1,6 +1,7 @@
 use std::io::Write;
 
 use anyhow::{anyhow, Context, Result};
+use log::debug;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 const EXPORTED_KEY_LABEL: &str = "adb-label\u{0}";
@@ -215,18 +216,19 @@ fn encode_rsa_publickey_with_name(public_key: boring::rsa::Rsa<boring::pkey::Pub
     Ok(bos.into_vec())
 }
 
+// TODO: Rewrite this to FSM
 pub async fn pair(port: String, code: String, data_folder: String) -> Result<bool> {
-    let host = "127.0.0.1".to_string();
-    // let port = "45393".to_string();
-    // let code = "312501".to_string();
+    debug!("Hooking panic");
+    std::panic::set_hook(Box::new(move |info| {
+        debug!("Panics: {:?}", info)
+    }));
 
+    let host = "127.0.0.1".to_string();
+    debug!("Pair starting");
     // Check cert file existance
     let data_folder = data_folder;
 
-    let log = data_folder.clone() + "/log.txt";
-    let log = std::path::Path::new(log.as_str());
-    let mut log = std::fs::File::create(log).unwrap();
-
+    debug!("Cert load begin");
     let cert_path = data_folder.clone() + "/cert.pem";
     let pkey_path = data_folder.clone() + "/pkey.pem";
     let cert_path = std::path::Path::new(cert_path.as_str());
@@ -236,6 +238,7 @@ pub async fn pair(port: String, code: String, data_folder: String) -> Result<boo
     let pkey: Option<boring::pkey::PKey<boring::pkey::Private>>;
 
     if !cert_path.exists() || !pkey_path.exists() {
+        debug!("Cert file don't exist");
         let (x509_raw, pkey_raw) = generate_cert()?;
         x509 = Some(x509_raw.clone());
         pkey = Some(pkey_raw.clone());
@@ -246,9 +249,10 @@ pub async fn pair(port: String, code: String, data_folder: String) -> Result<boo
     } else {
         return Ok(true);
     }
+    debug!("Cert load end");
 
-    // x509.unwrap().public_key().unwrap().rsa()
-
+    debug!("TLS connect begin");
+    debug!("Building TLS connector");
     let domain = host.clone() + ":" + port.as_str();
     let method = boring::ssl::SslMethod::tls();
     let mut connector = boring::ssl::SslConnector::builder(method)?;
@@ -259,14 +263,16 @@ pub async fn pair(port: String, code: String, data_folder: String) -> Result<boo
 
     let mut config = connector.build().configure()?;
     config.set_verify_callback(boring::ssl::SslVerifyMode::PEER, |_, _| true);
+    debug!("TLS connector build");
+    debug!("TCP connecting at {}", domain);
     let stream = tokio::net::TcpStream::connect(domain.as_str()).await?;
+    debug!("TLS connecting");
     let mut stream = tokio_boring::connect(config, host.as_str(), stream).await?;
     // To ensure the connection is not stolen while we do the PAKE, append the exported key material from the
     // tls connection to the password.
     let mut exported_key_material = [0; 64];
     stream.ssl().export_keying_material(&mut exported_key_material, EXPORTED_KEY_LABEL, None)?;
-    log.write_all(format!("exported_key_material: {:?}\n", exported_key_material).as_bytes())?;
-
+    debug!("exported_key_material: {:?}\n", exported_key_material);
 
     let mut password = vec![0u8; code.as_bytes().len() + exported_key_material.len()];
     password[..code.as_bytes().len()].copy_from_slice(code.as_bytes());
@@ -294,15 +300,15 @@ pub async fn pair(port: String, code: String, data_folder: String) -> Result<boo
     // Send data
     stream.write_all(header.as_bytes()).await?;
     stream.write_all(outbound_msg.as_slice()).await?;
-    log.write_all(("SPAKE2 Send\n").as_bytes())?;
+    debug!("SPAKE2 Send");
 
-    // Read data
+    // Read header data
     stream.read_u8().await?;
     let msg_type = stream.read_u8().await?;
     let payload_length = stream.read_i32().await?;
     if msg_type != 0u8 {
-        log.write_all(("Message type miss match\n").as_bytes())?;
-        panic!("Message type miss match");
+        debug!("Message type miss match");
+        return Err(anyhow!("Message type miss match"));
     }
 
     let mut payload_raw = vec![0u8; payload_length as usize];
@@ -313,10 +319,10 @@ pub async fn pair(port: String, code: String, data_folder: String) -> Result<boo
 
     // Has checked the hkdf generation process is correct
     // TODO: Check if the bob key is the same
-    log.write_all(format!("bob key: {:?}\n", boring::base64::encode_block(bob_key.as_slice())).as_bytes())?;
+    //log.write_all(format!("bob key: {:?}\n", boring::base64::encode_block(bob_key.as_slice())).as_bytes())?;
     let mut secret_key = [0u8; 16];
     hkdf::Hkdf::<sha2::Sha256>::new(None, bob_key.as_ref()).expand("adb pairing_auth aes-128-gcm key".as_bytes(), &mut secret_key).unwrap();
-    log.write_all(format!("secret key: {:?}\n", boring::base64::encode_block(secret_key.as_slice())).as_bytes())?;
+    //log.write_all(format!("secret key: {:?}\n", boring::base64::encode_block(secret_key.as_slice())).as_bytes())?;
 
     let encrypt_iv: i64 = 0;
 
@@ -327,31 +333,31 @@ pub async fn pair(port: String, code: String, data_folder: String) -> Result<boo
 
     let iv = iv_bytes.as_bytes();
 
-    log.write_all(("Create Crypter\n").as_bytes())?;
+    debug!("Create encrypt crypter");
     let mut crypter = boring::symm::Crypter::new(
         boring::symm::Cipher::aes_128_gcm(),
         boring::symm::Mode::Encrypt,
         secret_key.as_ref(),
         Some(iv))?;
-    log.write_all(("Crypter Created\n").as_bytes())?;
+    debug!("Encrypt crypter created");
 
-    log.write_all(("Generate PeerInfo\n").as_bytes())?;
+    debug!("Generate PeerInfo");
     let mut peerinfo = bytebuffer::ByteBuffer::new();
     peerinfo.resize(MAX_PEER_INFO_SIZE as usize);
     peerinfo.set_endian(bytebuffer::Endian::BigEndian);
 
     peerinfo.write_u8(0);
     peerinfo.write(encode_rsa_publickey_with_name(x509.unwrap().public_key().unwrap().rsa().unwrap()).unwrap().as_slice())?;
-    log.write_all(("PeerInfo Generated\n").as_bytes())?;
+    debug!("PeerInfo Generated");
 
-    log.write_all(("Update Crypter\n").as_bytes())?;
+    debug!("Update Crypter");
     let mut encrypted = vec![0u8; peerinfo.as_bytes().len()];
     crypter.update(peerinfo.as_bytes(), encrypted.as_mut_slice())?;
-    log.write_all(("Crypter Updated\n").as_bytes())?;
+    debug!("Crypter Updated");
     let fin = crypter.finalize(encrypted.as_mut_slice())?;
     if fin != 0 {
-        log.write_all(("Finalize error").as_bytes())?;
-        panic!("Finalize error");
+        debug!("Finalize error");
+        return Err(anyhow!("Finalize error"));
     }
 
     let mut encryption_tag = vec![0u8; 16];
@@ -371,7 +377,52 @@ pub async fn pair(port: String, code: String, data_folder: String) -> Result<boo
     stream.write_all(header.as_bytes()).await?;
     stream.write_all(encrypted.as_slice()).await?;
 
-    stream.flush().await?;
-    log.write_all(("All process done").as_bytes())?;
+    // Read peer info header
+    stream.read_u8().await?;
+    let msg_type = stream.read_u8().await?;
+    let payload_length = stream.read_i32().await?;
+    if msg_type != 1u8 {
+        debug!("Message type miss match");
+        return Err(anyhow!("Message type miss match"));
+    }
+
+    let mut payload_raw = vec![0u8; payload_length as usize];
+    stream.read_exact(payload_raw.as_mut_slice()).await?;
+    let encrypted = payload_raw[0..payload_length as usize - 16].to_vec();
+    let encrypted_tag = payload_raw[payload_length as usize - 16..payload_length as usize].to_vec();
+
+    let decrypt_iv: i64 = 0;
+    let mut iv_bytes = bytebuffer::ByteBuffer::new();
+    iv_bytes.resize(12);
+    iv_bytes.set_endian(bytebuffer::Endian::LittleEndian);
+    iv_bytes.write_i64(decrypt_iv);
+
+    let iv = iv_bytes.as_bytes();
+
+    debug!("Create decrypt crypter");
+    let mut crypter = boring::symm::Crypter::new(
+        boring::symm::Cipher::aes_128_gcm(),
+        boring::symm::Mode::Decrypt,
+        secret_key.as_ref(),
+        Some(iv))?;
+    debug!("Decrypt crypter created");
+
+    // debug!("Encrypted: {:?}",boring::base64::encode_block(encrypted.as_slice()));
+    // debug!("Tag: {:?}",boring::base64::encode_block(encrypted_tag.as_slice()));
+    // debug!("Key: {:?}", boring::base64::encode_block(secret_key.as_ref()));
+    // debug!("IV: {:?}", boring::base64::encode_block(iv));
+
+    debug!("Update crypter");
+    let mut decrypted = vec![0u8; (payload_length - 16) as usize];
+    crypter.set_tag(encrypted_tag.as_ref())?;
+    crypter.update((encrypted).as_slice(), decrypted.as_mut_slice())?;
+    debug!("Crypter updated");
+    let fin = crypter.finalize(decrypted.as_mut_slice())?;
+    if fin != 0 {
+        debug!("Finalize error");
+        return Err(anyhow!("Finalize error"));
+    }
+
+    debug!("All process done, peerinfo is {:?}", String::from_utf8(decrypted));
     Ok(true)
 }
