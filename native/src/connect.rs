@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::io::{Read, Write};
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use log::info;
@@ -68,6 +68,7 @@ fn generate_message(command: i32, arg0: i32, arg1: i32, data: Vec<u8>) -> bytebu
 }
 
 pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String> {
+    let mut log_file = std::fs::File::create(data_folder.clone() + "/log.txt").unwrap();
     let host = String::from("127.0.0.1:") + port.as_str();
     let host = host.as_str();
     let mut stream = tokio::net::TcpStream::connect(host).await.unwrap();
@@ -81,6 +82,7 @@ pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String
             Vec::from(SYSTEM_IDENTITY_STRING_HOST.as_bytes()),
         );
         stream.write_all(cnxn_message.as_bytes()).await.unwrap();
+        log_file.write_all(format!("CNXN send\n").as_bytes()).unwrap();
     }
 
     // Read STLS command
@@ -95,13 +97,15 @@ pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String
         if message.command != A_STLS as u32 {
             panic!("Not STLS command");
         }
-        info!("STLS Received")
+        info!("STLS Received");
+        log_file.write_all(format!("STLS received\n").as_bytes()).unwrap();
     }
     // Send STLS packet
     {
         let stls_message = generate_message(A_STLS, A_STLS_VERSION, 0, Vec::new());
         stream.write_all(stls_message.as_bytes()).await.unwrap();
-        info!("STLS Sent")
+        info!("STLS Sent");
+        log_file.write_all(format!("STLS sent\n").as_bytes()).unwrap();
     }
 
     info!("TLS Handshake begin");
@@ -136,8 +140,10 @@ pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String
     //config.set_verify_hostname(false);
     config.set_use_server_name_indication(false);
     //config.set_verify_callback(boring::ssl::SslVerifyMode::PEER, |_, _| true);
+    log_file.write_all(format!("TLS handshake begin\n").as_bytes()).unwrap();
     let mut stream = tokio_boring::connect(config, host, stream).await.unwrap();
     info!("TLS Handshake success");
+    log_file.write_all(format!("TLS handshake end\n").as_bytes()).unwrap();
     // Read CNXN
     {
         let mut message_raw = vec![0u8; ADB_HEADER_LENGTH];
@@ -148,10 +154,11 @@ pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String
 
         let message = Message::parse(&mut header);
         info!("CNXN Received");
+        log_file.write_all(format!("CNXN received\n").as_bytes()).unwrap();
         let mut data_raw = vec![0u8; message.data_length as usize];
         stream.read_exact(data_raw.as_mut_slice()).await.unwrap();
         let data = String::from_utf8(data_raw).unwrap();
-        info!("CNXN data: {}", data)
+        info!("CNXN data: {}", data);
     }
     // Send OPEN
     {
