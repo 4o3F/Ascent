@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 flutter_rust_bridge = "1"
-anyhow = "1.0.75"
+anyhow = { version = "1.0.75", features = ["backtrace"] }
 bytebuffer = "2.2.0"
 hex = "0.4.3"
 hkdf = "0.12.3"

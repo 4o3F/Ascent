@@ -3,9 +3,13 @@ import 'dart:isolate';
 
 import 'package:ascent/ffi.dart';
 import 'package:ascent/global_state.dart';
+import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+import 'package:get/get.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 import 'package:easy_localization/src/easy_localization_controller.dart';
 import 'package:easy_localization/src/localization.dart';
@@ -87,7 +91,12 @@ class PairTaskHandler extends TaskHandler {
     api
         .doPair(port: port, code: code, dataFolder: GlobalState.dataDir.path)
         .catchError((error) {
-      errorMessage = error.toString();
+      if (error is FrbAnyhowException) {
+        errorMessage = error.anyhow;
+      } else {
+        errorMessage = error.toString();
+      }
+      sendPort?.send("error#$errorMessage");
       return false;
     }).then((value) {
       if (value) {
@@ -175,13 +184,27 @@ class PairForegroundTask {
     }
     receivePort.listen((dynamic data) {
       if (data is String) {
-        switch (data) {
-          case 'pair_complete':
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              GlobalState.hasCert.value = true;
-              GlobalState.mixpanel.track("Pair Complete");
-              GlobalState.mixpanel.flush();
-            });
+        if (data == "pair_complete") {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            GlobalState.hasCert.value = true;
+            GlobalState.mixpanel.track("Pair Complete");
+            GlobalState.mixpanel.flush();
+          });
+        } else if (data.startsWith("error#")) {
+          String errorMessage = data.replaceFirst("error#", "");
+          Get.dialog(BrnScrollableTextDialog(
+            title: tr("error.title"),
+            contentText: errorMessage,
+            submitText: tr("error.copy"),
+            submitBgColor: Colors.orangeAccent,
+            onSubmitClick: () {
+              Clipboard.setData(ClipboardData(text: errorMessage));
+              BrnToast.showInCenter(
+                text: tr("error.copied"),
+                context: Get.context!,
+              );
+            },
+          ));
         }
       }
     });

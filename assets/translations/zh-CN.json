@@ -40,7 +40,7 @@
       "pair_port": "端口: ",
       "pair_code": "配对码: ",
       "pair_success": "配对成功，请返回Ascent主程序",
-      "pair_fail": "配对失败，请重新操作，错误信息"
+      "pair_fail": "配对失败，请确认配对码"
     },
     "notification_reply_button": "点此输入数据"
   },
@@ -54,7 +54,8 @@
     "notification_description": {
       "connecting": "连接无线调试中,请点击按钮输入无线调试端口",
       "waiting": "等待链接中",
-      "success": "获取成功，请返回Ascent主程序"
+      "success": "获取成功，请返回Ascent主程序",
+      "fail": "失败，请检查端口\n"
     },
     "notification_reply_button": "点此输入数据",
     "link_action": {

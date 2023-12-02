@@ -17,6 +17,7 @@ pub fn do_pair(port: String, code: String, data_folder: String) -> Result<bool> 
 }
 
 pub fn do_connect(port: String, data_folder: String) -> Result<String> {
+    debug!("Do connect native called");
     let rt = Runtime::new().unwrap();
     rt.block_on(async {
         connect::connect(port, data_folder).await

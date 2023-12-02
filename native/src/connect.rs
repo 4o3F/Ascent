@@ -1,7 +1,8 @@
 use std::io::Read;
 
+use anyhow::{anyhow, Context, Result};
+use log::debug;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use log::info;
 
 const ADB_HEADER_LENGTH: usize = 24;
 const SYSTEM_IDENTITY_STRING_HOST: &str = "host::\u{0}";
@@ -67,10 +68,11 @@ fn generate_message(command: i32, arg0: i32, arg1: i32, data: Vec<u8>) -> bytebu
     message
 }
 
-pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String> {
+pub async fn connect(port: String, data_folder: String) -> Result<String> {
     let host = String::from("127.0.0.1:") + port.as_str();
     let host = host.as_str();
-    let mut stream = tokio::net::TcpStream::connect(host).await.unwrap();
+    debug!("Connecting {}",host);
+    let mut stream = tokio::net::TcpStream::connect(host).await.with_context(|| format!("TCP connection to {} failed", host))?;
     let link: String;
     // Send CNXN first
     {
@@ -80,39 +82,40 @@ pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String
             MAX_PAYLOAD,
             Vec::from(SYSTEM_IDENTITY_STRING_HOST.as_bytes()),
         );
-        stream.write_all(cnxn_message.as_bytes()).await.unwrap();
+        stream.write_all(cnxn_message.as_bytes()).await.with_context(|| format!("Send CNXN"))?;
+        debug!("CNXN Sent");
     }
 
     // Read STLS command
     {
         let mut message_raw = vec![0u8; ADB_HEADER_LENGTH];
-        stream.read_exact(message_raw.as_mut_slice()).await.unwrap();
+        stream.read_exact(message_raw.as_mut_slice()).await.with_context(|| format!("Read STLS"))?;
         let mut header = bytebuffer::ByteBuffer::from_vec(message_raw); // CNXN header
         header.resize(ADB_HEADER_LENGTH);
         header.set_endian(bytebuffer::Endian::LittleEndian);
 
         let message = Message::parse(&mut header);
         if message.command != A_STLS as u32 {
-            panic!("Not STLS command");
+            return Err(anyhow!("Not STLS command"));
         }
-        info!("STLS Received")
+        debug!("STLS Received")
     }
     // Send STLS packet
     {
         let stls_message = generate_message(A_STLS, A_STLS_VERSION, 0, Vec::new());
-        stream.write_all(stls_message.as_bytes()).await.unwrap();
-        info!("STLS Sent")
+        stream.write_all(stls_message.as_bytes()).await.with_context(|| format!("Send STLS"))?;
+        debug!("STLS Sent")
     }
 
-    info!("TLS Handshake begin");
+    debug!("TLS Handshake begin");
     let data_folder = data_folder;
     let cert_path = data_folder.clone() + "/cert.pem";
     let pkey_path = data_folder.clone() + "/pkey.pem";
     let cert_path = std::path::Path::new(cert_path.as_str());
     let pkey_path = std::path::Path::new(pkey_path.as_str());
     // Load cert and pkey from file
-    let cert_file = std::fs::File::open(cert_path).unwrap();
-    let pkey_file = std::fs::File::open(pkey_path).unwrap();
+    let cert_file = std::fs::File::open(cert_path)?;
+    let pkey_file = std::fs::File::open(pkey_path)?;
     let x509_raw: Vec<u8> = cert_file.bytes().map(|x| x.unwrap()).collect();
     let x509_raw = x509_raw.as_slice();
     let pkey_raw: Vec<u8> = pkey_file.bytes().map(|x| x.unwrap()).collect();
@@ -130,77 +133,77 @@ pub async fn connect(port: String, data_folder: String) -> anyhow::Result<String
     connector.set_options(boring::ssl::SslOptions::NO_TLSV1_2);
     connector.set_options(boring::ssl::SslOptions::NO_TLSV1_1);
     connector.set_keylog_callback(move |_, line| {
-        info!("{}", line);
+        debug!("{}", line);
     });
     let mut config = connector.build().configure().unwrap();
     //config.set_verify_hostname(false);
     config.set_use_server_name_indication(false);
     //config.set_verify_callback(boring::ssl::SslVerifyMode::PEER, |_, _| true);
-    let mut stream = tokio_boring::connect(config, host, stream).await.unwrap();
-    info!("TLS Handshake success");
+    let mut stream = tokio_boring::connect(config, host, stream).await.with_context(|| format!("Open TLS stream"))?;
+    debug!("TLS Handshake success");
     // Read CNXN
     {
         let mut message_raw = vec![0u8; ADB_HEADER_LENGTH];
-        stream.read_exact(message_raw.as_mut_slice()).await.unwrap();
+        stream.read_exact(message_raw.as_mut_slice()).await.with_context(|| format!("Read CNXN header"))?;
         let mut header = bytebuffer::ByteBuffer::from_vec(message_raw); // CNXN header
         header.resize(ADB_HEADER_LENGTH);
         header.set_endian(bytebuffer::Endian::LittleEndian);
 
         let message = Message::parse(&mut header);
-        info!("CNXN Received");
+        debug!("CNXN Received");
         let mut data_raw = vec![0u8; message.data_length as usize];
-        stream.read_exact(data_raw.as_mut_slice()).await.unwrap();
-        let data = String::from_utf8(data_raw).unwrap();
-        info!("CNXN data: {}", data)
+        stream.read_exact(data_raw.as_mut_slice()).await.with_context(|| format!("Read CNXN"))?;
+        let data = String::from_utf8(data_raw).with_context(|| format!("Parse CNXN data"))?;
+        debug!("CNXN data: {}", data)
     }
     // Send OPEN
     {
         let shell_cmd = "shell:logcat -b all -c && logcat | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\\.com|hoyoverse\\.com)' | grep -i 'gacha'\u{0}";
         let open_message = generate_message(A_OPEN, 233, 0, Vec::from(shell_cmd.as_bytes()));
-        stream.write_all(open_message.as_bytes()).await.unwrap();
-        info!("OPEN Sent");
+        stream.write_all(open_message.as_bytes()).await.with_context(|| format!("Send OPEN"))?;
+        debug!("OPEN Sent");
     }
     // Read OKAY
     {
         let mut message_raw = vec![0u8; ADB_HEADER_LENGTH];
-        stream.read_exact(message_raw.as_mut_slice()).await.unwrap();
-        let mut header = bytebuffer::ByteBuffer::from_vec(message_raw); // CNXN header
+        stream.read_exact(message_raw.as_mut_slice()).await.with_context(|| format!("Read OKAY"))?;
+        let mut header = bytebuffer::ByteBuffer::from_vec(message_raw);
         header.resize(ADB_HEADER_LENGTH);
         header.set_endian(bytebuffer::Endian::LittleEndian);
 
         let message = Message::parse(&mut header);
         if message.command != A_OKAY as u32 {
-            panic!("Not OKAY command");
+            return Err(anyhow!("Not OKAY command"));
         }
-        info!("OKAY Received");
+        debug!("OKAY Received");
     }
     // Read WRTE
     {
         let mut message_raw = vec![0u8; ADB_HEADER_LENGTH];
-        stream.read_exact(message_raw.as_mut_slice()).await.unwrap();
-        let mut header = bytebuffer::ByteBuffer::from_vec(message_raw); // CNXN header
+        stream.read_exact(message_raw.as_mut_slice()).await.with_context(|| format!("Read WRTE header"))?;
+        let mut header = bytebuffer::ByteBuffer::from_vec(message_raw);
         header.resize(ADB_HEADER_LENGTH);
         header.set_endian(bytebuffer::Endian::LittleEndian);
 
         let message = Message::parse(&mut header);
         if message.command != A_WRTE as u32 {
-            panic!("Not WRTE command");
+            return Err(anyhow!("Not WRTE command"));
         }
-        info!("WRTE Received");
+        debug!("WRTE Received");
         let mut data_raw = vec![0u8; message.data_length as usize];
-        stream.read_exact(data_raw.as_mut_slice()).await.unwrap();
-        link = String::from_utf8(data_raw).unwrap();
-        info!("WRTE data: {}", link)
+        stream.read_exact(data_raw.as_mut_slice()).await.with_context(|| format!("Read WRTE"))?;
+        link = String::from_utf8(data_raw).with_context(|| format!("Parse WRTE string"))?;
+        debug!("WRTE data: {}", link)
     }
     // Send OKAY
     {
         let okay_message = generate_message(A_OKAY, 233, 0, Vec::new());
-        stream.write_all(okay_message.as_bytes()).await.unwrap();
-        info!("OKAY Sent");
+        stream.write_all(okay_message.as_bytes()).await.with_context(|| format!("Send OKAY"))?;
+        debug!("OKAY Sent");
     }
 
-    stream.flush().await.unwrap();
-    stream.shutdown().await.unwrap();
+    stream.flush().await.with_context(|| format!("Flush stream"))?;
+    stream.shutdown().await.with_context(|| format!("Shutdown stream"))?;
 
     Ok(link)
 }

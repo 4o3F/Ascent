@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:easy_localization/src/easy_localization_controller.dart';
 import 'package:easy_localization/src/localization.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:get/get.dart';
 import 'package:multicast_dns/multicast_dns.dart';
 
@@ -77,13 +78,32 @@ class ConnectTaskHandler extends TaskHandler {
     FlutterForegroundTask.updateService(
       notificationText: tr('connect.notification_description.waiting'),
     );
-    String link =
-        await api.doConnect(port: port, dataFolder: GlobalState.dataDir.path);
-    this.link = link;
-    FlutterForegroundTask.updateService(
-      notificationText: tr('connect.notification_description.success'),
-    );
-    sendPort?.send(link);
+
+    String errorMessage = "";
+    api
+        .doConnect(port: port, dataFolder: GlobalState.dataDir.path)
+        .catchError((error) {
+      if (error is FrbAnyhowException) {
+        errorMessage = error.anyhow;
+      } else {
+        errorMessage = error.toString();
+      }
+      sendPort?.send("error#$errorMessage");
+      return "";
+    }).then((value) {
+      if (value.isNotEmpty) {
+        link = value;
+        FlutterForegroundTask.updateService(
+          notificationText: tr('connect.notification_description.success'),
+        );
+        sendPort?.send(link);
+      } else {
+        FlutterForegroundTask.updateService(
+          notificationText:
+              tr('connect.notification_description.fail') + errorMessage,
+        );
+      }
+    });
   }
 
   @override
@@ -143,28 +163,46 @@ class ConnectForegroundTask {
     }
     receivePort.listen((dynamic data) {
       if (data is String) {
-        RegExp regex = RegExp(r'https://(.+)');
-        Match? match = regex.firstMatch(data);
-        if (match != null) {
-          logic.link.value = match.group(0)!;
+        if (data.startsWith("error#")) {
           logic.inProgress.value = false;
+          String errorMessage = data.replaceFirst("error#", "");
           Get.dialog(BrnScrollableTextDialog(
-            title: tr("connect.link_action.title"),
-            contentText: logic.link.value,
-            submitText: tr("connect.link_action.copy_button"),
-            submitBgColor: Colors.greenAccent,
+            title: tr("error.title"),
+            contentText: errorMessage,
+            submitText: tr("error.copy"),
+            submitBgColor: Colors.orangeAccent,
             onSubmitClick: () {
-              Clipboard.setData(ClipboardData(text: logic.link.value));
+              Clipboard.setData(ClipboardData(text: errorMessage));
               BrnToast.showInCenter(
-                text: tr("connect.link_action.copied"),
+                text: tr("error.copied"),
                 context: Get.context!,
               );
             },
           ));
-          GlobalState.mixpanel.track("Connect Complete", properties: {
-            'Game': logic.link.value.contains('hkrpg') ? 'hkrpg' : 'gs',
-          });
-          GlobalState.mixpanel.flush();
+        } else {
+          RegExp regex = RegExp(r'https://(.+)');
+          Match? match = regex.firstMatch(data);
+          if (match != null) {
+            logic.link.value = match.group(0)!;
+            logic.inProgress.value = false;
+            Get.dialog(BrnScrollableTextDialog(
+              title: tr("connect.link_action.title"),
+              contentText: logic.link.value,
+              submitText: tr("connect.link_action.copy_button"),
+              submitBgColor: Colors.greenAccent,
+              onSubmitClick: () {
+                Clipboard.setData(ClipboardData(text: logic.link.value));
+                BrnToast.showInCenter(
+                  text: tr("connect.link_action.copied"),
+                  context: Get.context!,
+                );
+              },
+            ));
+            GlobalState.mixpanel.track("Connect Complete", properties: {
+              'Game': logic.link.value.contains('hkrpg') ? 'hkrpg' : 'gs',
+            });
+            GlobalState.mixpanel.flush();
+          }
         }
       }
     });

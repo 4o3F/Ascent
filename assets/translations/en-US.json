@@ -40,7 +40,7 @@
       "pair_port": "Port: ",
       "pair_code": "Code: ",
       "pair_success": "Pairing success, please return to Ascent",
-      "pair_fail": "Pair failed, please go back and redo\n"
+      "pair_fail": "Pair failed, please check pair code\n"
     },
     "notification_reply_button": "Enter data here"
   },
@@ -54,7 +54,8 @@
     "notification_description": {
       "connecting": "Wireless debug connecting, please enter port by clicking the button",
       "waiting": "Waiting for link",
-      "success": "Success, please return to Ascent"
+      "success": "Success, please return to Ascent",
+      "fail": "Failed, please check port\n"
     },
     "notification_reply_button": "Enter data here",
     "link_action": {
@@ -67,5 +68,10 @@
     "title": "New version ",
     "ok": "Update",
     "cancel": "Not now"
+  },
+  "error" : {
+    "title": "Please send following to developer",
+    "copy": "Copy",
+    "copied": "Copied"
   }
 }
