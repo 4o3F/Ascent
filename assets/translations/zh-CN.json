@@ -8,6 +8,7 @@
   },
   "home": {
     "star": "如果你喜欢Ascent 请给个Star吧 ;D",
+    "support": "技术支持",
     "developer_option": {
       "status": "开发者选项状态: ",
       "enabled": "已启用",
@@ -69,5 +70,10 @@
     "title": "新版本 ",
     "ok": "更新",
     "cancel": "暂不更新"
+  },
+  "error" : {
+    "title": "请联系技术支持",
+    "copy": "复制",
+    "copied": "已复制"
   }
 }

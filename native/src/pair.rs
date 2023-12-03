@@ -420,6 +420,6 @@ pub async fn pair(port: String, code: String, data_folder: String) -> Result<boo
         return Err(anyhow!("Finalize error"));
     }
 
-    debug!("All process done, peerinfo is {:?}", String::from_utf8(decrypted));
+    debug!("All process done, peerinfo is {:?}", String::from_utf8(decrypted)?.trim_matches(char::from(0)));
     Ok(true)
 }

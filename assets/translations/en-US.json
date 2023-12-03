@@ -8,6 +8,7 @@
   },
   "home": {
     "star": "If you like Ascent, Star it ;D",
+    "support": "Get Support",
     "developer_option": {
       "status": "Developer Option Status: ",
       "enabled": "Enabled",
@@ -71,7 +72,7 @@
     "cancel": "Not now"
   },
   "error" : {
-    "title": "Please send following to developer",
+    "title": "Please contact support",
     "copy": "Copy",
     "copied": "Copied"
   }
