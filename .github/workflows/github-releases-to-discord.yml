@@ -1,8 +1,7 @@
+name: Push release to Discord
 on:
   release:
-    types:
-      - published
-      - edited
+    types: [ published,edited ]
 
 jobs:
   github-releases-to-discord:
