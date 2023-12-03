@@ -9,7 +9,7 @@ import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 class GlobalState {
-  static const version = "2.1.1";
+  static const version = "2.1.2";
 
   static const platform = MethodChannel('cafe.f403.ascent/main');
   static Rx<String> currentRoute = "/home".obs;

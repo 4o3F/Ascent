@@ -55,7 +55,8 @@
       "connecting": "Wireless debug connecting, please enter port by clicking the button",
       "waiting": "Waiting for link",
       "success": "Success, please return to Ascent",
-      "fail": "Failed, please check port\n"
+      "fail": "Failed, please check port\n",
+      "repair": "Cert invalid, please redo pairing"
     },
     "notification_reply_button": "Enter data here",
     "link_action": {

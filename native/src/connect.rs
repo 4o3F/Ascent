@@ -126,7 +126,7 @@ pub async fn connect(port: String, data_folder: String) -> Result<String> {
 
     let method = boring::ssl::SslMethod::tls();
     let mut connector = boring::ssl::SslConnector::builder(method).unwrap();
-    connector.set_verify(boring::ssl::SslVerifyMode::NONE);
+    connector.set_verify(boring::ssl::SslVerifyMode::PEER);
     connector.set_certificate(x509.clone().unwrap().as_ref()).unwrap();
     connector.set_private_key(pkey.clone().unwrap().as_ref()).unwrap();
     connector.set_options(boring::ssl::SslOptions::NO_TLSV1);
@@ -138,13 +138,24 @@ pub async fn connect(port: String, data_folder: String) -> Result<String> {
     let mut config = connector.build().configure().unwrap();
     //config.set_verify_hostname(false);
     config.set_use_server_name_indication(false);
-    //config.set_verify_callback(boring::ssl::SslVerifyMode::PEER, |_, _| true);
+    config.set_verify_callback(boring::ssl::SslVerifyMode::PEER, |_, _| {
+        return true;
+    });
     let mut stream = tokio_boring::connect(config, host, stream).await.with_context(|| format!("Open TLS stream"))?;
     debug!("TLS Handshake success");
     // Read CNXN
     {
         let mut message_raw = vec![0u8; ADB_HEADER_LENGTH];
-        stream.read_exact(message_raw.as_mut_slice()).await.with_context(|| format!("Read CNXN header"))?;
+        match stream.read_exact(message_raw.as_mut_slice()).await.with_context(|| format!("Read CNXN header")) {
+            Ok(_) => {}
+            Err(e) => {
+                debug!("Read CNXN header failed: {:?}", e.source().unwrap().to_string());
+                if e.source().unwrap().to_string().contains("SSLV3_ALERT_CERTIFICATE_UNKNOWN") {
+                    return Err(anyhow!("error.pair_cert_invalid"));
+                }
+                return Err(anyhow!("Read CNXN header failed \n {}", e.root_cause()));
+            }
+        }
         let mut header = bytebuffer::ByteBuffer::from_vec(message_raw); // CNXN header
         header.resize(ADB_HEADER_LENGTH);
         header.set_endian(bytebuffer::Endian::LittleEndian);

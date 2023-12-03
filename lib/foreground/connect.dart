@@ -1,4 +1,4 @@
-import 'dart:isolate';
+import 'dart:io';
 
 import 'package:ascent/ffi.dart';
 import 'package:ascent/global_state.dart';
@@ -88,20 +88,31 @@ class ConnectTaskHandler extends TaskHandler {
       } else {
         errorMessage = error.toString();
       }
-      sendPort?.send("error#$errorMessage");
-      return "";
+      if (errorMessage.contains("error.pair_cert_invalid")) {
+        sendPort?.send("error.pair_cert_invalid#$errorMessage");
+        return "error.pair_cert_invalid";
+      } else {
+        sendPort?.send("error.other#$errorMessage");
+        return "error.other";
+      }
     }).then((value) {
-      if (value.isNotEmpty) {
+      if (!value.startsWith("error")) {
         link = value;
         FlutterForegroundTask.updateService(
           notificationText: tr('connect.notification_description.success'),
         );
         sendPort?.send(link);
       } else {
-        FlutterForegroundTask.updateService(
-          notificationText:
-              tr('connect.notification_description.fail') + errorMessage,
-        );
+        if (value == "error.pair_cert_invalid") {
+          FlutterForegroundTask.updateService(
+            notificationText: tr('connect.notification_description.repair'),
+          );
+        } else {
+          FlutterForegroundTask.updateService(
+            notificationText:
+                tr('connect.notification_description.fail') + errorMessage,
+          );
+        }
       }
     });
   }
@@ -163,9 +174,9 @@ class ConnectForegroundTask {
     }
     receivePort.listen((dynamic data) {
       if (data is String) {
-        if (data.startsWith("error#")) {
+        if (data.startsWith("error.other#")) {
           logic.inProgress.value = false;
-          String errorMessage = data.replaceFirst("error#", "");
+          String errorMessage = data.replaceFirst("error.other#", "");
           Get.dialog(BrnScrollableTextDialog(
             title: tr("error.title"),
             contentText: errorMessage,
@@ -179,6 +190,11 @@ class ConnectForegroundTask {
               );
             },
           ));
+        } else if (data.startsWith("error.pair_cert_invalid#")) {
+          logic.inProgress.value = false;
+          File("${GlobalState.dataDir.path}/cert.pem").deleteSync();
+          File("${GlobalState.dataDir.path}/pkey.pem").deleteSync();
+          GlobalState.hasCert.value = false;
         } else {
           RegExp regex = RegExp(r'https://(.+)');
           Match? match = regex.firstMatch(data);

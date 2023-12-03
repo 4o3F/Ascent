@@ -55,7 +55,8 @@
       "connecting": "连接无线调试中,请点击按钮输入无线调试端口",
       "waiting": "等待链接中",
       "success": "获取成功，请返回Ascent主程序",
-      "fail": "失败，请检查端口\n"
+      "fail": "失败，请检查端口\n",
+      "repair": "证书失效，请重新配对"
     },
     "notification_reply_button": "点此输入数据",
     "link_action": {
