@@ -42,6 +42,8 @@ Future<void> checkUpdate() async {
   http.Response response = await http.get(Uri.parse(url));
   Map parsed = json.decode(response.body);
   String version = parsed['version'];
+  String discord = parsed['discord'];
+  GlobalState.discord = discord;
   Version newVersion = Version.parse(version);
   Version currentVersion = Version.parse(GlobalState.version);
   if (newVersion > currentVersion) {
@@ -68,8 +70,6 @@ Future<void> checkUpdate() async {
     dialog.show();
   }
 }
-
-Future<void> doUpdate(String url) async {}
 
 class AscentApp extends StatelessWidget {
   const AscentApp({super.key});

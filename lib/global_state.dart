@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 class GlobalState {
   static const version = "2.1.3";
+  static String discord = "https://discord.gg/6v6HEUaRWk";
 
   static const platform = MethodChannel('cafe.f403.ascent/main');
   static Rx<String> currentRoute = "/home".obs;

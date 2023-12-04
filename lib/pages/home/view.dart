@@ -114,7 +114,7 @@ class HomePage extends StatelessWidget {
                   titleColor: Colors.white,
                   title: tr('home.support'),
                   onTap: () async {
-                    final Uri url = Uri.parse("https://discord.gg/AhrW25ksQT");
+                    final Uri url = Uri.parse(GlobalState.discord);
                     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
                       await launchUrl(url);
                     }
