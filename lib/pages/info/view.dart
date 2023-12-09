@@ -1,3 +1,4 @@
+import 'package:ascent/global_state.dart';
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -53,6 +54,13 @@ class InfoPage extends StatelessWidget {
           const Text(
             "https://github.com/4o3F/Ascent",
             style: TextStyle(fontSize: 15, color: Colors.indigoAccent),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Text(
+            "Version: ${GlobalState.version}",
+            style: TextStyle(fontSize: 15, color: Colors.orangeAccent),
           ),
           const SizedBox(
             height: 20,

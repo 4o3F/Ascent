@@ -1,4 +1,5 @@
 import 'package:ascent/foreground/connect.dart';
+import 'package:ascent/foreground/rootConnect.dart';
 import 'package:ascent/global_state.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,10 +13,17 @@ class ConnectPage extends StatelessWidget {
 
   final logic = Get.put(ConnectLogic());
   ConnectForegroundTask connectForegroundTask = ConnectForegroundTask();
+  RootConnectForegroundTask rootConnectForegroundTask =
+      RootConnectForegroundTask();
 
   Future<void> doConnect() async {
     logic.inProgress.value = true;
-    bool result = await connectForegroundTask.startConnectForegroundTask(logic);
+    await connectForegroundTask.startConnectForegroundTask(logic);
+  }
+
+  Future<void> doRootConnect() async {
+    logic.inProgress.value = true;
+    await rootConnectForegroundTask.startRootConnectForegroundTask(logic);
   }
 
   @override
@@ -36,15 +44,32 @@ class ConnectPage extends StatelessWidget {
                 ).tr(),
                 const SizedBox(height: 20),
                 BrnBigMainButton(
-                  title: logic.inProgress.value ? tr('connect.guide.in_progress') : tr('connect.guide.connect'),
+                  title: logic.inProgress.value
+                      ? tr('connect.guide.in_progress')
+                      : tr('connect.guide.connect'),
                   bgColor: Colors.blueAccent.withOpacity(0.8),
-                  isEnable: (logic.developerOptionEnabled.value &&
-                      GlobalState.hasCert.value && !logic.inProgress.value),
+                  isEnable: ((logic.developerOptionEnabled.value &&
+                          GlobalState.hasCert.value) &&
+                      !logic.inProgress.value),
                   onTap: () {
                     doConnect();
                   },
                 ),
                 const SizedBox(height: 20),
+                Visibility(
+                  visible: GlobalState.rootEnabled.value,
+                  child: BrnBigMainButton(
+                    title: logic.inProgress.value
+                        ? tr('connect.guide.in_progress')
+                        : tr('connect.guide.root_connect'),
+                    bgColor: Colors.blueAccent.withOpacity(0.8),
+                    isEnable: (GlobalState.rootEnabled.value &&
+                        !logic.inProgress.value),
+                    onTap: () {
+                      doRootConnect();
+                    },
+                  ),
+                )
               ],
             ),
           )),

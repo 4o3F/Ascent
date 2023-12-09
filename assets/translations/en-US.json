@@ -14,6 +14,11 @@
       "enabled": "Enabled",
       "disabled": "Disabled"
     },
+    "root": {
+      "name": "Get Link",
+      "enabled": "Root Enabled!",
+      "direct_connect": "You can directly tap connect"
+    },
     "pairing": {
       "name": "Pair",
       "status": "ADB Pair Status: ",
@@ -49,7 +54,8 @@
     "guide": {
       "prepare_guide": "Open game after connect\nYou'll be notified on success",
       "connect": "Connect!",
-      "in_progress": "Waiting..."
+      "in_progress": "Waiting...",
+      "root_connect": "Root Connect!"
     },
     "notification_title": "Ascent Connect",
     "notification_description": {
@@ -66,12 +72,19 @@
       "copied": "Copied"
     }
   },
+  "root_connect": {
+    "notification_title": "Ascent Root Connect",
+    "notification_description": {
+      "waiting": "Waiting for link",
+      "success": "Success, please return to Ascent"
+    }
+  },
   "update": {
     "title": "New version ",
     "ok": "Update",
     "cancel": "Not now"
   },
-  "error" : {
+  "error": {
     "title": "Please contact support",
     "copy": "Copy",
     "copied": "Copied"

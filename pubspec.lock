@@ -678,6 +678,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.4"
+  root:
+    dependency: "direct main"
+    description:
+      name: root
+      sha256: "2134e95097f08e15bef83fc6d80dd072674177626f51f25bd41f6f7ede1433bb"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.4"
   shared_preferences:
     dependency: transitive
     description:

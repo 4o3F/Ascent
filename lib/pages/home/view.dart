@@ -17,8 +17,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GlobalState.platform.invokeMethod('getDeveloperOptionEnabled').then(
-            (value) =>
-        logic.developerOptionEnabled.value = (value.toString() == "true"));
+        (value) =>
+            logic.developerOptionEnabled.value = (value.toString() == "true"));
 
     return Material(
       child: Padding(
@@ -73,6 +73,44 @@ class HomePage extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
+                Visibility(
+                    visible: GlobalState.rootEnabled.value,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "home.root.enabled",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.lightGreenAccent,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ).tr(),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "home.root.direct_connect",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.deepOrangeAccent,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ).tr(),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    )),
                 BrnBigMainButton(
                   title: tr('home.pairing.name'),
                   bgColor: Colors.cyan.withOpacity(0.8),
@@ -88,8 +126,9 @@ class HomePage extends StatelessWidget {
                 BrnBigMainButton(
                   title: tr('home.connect.name'),
                   bgColor: Colors.indigoAccent.withOpacity(0.8),
-                  isEnable:
-                  (logic.developerOptionEnabled.value && GlobalState.hasCert.value),
+                  isEnable: ((logic.developerOptionEnabled.value &&
+                          GlobalState.hasCert.value) ||
+                      GlobalState.rootEnabled.value),
                   onTap: () {
                     Get.toNamed("/connect");
                   },
@@ -101,7 +140,8 @@ class HomePage extends StatelessWidget {
                   title: tr('home.star'),
                   onTap: () async {
                     final Uri url = Uri.parse("https://github.com/4o3F");
-                    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                    if (!await launchUrl(url,
+                        mode: LaunchMode.externalApplication)) {
                       await launchUrl(url);
                     }
                   },
@@ -115,7 +155,8 @@ class HomePage extends StatelessWidget {
                   title: tr('home.support'),
                   onTap: () async {
                     final Uri url = Uri.parse(GlobalState.discord);
-                    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                    if (!await launchUrl(url,
+                        mode: LaunchMode.externalApplication)) {
                       await launchUrl(url);
                     }
                   },

@@ -14,6 +14,11 @@
       "enabled": "已启用",
       "disabled": "未启用"
     },
+    "root": {
+      "name": "获取链接",
+      "enabled": "Root已开启!",
+      "direct_connect": "你可以直接点击连接"
+    },
     "pairing": {
       "name": "配对",
       "status": "无线调试配对状态: ",
@@ -48,8 +53,9 @@
   "connect": {
     "guide": {
       "prepare_guide": "连接后请直接打开游戏\n成功获得链接后将在通知中提示",
-      "connect": "开始连接...",
-      "in_progress": "等待中..."
+      "connect": "开始连接!",
+      "in_progress": "等待中...",
+      "root_connect": "开始Root连接!"
     },
     "notification_title": "Ascent连接",
     "notification_description": {
@@ -64,6 +70,13 @@
       "title": "抽卡链接",
       "copy_button": "复制",
       "copied": "已复制"
+    }
+  },
+  "root_connect": {
+    "notification_title": "Ascent Root连接",
+    "notification_description": {
+      "waiting": "等待链接中",
+      "success": "获取成功，请返回Ascent主程序"
     }
   },
   "update": {
