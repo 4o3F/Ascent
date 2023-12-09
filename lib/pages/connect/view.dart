@@ -1,5 +1,5 @@
 import 'package:ascent/foreground/connect.dart';
-import 'package:ascent/foreground/rootConnect.dart';
+import 'package:ascent/foreground/root_connect.dart';
 import 'package:ascent/global_state.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';

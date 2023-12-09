@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:ascent/global_state.dart';
 import 'package:ascent/pages/connect/logic.dart';
 import 'package:bruno/bruno.dart';
@@ -18,8 +16,6 @@ void startCallback() {
   // The setTaskHandler function must be called to handle the task in the background.
   FlutterForegroundTask.setTaskHandler(RootConnectTaskHandler());
 }
-
-enum ConnectStatus { WAIT_PORT, WAIT_LINK }
 
 class RootConnectTaskHandler extends TaskHandler {
   String link = "";
@@ -58,16 +54,13 @@ class RootConnectTaskHandler extends TaskHandler {
     while (link.isEmpty) {
       String? data = await Root.exec(
           cmd:
-              "logcat -d | grep -E \'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\\.com|hoyoverse\\.com)\' | grep -i \'gacha\' | tail -n 1");
+              "logcat -d | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs).(mihoyo\\.com|hoyoverse\\.com)' | grep -i 'gacha' | tail -n 1");
       if (data != null) {
         link = data;
         sendPort?.send(link);
       }
       Future.delayed(const Duration(milliseconds: 500));
     }
-    // await Root.exec(cmd: "logcat 403f.cafeakjsbdkajs");
-
-    String errorMessage = "";
   }
 
   @override
