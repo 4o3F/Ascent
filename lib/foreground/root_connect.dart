@@ -48,7 +48,7 @@ class RootConnectTaskHandler extends TaskHandler {
 
   Future<void> waitLink() async {
     FlutterForegroundTask.updateService(
-      notificationText: tr('connect.notification_description.waiting'),
+      notificationText: tr('root_connect.notification_description.waiting'),
     );
 
     while (link.isEmpty) {
