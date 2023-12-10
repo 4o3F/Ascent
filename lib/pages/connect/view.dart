@@ -4,6 +4,7 @@ import 'package:ascent/global_state.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
 
 import 'logic.dart';
@@ -26,11 +27,20 @@ class ConnectPage extends StatelessWidget {
     await rootConnectForegroundTask.startRootConnectForegroundTask(logic);
   }
 
+  Future<void> doResetProcess() async {
+    logic.inProgress.value = false;
+    logic.link.value = "";
+    await FlutterForegroundTask.stopService();
+  }
+
   @override
   Widget build(BuildContext context) {
     GlobalState.platform.invokeMethod('getDeveloperOptionEnabled').then(
         (value) =>
             logic.developerOptionEnabled.value = (value.toString() == "true"));
+    FlutterForegroundTask.isRunningService.then((value) => {
+          if (!value) {logic.inProgress.value = false, logic.link.value = ""}
+        });
     return Material(
       child: Padding(
           padding: const EdgeInsets.only(left: 20, right: 20),
@@ -53,6 +63,14 @@ class ConnectPage extends StatelessWidget {
                       !logic.inProgress.value),
                   onTap: () {
                     doConnect();
+                  },
+                ),
+                const SizedBox(height: 20),
+                BrnBigMainButton(
+                  title: tr('connect.guide.reset'),
+                  bgColor: Colors.orangeAccent.withOpacity(0.8),
+                  onTap: () {
+                    doResetProcess();
                   },
                 ),
                 const SizedBox(height: 20),

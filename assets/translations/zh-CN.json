@@ -55,6 +55,7 @@
       "prepare_guide": "连接后请直接打开游戏\n成功获得链接后将在通知中提示",
       "connect": "开始连接!",
       "in_progress": "等待中...",
+      "reset": "重置状态",
       "root_connect": "开始Root连接!"
     },
     "notification_title": "Ascent连接",

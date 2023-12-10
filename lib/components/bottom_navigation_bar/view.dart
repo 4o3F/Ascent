@@ -3,8 +3,8 @@ import 'package:ascent/routes.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart' as easy_localization;
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
-
 
 class BottomNavigationBarComponent extends StatelessWidget {
   BottomNavigationBarComponent({Key? key}) : super(key: key);
@@ -17,6 +17,9 @@ class BottomNavigationBarComponent extends StatelessWidget {
               currentIndex: Routes.route2index(GlobalState.currentRoute.value),
               onTap: (index) {
                 GlobalState.currentRoute.value = Routes.index2route(index);
+                FlutterForegroundTask.isRunningService.then((value) => {
+                      if (value) {FlutterForegroundTask.stopService()}
+                    });
                 Get.toNamed(GlobalState.currentRoute.value);
               },
               fixedColor: Colors.blueAccent,

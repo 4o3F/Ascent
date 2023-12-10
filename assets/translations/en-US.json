@@ -55,6 +55,7 @@
       "prepare_guide": "Open game after connect\nYou'll be notified on success",
       "connect": "Connect!",
       "in_progress": "Waiting...",
+      "reset": "Reset Process",
       "root_connect": "Root Connect!"
     },
     "notification_title": "Ascent Connect",
