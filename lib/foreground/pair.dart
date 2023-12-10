@@ -28,7 +28,7 @@ class PairTaskHandler extends TaskHandler {
   PairStatus status = PairStatus.WAIT_PORT;
   String port = "";
   String code = "";
-  final MDnsClient mDnsClient = MDnsClient();
+  static late MDnsClient mDnsClient;
   SendPort? sendPort;
 
   Future<void> loadTranslations() async {
@@ -118,7 +118,9 @@ class PairTaskHandler extends TaskHandler {
   }
 
   @override
-  void onDestroy(DateTime timestamp, SendPort? sendPort) {}
+  void onDestroy(DateTime timestamp, SendPort? sendPort) {
+    mDnsClient.stop();
+  }
 
   @override
   void onRepeatEvent(DateTime timestamp, SendPort? sendPort) {}
@@ -127,6 +129,11 @@ class PairTaskHandler extends TaskHandler {
   void onStart(DateTime timestamp, SendPort? sendPort) {
     loadTranslations();
     GlobalState.init();
+    mDnsClient = MDnsClient(rawDatagramSocketFactory: (dynamic host, int port,
+        {bool reuseAddress = true, bool reusePort = true, int ttl = 1}) {
+      return RawDatagramSocket.bind(host, port,
+          reuseAddress: true, reusePort: false, ttl: ttl);
+    });
     // Start mdns listener
     startMDNS();
     this.sendPort = sendPort;

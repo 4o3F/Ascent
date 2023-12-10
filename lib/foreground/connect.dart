@@ -25,7 +25,7 @@ enum ConnectStatus { WAIT_PORT, WAIT_LINK }
 class ConnectTaskHandler extends TaskHandler {
   String port = "";
   String link = "";
-  final MDnsClient mDnsClient = MDnsClient();
+  static late MDnsClient mDnsClient;
   SendPort? sendPort;
   ConnectStatus status = ConnectStatus.WAIT_PORT;
 
@@ -118,7 +118,9 @@ class ConnectTaskHandler extends TaskHandler {
   }
 
   @override
-  void onDestroy(DateTime timestamp, SendPort? sendPort) {}
+  void onDestroy(DateTime timestamp, SendPort? sendPort) {
+    mDnsClient.stop();
+  }
 
   @override
   void onRepeatEvent(DateTime timestamp, SendPort? sendPort) {}
@@ -127,6 +129,11 @@ class ConnectTaskHandler extends TaskHandler {
   void onStart(DateTime timestamp, SendPort? sendPort) {
     loadTranslations();
     GlobalState.init();
+    mDnsClient = MDnsClient(rawDatagramSocketFactory: (dynamic host, int port,
+        {bool reuseAddress = true, bool reusePort = true, int ttl = 1}) {
+      return RawDatagramSocket.bind(host, port,
+          reuseAddress: true, reusePort: false, ttl: ttl);
+    });
     startMDNS();
     this.sendPort = sendPort;
   }
