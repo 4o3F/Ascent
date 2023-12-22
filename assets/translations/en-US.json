@@ -60,8 +60,8 @@
     },
     "notification_title": "Ascent Connect",
     "notification_description": {
-      "connecting": "Wireless debug connecting, please enter port by clicking the button",
-      "waiting": "Waiting for link",
+      "connecting": "Port undetected, enter 5 digit port number behind IP address",
+      "waiting": "Please open game, waiting for link",
       "success": "Success, please return to Ascent",
       "fail": "Failed, please check port\n",
       "repair": "Cert invalid, please redo pairing"

@@ -141,6 +141,12 @@ class ConnectTaskHandler extends TaskHandler {
   @override
   void onNotificationReplied(String id, String reply) {
     if (status == ConnectStatus.WAIT_PORT) {
+      if (reply.length > 5) {
+        FlutterForegroundTask.updateService(
+          notificationText: tr('connect.notification_description.fail'),
+        );
+        return;
+      }
       if (int.tryParse(reply) != null) {
         port = reply;
         status = ConnectStatus.WAIT_LINK;
