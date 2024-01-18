@@ -3,3 +3,4 @@
 .idea/
 build/
 .dart_tool/
+rust_builder

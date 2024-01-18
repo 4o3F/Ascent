@@ -150,8 +150,8 @@ dependencies = [
 
 [[package]]
 name = "boring"
-version = "4.1.0"
-source = "git+https://github.com/4o3F/boring.git?branch=cmake-msvc#29fb5c05b686a5ec8b6d92ef7374741ee828e4b8"
+version = "4.3.0"
+source = "git+https://github.com/4o3F/boring.git#bcb550ac17d1187351b76d06a1c325e4d9e40605"
 dependencies = [
  "bitflags 2.4.1",
  "boring-sys",
@@ -162,8 +162,8 @@ dependencies = [
 
 [[package]]
 name = "boring-sys"
-version = "4.1.0"
-source = "git+https://github.com/4o3F/boring.git?branch=cmake-msvc#29fb5c05b686a5ec8b6d92ef7374741ee828e4b8"
+version = "4.3.0"
+source = "git+https://github.com/4o3F/boring.git#bcb550ac17d1187351b76d06a1c325e4d9e40605"
 dependencies = [
  "bindgen",
  "cmake",
@@ -915,8 +915,8 @@ dependencies = [
 
 [[package]]
 name = "tokio-boring"
-version = "4.1.0"
-source = "git+https://github.com/4o3F/boring.git?branch=cmake-msvc#29fb5c05b686a5ec8b6d92ef7374741ee828e4b8"
+version = "4.3.0"
+source = "git+https://github.com/4o3F/boring.git#bcb550ac17d1187351b76d06a1c325e4d9e40605"
 dependencies = [
  "boring",
  "boring-sys",
