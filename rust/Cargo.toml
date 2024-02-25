@@ -1,13 +1,11 @@
 [package]
-name = "native"
+name = "rust_lib_ascent"
 version = "2.1.4"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-flutter_rust_bridge = "2.0.0-dev.20"
-anyhow = { version = "1.0.75", features = ["backtrace"] }
+flutter_rust_bridge = "=2.0.0-dev.24"
+anyhow = { version = "1.0.75" }
 bytebuffer = "2.2.0"
 hex = "0.4.3"
 hkdf = "0.12.3"
@@ -20,8 +18,9 @@ log = "0.4.20"
 regex = { version = "1.10.2", features = [] }
 android_logger = "0.13.3"
 
+
 [lib]
-crate-type = ["staticlib", "cdylib"]
+crate-type = ["cdylib", "staticlib"]
 
 [profile.release]
 lto = true

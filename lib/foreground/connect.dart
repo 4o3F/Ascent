@@ -1,6 +1,7 @@
 import 'dart:io';
+import 'dart:isolate';
 
-import 'package:ascent/ffi.dart';
+import 'package:ascent/native/api.dart' as api;
 import 'package:ascent/global_state.dart';
 import 'package:ascent/pages/connect/logic.dart';
 import 'package:bruno/bruno.dart';
@@ -83,8 +84,8 @@ class ConnectTaskHandler extends TaskHandler {
     api
         .doConnect(port: port, dataFolder: GlobalState.dataDir.path)
         .catchError((error) {
-      if (error is FrbAnyhowException) {
-        errorMessage = error.anyhow;
+      if (error is AnyhowException) {
+        errorMessage = error.message;
       } else {
         errorMessage = error.toString();
       }

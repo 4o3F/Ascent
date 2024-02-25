@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:ascent/global_state.dart';
 import 'package:ascent/pages/connect/logic.dart';
 import 'package:bruno/bruno.dart';

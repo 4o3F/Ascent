@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:ascent/ffi.dart';
+import 'package:ascent/native/api.dart' as api;
 import 'package:ascent/global_state.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -91,8 +91,8 @@ class PairTaskHandler extends TaskHandler {
     api
         .doPair(port: port, code: code, dataFolder: GlobalState.dataDir.path)
         .catchError((error) {
-      if (error is FrbAnyhowException) {
-        errorMessage = error.anyhow;
+      if (error is AnyhowException) {
+        errorMessage = error.message;
       } else {
         errorMessage = error.toString();
       }
