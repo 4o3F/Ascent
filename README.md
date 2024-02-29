@@ -1,16 +1,33 @@
 # Ascent
-> WARNING: This application is still under development, please raise an issue for any problem you've encountered
+A tool for retrieving wish link from Mihoyo games on Android with single device, no Root or PC required.
 
-A tool for retrieving wish link from Mihoyo games on Android with a single device
+**Please give me a star if you like this tool**
 
-By compling adb to ARM and changing some of it's functions to make it runnable on Android, this application enabled you to directly pair and connect your devices's wireless debugging.
+Thanks to @Mirai0009 for the excellent [guide](https://gist.github.com/Mirai0009/8615e52e09083de9c0ea2dc00dc62ea8), if you still have problems, please raise a issue or join our [Discord](https://discord.com/invite/6v6HEUaRWk) for support.
 
-While this application focus on being a tool for Mihoyo game wish link retrieve, the same process can also be useful for other Android applications that need adb shell access to start, such as Ice Box,etc. 
+Supported:
 
-Fork and PR are welcomed ;)
++ Xiaomi
++ Honor
++ Samsung
++ Vivo/iQOO (Only Android 14, other versions need interaction with customer service)
++ ....mostly all brands
 
-### Docs
-#### Generate dart binding for rust code
-```shell
-flutter_rust_bridge_codegen -r native/src/api.rs -d lib/native/bridge_generated.dart --llvm-path=D:\SOFTWARE\LLVM
-```
+Not supported:
+
++ ~~Vivo/iQOO~~
++ ~~Samsung~~(Fixed by V2)
++ Huawei/Honor(No wireless debug available, requires PC to enable)
+
+Ascent mainly simulates the ADB wireless debug pairing and connect protocol, thus filtering out the wish history URL from the WebView log of Unity. For tech details, please refer to [my blog post](https://403f.cafe/p/adb-tls-protocol/).
+
+
+
+## Build
+
+1. Make sure you have Flutter and Rust installed
+2. Simply run `flutter build apk`, it should auto configure everything
+
+
+
+[![Stargazers over time](https://starchart.cc/4o3F/Ascent.svg?variant=adaptive)](https://starchart.cc/4o3F/Ascent)
