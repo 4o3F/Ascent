@@ -1,4 +1,6 @@
 # Ascent
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/4o3F/Ascent/total)
+![Discord](https://img.shields.io/discord/1180781478951530537?color=5865F2&label=40EF's Cafe&logo=discord&logoColor=white")
 A tool for retrieving wish link from Mihoyo games on Android with single device, no Root or PC required.
 
 **Please give me a star if you like this tool**
