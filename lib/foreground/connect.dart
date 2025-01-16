@@ -28,7 +28,6 @@ class ConnectTaskHandler extends TaskHandler {
   String port = "";
   String link = "";
   static late MDnsClient mDnsClient;
-  SendPort? sendPort;
   ConnectStatus status = ConnectStatus.WAIT_PORT;
 
   Future<void> loadTranslations() async {
@@ -92,10 +91,10 @@ class ConnectTaskHandler extends TaskHandler {
         errorMessage = error.toString();
       }
       if (errorMessage.contains("error.pair_cert_invalid")) {
-        sendPort?.send("error.pair_cert_invalid#$errorMessage");
+        FlutterForegroundTask.sendDataToMain("error.pair_cert_invalid#$errorMessage");
         return "error.pair_cert_invalid";
       } else {
-        sendPort?.send("error.other#$errorMessage");
+        FlutterForegroundTask.sendDataToMain("error.other#$errorMessage");
         return "error.other";
       }
     }).then((value) {
@@ -104,7 +103,7 @@ class ConnectTaskHandler extends TaskHandler {
         FlutterForegroundTask.updateService(
           notificationText: tr('connect.notification_description.success'),
         );
-        sendPort?.send(link);
+        FlutterForegroundTask.sendDataToMain(link);
       } else {
         if (value == "error.pair_cert_invalid") {
           FlutterForegroundTask.updateService(
@@ -121,15 +120,15 @@ class ConnectTaskHandler extends TaskHandler {
   }
 
   @override
-  void onDestroy(DateTime timestamp, SendPort? sendPort) {
+  Future<void> onDestroy(DateTime timestamp) async {
     mDnsClient.stop();
   }
 
   @override
-  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) {}
+  void onRepeatEvent(DateTime timestamp) {}
 
   @override
-  void onStart(DateTime timestamp, SendPort? sendPort) {
+  Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     loadTranslations();
     GlobalState.init();
     mDnsClient = MDnsClient(rawDatagramSocketFactory: (dynamic host, int port,
@@ -138,7 +137,6 @@ class ConnectTaskHandler extends TaskHandler {
           reuseAddress: true, reusePort: false, ttl: ttl);
     });
     startMDNS();
-    this.sendPort = sendPort;
   }
 
   @override
@@ -184,11 +182,7 @@ class ConnectForegroundTask {
     if (await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.stopService();
     }
-    final ReceivePort? receivePort = FlutterForegroundTask.receivePort;
-    if (receivePort == null) {
-      return false;
-    }
-    receivePort.listen((dynamic data) {
+    FlutterForegroundTask.addTaskDataCallback((dynamic data) {
       if (data is String) {
         if (data.startsWith("error.other#")) {
           logic.inProgress.value = false;
@@ -245,30 +239,29 @@ class ConnectForegroundTask {
         channelName: 'Ascent Foreground Service',
         channelImportance: NotificationChannelImportance.HIGH,
         priority: NotificationPriority.HIGH,
-        buttons: [
-          NotificationButton(
-            id: 'replyButton',
-            text: tr("pair.notification_reply_button"),
-            isReply: true,
-          )
-        ],
       ),
       iosNotificationOptions: const IOSNotificationOptions(
         showNotification: false,
         playSound: false,
       ),
-      foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 5000,
-        isOnceEvent: false,
+      foregroundTaskOptions: ForegroundTaskOptions(
         allowWakeLock: true,
         autoRunOnBoot: false,
         allowWifiLock: true,
+        eventAction: ForegroundTaskEventAction.repeat(5000),
       ),
     );
     await FlutterForegroundTask.startService(
       notificationTitle: tr('connect.notification_title'),
       notificationText: tr('connect.notification_description.connecting'),
       callback: startCallback,
+      notificationButtons: [
+        NotificationButton(
+          id: 'replyButton',
+          text: tr("pair.notification_reply_button"),
+          isReply: true,
+        )
+      ],
     );
     return true;
   }

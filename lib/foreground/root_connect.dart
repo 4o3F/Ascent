@@ -20,7 +20,6 @@ void startCallback() {
 
 class RootConnectTaskHandler extends TaskHandler {
   String link = "";
-  SendPort? sendPort;
 
   Future<void> loadTranslations() async {
     //this will only set EasyLocalizationController.savedLocale
@@ -58,23 +57,22 @@ class RootConnectTaskHandler extends TaskHandler {
               "logcat -d | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs|aki-gm-resources-oversea).(mihoyo\\.com|hoyoverse\\.com|aki-game\\.net|aki-game\\.com)' | grep -i 'gacha' | tail -n 1");
       if (data != null) {
         link = data;
-        sendPort?.send(link);
+        FlutterForegroundTask.sendDataToMain(link);
       }
       Future.delayed(const Duration(milliseconds: 500));
     }
   }
 
   @override
-  void onDestroy(DateTime timestamp, SendPort? sendPort) {}
+  Future<void> onDestroy(DateTime timestamp) async {}
 
   @override
-  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) {}
+  void onRepeatEvent(DateTime timestamp) {}
 
   @override
-  void onStart(DateTime timestamp, SendPort? sendPort) {
+  Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     loadTranslations();
     GlobalState.init();
-    this.sendPort = sendPort;
     waitLink();
   }
 }
@@ -104,11 +102,7 @@ class RootConnectForegroundTask {
     if (await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.stopService();
     }
-    final ReceivePort? receivePort = FlutterForegroundTask.receivePort;
-    if (receivePort == null) {
-      return false;
-    }
-    receivePort.listen((dynamic data) {
+    FlutterForegroundTask.addTaskDataCallback((dynamic data) {
       if (data is String) {
         if (data.startsWith("error.other#")) {
           logic.inProgress.value = false;
@@ -165,9 +159,8 @@ class RootConnectForegroundTask {
         showNotification: false,
         playSound: false,
       ),
-      foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 5000,
-        isOnceEvent: false,
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.repeat(5000),
         allowWakeLock: true,
         autoRunOnBoot: false,
         allowWifiLock: true,

@@ -169,7 +169,7 @@ pub async fn connect(port: String, data_folder: String) -> Result<String> {
     }
     // Send OPEN
     {
-        let shell_cmd = "shell:logcat -b all -c && logcat | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs|public-operation-hk4e|aki-gm-resources-oversea).(mihoyo\\.com|hoyoverse\\.com|aki-game\\.net|aki-game\\.com)' | grep -i 'gacha'\u{0}";
+        let shell_cmd = "shell:setprop log.tag I && logcat -b all -c && logcat | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs|public-operation-hk4e|aki-gm-resources-oversea).(mihoyo\\.com|hoyoverse\\.com|aki-game\\.net|aki-game\\.com)' | grep -i 'gacha'\u{0}";
         let open_message = generate_message(A_OPEN, 233, 0, Vec::from(shell_cmd.as_bytes()));
         stream.write_all(open_message.as_bytes()).await.with_context(|| format!("Send OPEN"))?;
         debug!("OPEN Sent");

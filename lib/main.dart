@@ -27,6 +27,8 @@ void main() async {
   await RustLib.init();
   // Set some final global data
   GlobalState.init();
+
+  FlutterForegroundTask.initCommunicationPort();
   runApp(
     WithForegroundTask(
       child: EasyLocalization(

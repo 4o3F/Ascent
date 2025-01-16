@@ -30,7 +30,6 @@ class PairTaskHandler extends TaskHandler {
   String port = "";
   String code = "";
   static late MDnsClient mDnsClient;
-  SendPort? sendPort;
 
   Future<void> loadTranslations() async {
     //this will only set EasyLocalizationController.savedLocale
@@ -98,7 +97,7 @@ class PairTaskHandler extends TaskHandler {
       } else {
         errorMessage = error.toString();
       }
-      sendPort?.send("error#$errorMessage");
+      FlutterForegroundTask.sendDataToMain("error#$errorMessage");
       return false;
     }).then((value) {
       if (value) {
@@ -106,7 +105,7 @@ class PairTaskHandler extends TaskHandler {
           notificationTitle: tr('pair.notification_title'),
           notificationText: tr('pair.notification_description.pair_success'),
         );
-        sendPort?.send('pair_complete');
+        FlutterForegroundTask.sendDataToMain('pair_complete');
       } else {
         FlutterForegroundTask.updateService(
           notificationTitle: tr('pair.notification_title'),
@@ -120,15 +119,15 @@ class PairTaskHandler extends TaskHandler {
   }
 
   @override
-  void onDestroy(DateTime timestamp, SendPort? sendPort) {
+  Future<void> onDestroy(DateTime timestamp) async {
     mDnsClient.stop();
   }
 
   @override
-  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) {}
+  void onRepeatEvent(DateTime timestamp) {}
 
   @override
-  void onStart(DateTime timestamp, SendPort? sendPort) {
+  Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     loadTranslations();
     GlobalState.init();
     mDnsClient = MDnsClient(rawDatagramSocketFactory: (dynamic host, int port,
@@ -138,7 +137,6 @@ class PairTaskHandler extends TaskHandler {
     });
     // Start mdns listener
     startMDNS();
-    this.sendPort = sendPort;
   }
 
   @override
@@ -157,6 +155,7 @@ class PairTaskHandler extends TaskHandler {
         break;
     }
   }
+
 }
 
 class PairForegroundTask {
@@ -177,6 +176,33 @@ class PairForegroundTask {
     }
   }
 
+  void pairCallback(Object data) {
+    if (data is String) {
+      if (data == "pair_complete") {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          GlobalState.hasCert.value = true;
+          GlobalState.mixpanel.track("Pair Complete");
+          GlobalState.mixpanel.flush();
+        });
+      } else if (data.startsWith("error#")) {
+        String errorMessage = data.replaceFirst("error#", "");
+        Get.dialog(BrnScrollableTextDialog(
+          title: tr("error.title"),
+          contentText: errorMessage,
+          submitText: tr("error.copy"),
+          submitBgColor: Colors.orangeAccent,
+          onSubmitClick: () {
+            Clipboard.setData(ClipboardData(text: errorMessage));
+            BrnToast.showInCenter(
+              text: tr("error.copied"),
+              context: Get.context!,
+            );
+          },
+        ));
+      }
+    }
+  }
+
   Future<bool> startPairForegroundTask() async {
     GlobalState.mixpanel.track("Pair Begin");
     GlobalState.mixpanel.flush();
@@ -187,58 +213,22 @@ class PairForegroundTask {
       await FlutterForegroundTask.stopService();
     }
 
-    final ReceivePort? receivePort = FlutterForegroundTask.receivePort;
-    if (receivePort == null) {
-      return false;
-    }
-    receivePort.listen((dynamic data) {
-      if (data is String) {
-        if (data == "pair_complete") {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            GlobalState.hasCert.value = true;
-            GlobalState.mixpanel.track("Pair Complete");
-            GlobalState.mixpanel.flush();
-          });
-        } else if (data.startsWith("error#")) {
-          String errorMessage = data.replaceFirst("error#", "");
-          Get.dialog(BrnScrollableTextDialog(
-            title: tr("error.title"),
-            contentText: errorMessage,
-            submitText: tr("error.copy"),
-            submitBgColor: Colors.orangeAccent,
-            onSubmitClick: () {
-              Clipboard.setData(ClipboardData(text: errorMessage));
-              BrnToast.showInCenter(
-                text: tr("error.copied"),
-                context: Get.context!,
-              );
-            },
-          ));
-        }
-      }
-    });
+    FlutterForegroundTask.addTaskDataCallback(pairCallback);
 
     // Init foreground task
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
-          channelId: 'ascent_foreground_service',
-          channelName: 'Ascent Foreground Service',
-          channelImportance: NotificationChannelImportance.HIGH,
-          priority: NotificationPriority.HIGH,
-          buttons: [
-            NotificationButton(
-              id: 'replyButton',
-              text: tr("pair.notification_reply_button"),
-              isReply: true,
-            )
-          ]),
+        channelId: 'ascent_foreground_service',
+        channelName: 'Ascent Foreground Service',
+        channelImportance: NotificationChannelImportance.HIGH,
+        priority: NotificationPriority.HIGH,
+      ),
       iosNotificationOptions: const IOSNotificationOptions(
         showNotification: false,
         playSound: false,
       ),
-      foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 5000,
-        isOnceEvent: false,
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.repeat(5000),
         allowWakeLock: true,
         autoRunOnBoot: false,
         allowWifiLock: true,
@@ -247,10 +237,16 @@ class PairForegroundTask {
 
     // Start task
     await FlutterForegroundTask.startService(
-      notificationTitle: tr('pair.notification_title'),
-      notificationText: tr('pair.notification_description.guide_port'),
-      callback: startCallback,
-    );
+        notificationTitle: tr('pair.notification_title'),
+        notificationText: tr('pair.notification_description.guide_port'),
+        callback: startCallback,
+        notificationButtons: [
+          NotificationButton(
+            id: 'replyButton',
+            text: tr("pair.notification_reply_button"),
+            isReply: true,
+          )
+        ]);
     return true;
   }
 }

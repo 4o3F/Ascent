@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:root/root.dart';
 
 class GlobalState {
-  static const version = "2.1.6";
+  static const version = "2.2.0";
   static String discord = "https://discord.gg/6v6HEUaRWk";
 
   static const platform = MethodChannel('cafe.f403.ascent/main');

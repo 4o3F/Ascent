@@ -38,8 +38,8 @@ class PairPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GlobalState.hasCert.value =
-        File("${GlobalState.dataDir.path}/cert.pem").existsSync();
+    // GlobalState.hasCert.value =
+    //     File("${GlobalState.dataDir.path}/cert.pem").existsSync();
     GlobalState.platform.invokeMethod('getDeveloperOptionEnabled').then(
         (value) =>
             logic.developerOptionEnabled.value = (value.toString() == "true"));
@@ -51,6 +51,7 @@ class PairPage extends StatelessWidget {
             context: context);
       }
     });
+    print("AAAAAAAAAAAAAAAAA GlobalState.hasCert.value: ${GlobalState.hasCert.value}");
     return Material(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),

@@ -1,0 +1,6 @@
+#[env]
+#CC = { value = "D:\\Applications\\LLVM\\bin\\clang-cl.exe", force = true }
+#CMAKE_CXX_COMPILER = { value = "D:\\Applications\\LLVM\\bin\\clang-cl.exe", force = true }
+#CMAKE_C_COMPILER = { value = "D:\\Applications\\LLVM\\bin\\clang-cl.exe", force = true }
+#CMAKE_GENERATOR = { value = "Ninja", force = true }
+#CXX = { value = "D:\\Applications\\LLVM\\bin\\clang-cl.exe", force = true }
