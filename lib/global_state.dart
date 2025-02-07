@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:root/root.dart';
 
 class GlobalState {
-  static const version = "2.2.0";
+  static const version = "2.2.1";
   static String discord = "https://discord.gg/6v6HEUaRWk";
 
   static const platform = MethodChannel('cafe.f403.ascent/main');
@@ -26,6 +26,7 @@ class GlobalState {
   static const List<Locale> supportedLocale = [
     Locale('en', 'US'),
     Locale('zh', 'CN'),
+    Locale('ru', 'RU'),
   ];
 
   static void init() async {

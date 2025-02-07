@@ -1,0 +1,93 @@
+{
+  "title": "Ascent",
+  "navigation": {
+    "home": "Home",
+    "pair": "Pair",
+    "connect": "Connect",
+    "info": "Info"
+  },
+  "home": {
+    "star": "If you like Ascent, Star it ;D",
+    "support": "Get Support",
+    "developer_option": {
+      "status": "Developer Option Status: ",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "root": {
+      "name": "Get Link",
+      "enabled": "Root Enabled!",
+      "direct_connect": "You can directly tap connect"
+    },
+    "pairing": {
+      "name": "Pair",
+      "status": "ADB Pair Status: ",
+      "paired": "Paired",
+      "wait_pairing": "Wait Pairing"
+    },
+    "connect": {
+      "name": "Connect",
+      "status": "ADB Connect Status: ",
+      "connected": "Connected",
+      "wait_connect": "Wait Connecting"
+    }
+  },
+  "pair": {
+    "guide": {
+      "prepare_guide": "Please follow the guide in notification for following ADB pairing process",
+      "pair": "Start Pairing",
+      "reset": "Reset Pair Cert"
+    },
+    "notification_title": "Ascent Pairing",
+    "notification_description": {
+      "guide_port": "Open wireless debugging and click 'Pair device with pairing code'\nEnter the pairing port by clicking the following button",
+      "guide_code": "Please enter the pairing code (6 bit) below the button",
+      "error_init": "Foreground service start failed, please contact developer",
+      "pair_port": "Port: ",
+      "pair_code": "Code: ",
+      "pair_success": "Pairing success, please return to Ascent",
+      "pair_fail": "Pair failed, please check pair code\n"
+    },
+    "notification_reply_button": "Enter data here"
+  },
+  "connect": {
+    "guide": {
+      "prepare_guide": "Open game after connect\nYou'll be notified on success",
+      "connect": "Connect!",
+      "in_progress": "Waiting...",
+      "reset": "Reset Process",
+      "root_connect": "Root Connect!"
+    },
+    "notification_title": "Ascent Connect",
+    "notification_description": {
+      "connecting": "Port undetected, enter 5 digit port number behind IP address",
+      "waiting": "Please open game, waiting for link",
+      "success": "Success, please return to Ascent",
+      "fail": "Failed, please check port\n",
+      "repair": "Cert invalid, please redo pairing"
+    },
+    "notification_reply_button": "Enter data here",
+    "link_action": {
+      "title": "Wish history link",
+      "copy_button": "Copy",
+      "copied": "Copied"
+    }
+  },
+  "root_connect": {
+    "notification_title": "Ascent Root Connect",
+    "notification_description": {
+      "waiting": "Waiting for link",
+      "success": "Success, please return to Ascent"
+    }
+  },
+  "update": {
+    "title": "New version ",
+    "ok": "Update",
+    "cancel": "Not now"
+  },
+  "error": {
+    "title": "Please contact support",
+    "copy": "Copy",
+    "copied": "Copied"
+  }
+}

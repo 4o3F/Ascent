@@ -7,7 +7,8 @@ A tool for retrieving wish link from Mihoyo games on Android with single device,
 
 **Please give me a star if you like this tool**
 
-Thanks to @Mirai0009 for the excellent [guide](https://gist.github.com/Mirai0009/8615e52e09083de9c0ea2dc00dc62ea8), if you still have problems, please raise a issue or join our [Discord](https://discord.com/invite/6v6HEUaRWk) for support.
+Thanks to @Mirai0009 for the excellent [guide](https://gist.github.com/Mirai0009/8615e52e09083de9c0ea2dc00dc62ea8). Thanks Dark_St4lker for Russian translation.  
+If you still have problems, please raise a issue or join our [Discord](https://discord.com/invite/6v6HEUaRWk) for support.
 
 Supported:
 
