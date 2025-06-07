@@ -36,3 +36,5 @@ Ascent mainly simulates the ADB wireless debug pairing and connect protocol, thu
 
 
 [![Stargazers over time](https://starchart.cc/4o3F/Ascent.svg?variant=adaptive)](https://starchart.cc/4o3F/Ascent)
+
+[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
