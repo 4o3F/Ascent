@@ -19,6 +19,11 @@
       "enabled": "Root已开启!",
       "direct_connect": "你可以直接点击连接"
     },
+    "shizuku": {
+      "name": "获取链接",
+      "enabled": "Shizuku已开启!",
+      "direct_connect": "你可以直接点击连接"
+    },
     "pairing": {
       "name": "配对",
       "status": "无线调试配对状态: ",
@@ -56,7 +61,8 @@
       "connect": "开始连接!",
       "in_progress": "请打开游戏,等待中...",
       "reset": "重置状态",
-      "root_connect": "开始Root连接!"
+      "root_connect": "开始Root连接!",
+      "shizuku_connect": "开始Shizuku连接！"
     },
     "notification_title": "Ascent连接",
     "notification_description": {
@@ -80,6 +86,13 @@
       "success": "获取成功，请返回Ascent主程序"
     }
   },
+  "shizuku_connect": {
+    "notification_title": "Ascent Shizuku连接",
+    "notification_description": {
+      "waiting": "等待链接中",
+      "success": "获取成功，请返回Ascent主程序"
+    }
+  },
   "update": {
     "title": "新版本 ",
     "ok": "更新",
@@ -89,5 +102,8 @@
     "title": "请联系技术支持",
     "copy": "复制",
     "copied": "已复制"
+  },
+  "settings": {
+    "disable_auto_detect_port": "关闭端口自动检测"
   }
 }

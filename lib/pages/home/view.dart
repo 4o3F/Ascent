@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:ascent/global_state.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -10,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'logic.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+  HomePage({super.key});
 
   final logic = Get.put(HomeLogic());
 
@@ -111,6 +109,44 @@ class HomePage extends StatelessWidget {
                         ),
                       ],
                     )),
+                Visibility(
+                    visible: GlobalState.shizukuEnabled.value,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "home.shizuku.enabled",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.lightGreenAccent,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ).tr(),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "home.shizuku.direct_connect",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.deepOrangeAccent,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ).tr(),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    )),
                 BrnBigMainButton(
                   title: tr('home.pairing.name'),
                   bgColor: Colors.cyan.withOpacity(0.8),
@@ -128,7 +164,7 @@ class HomePage extends StatelessWidget {
                   bgColor: Colors.indigoAccent.withOpacity(0.8),
                   isEnable: ((logic.developerOptionEnabled.value &&
                           GlobalState.hasCert.value) ||
-                      GlobalState.rootEnabled.value),
+                      GlobalState.rootEnabled.value || GlobalState.shizukuEnabled.value),
                   onTap: () {
                     Get.toNamed("/connect");
                   },

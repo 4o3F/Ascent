@@ -1,25 +1,23 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:ascent/global_state.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
 
 import '../../foreground/pair.dart';
 import 'logic.dart';
 
 class PairPage extends StatelessWidget {
-  PairPage({Key? key}) : super(key: key);
+  PairPage({super.key});
 
   final logic = Get.put(PairLogic());
   PairForegroundTask pairForegroundTask = PairForegroundTask();
 
   Future<void> doPair() async {
-    // TODO: Call out developer option intent
+    // Call out developer option intent
     AndroidIntent intent = const AndroidIntent(
       action: 'android.settings.APPLICATION_DEVELOPMENT_SETTINGS',
     );
@@ -51,7 +49,6 @@ class PairPage extends StatelessWidget {
             context: context);
       }
     });
-    print("AAAAAAAAAAAAAAAAA GlobalState.hasCert.value: ${GlobalState.hasCert.value}");
     return Material(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),

@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:root/root.dart';
+import 'package:shizuku_api/shizuku_api.dart';
 
 class GlobalState {
   static const version = "2.2.1";
@@ -19,9 +20,11 @@ class GlobalState {
   static const String localizationAssetPath = "assets/translations";
   static Rx<bool> hasCert = false.obs;
   static Rx<bool> rootEnabled = false.obs;
+  static Rx<bool> shizukuEnabled = false.obs;
   static late Mixpanel mixpanel;
   static StreamSubscription? intentSubscription;
   static String? locale;
+  static Rx<bool> disableAutoDetectPort = false.obs;
 
   static const List<Locale> supportedLocale = [
     Locale('en', 'US'),
@@ -35,9 +38,19 @@ class GlobalState {
     if (kDebugMode) {
       print("Data directory: ${dataDir.path}");
     }
+
+    disableAutoDetectPort.value =
+        File("${dataDir.path}/disableAutoDetectPort").existsSync();
+
     mixpanel = await Mixpanel.init("1bad86a59f59ee1d395c31b61bf9202a",
         trackAutomaticEvents: true);
 
     rootEnabled.value = await Root.isRooted() ?? false;
+    final _shizukuApiPlugin = ShizukuApi();
+    if ((await _shizukuApiPlugin.pingBinder() ?? false) &&
+        (await _shizukuApiPlugin.checkPermission() ?? false) &&
+        (await _shizukuApiPlugin.requestPermission() ?? false)) {
+      shizukuEnabled.value = true;
+    }
   }
 }

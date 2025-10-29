@@ -1,5 +1,6 @@
 import 'package:ascent/foreground/connect.dart';
 import 'package:ascent/foreground/root_connect.dart';
+import 'package:ascent/foreground/shizuku_connect.dart';
 import 'package:ascent/global_state.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -10,12 +11,13 @@ import 'package:get/get.dart';
 import 'logic.dart';
 
 class ConnectPage extends StatelessWidget {
-  ConnectPage({Key? key}) : super(key: key);
+  ConnectPage({super.key});
 
   final logic = Get.put(ConnectLogic());
   ConnectForegroundTask connectForegroundTask = ConnectForegroundTask();
   RootConnectForegroundTask rootConnectForegroundTask =
       RootConnectForegroundTask();
+  ShizukuConnectForegroundTask shizukuConnectForegroundTask = ShizukuConnectForegroundTask();
 
   Future<void> doConnect() async {
     logic.inProgress.value = true;
@@ -25,6 +27,11 @@ class ConnectPage extends StatelessWidget {
   Future<void> doRootConnect() async {
     logic.inProgress.value = true;
     await rootConnectForegroundTask.startRootConnectForegroundTask(logic);
+  }
+
+  Future<void> doShizukuConnect() async {
+    logic.inProgress.value = true;
+    await shizukuConnectForegroundTask.startShizukuConnectForegroundTask(logic);
   }
 
   Future<void> doResetProcess() async {
@@ -85,6 +92,20 @@ class ConnectPage extends StatelessWidget {
                         !logic.inProgress.value),
                     onTap: () {
                       doRootConnect();
+                    },
+                  ),
+                ),
+                Visibility(
+                  visible: GlobalState.shizukuEnabled.value,
+                  child: BrnBigMainButton(
+                    title: logic.inProgress.value
+                        ? tr('connect.guide.in_progress')
+                        : tr('connect.guide.shizuku_connect'),
+                    bgColor: Colors.blueAccent.withOpacity(0.8),
+                    isEnable: (GlobalState.shizukuEnabled.value &&
+                        !logic.inProgress.value),
+                    onTap: () {
+                      doShizukuConnect();
                     },
                   ),
                 )

@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:ascent/global_state.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'logic.dart';
 
 class InfoPage extends StatelessWidget {
-  InfoPage({Key? key}) : super(key: key);
+  InfoPage({super.key});
 
   final logic = Get.put(InfoLogic());
 
@@ -99,6 +103,28 @@ class InfoPage extends StatelessWidget {
               Text("855857816", style: TextStyle(color: Colors.blueAccent)),
             ],
           ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text("settings.disable_auto_detect_port").tr(),
+              Obx(() => Switch(
+                  value: GlobalState.disableAutoDetectPort.value,
+                  onChanged: (bool value) async {
+                    var dataDir = await getApplicationDocumentsDirectory();
+                    GlobalState.disableAutoDetectPort.value = value;
+                    if (value) {
+                      File("${dataDir.path}/disableAutoDetectPort")
+                          .createSync();
+                    } else {
+                      File("${dataDir.path}/disableAutoDetectPort").deleteSync();
+                    }
+                  }))
+            ],
+          )
         ],
       ),
     ));

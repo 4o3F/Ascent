@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:ascent/global_state.dart';
 import 'package:ascent/pages/connect/logic.dart';
 import 'package:bruno/bruno.dart';
@@ -71,7 +69,7 @@ class RootConnectTaskHandler extends TaskHandler {
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
-    loadTranslations();
+    await loadTranslations();
     GlobalState.init();
     waitLink();
   }
@@ -102,6 +100,7 @@ class RootConnectForegroundTask {
     if (await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.stopService();
     }
+    FlutterForegroundTask.dataCallbacks.clear();
     FlutterForegroundTask.addTaskDataCallback((dynamic data) {
       if (data is String) {
         if (data.startsWith("error.other#")) {
@@ -143,6 +142,7 @@ class RootConnectForegroundTask {
               'Game': logic.link.value.contains('hkrpg') ? 'hkrpg' : 'gs',
             });
             GlobalState.mixpanel.flush();
+            FlutterForegroundTask.stopService();
           }
         }
       }

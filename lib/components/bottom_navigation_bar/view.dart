@@ -7,7 +7,7 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
 
 class BottomNavigationBarComponent extends StatelessWidget {
-  BottomNavigationBarComponent({Key? key}) : super(key: key);
+  const BottomNavigationBarComponent({super.key});
 
   @override
   Widget build(BuildContext context) {

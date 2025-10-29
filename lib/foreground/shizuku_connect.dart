@@ -1,8 +1,4 @@
-import 'dart:io';
-
-import 'package:ascent/native/api/api.dart' as api;
 import 'package:ascent/global_state.dart';
-import 'package:ascent/native/frb_generated.dart';
 import 'package:ascent/pages/connect/logic.dart';
 import 'package:bruno/bruno.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -11,23 +7,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:easy_localization/src/easy_localization_controller.dart';
 import 'package:easy_localization/src/localization.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:get/get.dart';
-import 'package:multicast_dns/multicast_dns.dart';
+import 'package:shizuku_api/shizuku_api.dart';
 
 @pragma('vm:entry-point')
 void startCallback() {
   // The setTaskHandler function must be called to handle the task in the background.
-  FlutterForegroundTask.setTaskHandler(ConnectTaskHandler());
+  FlutterForegroundTask.setTaskHandler(ShizukuConnectTaskHandler());
 }
 
-enum ConnectStatus { WAIT_PORT, WAIT_LINK }
-
-class ConnectTaskHandler extends TaskHandler {
-  String port = "";
+class ShizukuConnectTaskHandler extends TaskHandler {
   String link = "";
-  static late MDnsClient mDnsClient;
-  ConnectStatus status = ConnectStatus.WAIT_PORT;
 
   Future<void> loadTranslations() async {
     //this will only set EasyLocalizationController.savedLocale
@@ -54,75 +44,25 @@ class ConnectTaskHandler extends TaskHandler {
         fallbackTranslations: controller.fallbackTranslations);
   }
 
-  Future<void> startMDNS() async {
-    print("Start listening to mDNS");
-    await mDnsClient.start();
-    while (status == ConnectStatus.WAIT_PORT) {
-      await for (final PtrResourceRecord ptr
-          in mDnsClient.lookup<PtrResourceRecord>(
-              ResourceRecordQuery.serverPointer('_adb-tls-connect._tcp'))) {
-        await for (final SrvResourceRecord srv
-            in mDnsClient.lookup<SrvResourceRecord>(
-                ResourceRecordQuery.service(ptr.domainName))) {
-          port = srv.port.toString();
-          status = ConnectStatus.WAIT_LINK;
-          waitLink();
-        }
+  Future<void> waitLink() async {
+    FlutterForegroundTask.updateService(
+      notificationText: tr('shizuku_connect.notification_description.waiting'),
+    );
+
+    final _shizukuApiPlugin = ShizukuApi();
+    while (link.isEmpty) {
+      String? data = await _shizukuApiPlugin.runCommand(
+          "logcat -d | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs|aki-gm-resources-oversea).(mihoyo\\.com|hoyoverse\\.com|aki-game\\.net|aki-game\\.com)' | grep -i 'gacha' | tail -n 1");
+      if (data != null) {
+        link = data;
+        FlutterForegroundTask.sendDataToMain(link);
       }
-      await Future.delayed(const Duration(milliseconds: 500));
+      Future.delayed(const Duration(milliseconds: 500));
     }
   }
 
-  Future<void> waitLink() async {
-    mDnsClient.stop();
-    FlutterForegroundTask.updateService(
-      notificationText: tr('connect.notification_description.waiting'),
-    );
-
-    await RustLib.init();
-    String errorMessage = "";
-    api
-        .doConnect(port: port, dataFolder: GlobalState.dataDir.path)
-        .catchError((error) {
-      if (error is AnyhowException) {
-        errorMessage = error.message;
-      } else {
-        errorMessage = error.toString();
-      }
-      if (errorMessage.contains("error.pair_cert_invalid")) {
-        FlutterForegroundTask.sendDataToMain(
-            "error.pair_cert_invalid#$errorMessage");
-        return "error.pair_cert_invalid";
-      } else {
-        FlutterForegroundTask.sendDataToMain("error.other#$errorMessage");
-        return "error.other";
-      }
-    }).then((value) {
-      if (!value.startsWith("error")) {
-        link = value;
-        FlutterForegroundTask.updateService(
-          notificationText: tr('connect.notification_description.success'),
-        );
-        FlutterForegroundTask.sendDataToMain(link);
-      } else {
-        if (value == "error.pair_cert_invalid") {
-          FlutterForegroundTask.updateService(
-            notificationText: tr('connect.notification_description.repair'),
-          );
-        } else {
-          FlutterForegroundTask.updateService(
-            notificationText:
-                tr('connect.notification_description.fail') + errorMessage,
-          );
-        }
-      }
-    });
-  }
-
   @override
-  Future<void> onDestroy(DateTime timestamp) async {
-    mDnsClient.stop();
-  }
+  Future<void> onDestroy(DateTime timestamp) async {}
 
   @override
   void onRepeatEvent(DateTime timestamp) {}
@@ -131,35 +71,11 @@ class ConnectTaskHandler extends TaskHandler {
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     await loadTranslations();
     GlobalState.init();
-    mDnsClient = MDnsClient(rawDatagramSocketFactory: (dynamic host, int port,
-        {bool reuseAddress = true, bool reusePort = true, int ttl = 1}) {
-      return RawDatagramSocket.bind(host, port,
-          reuseAddress: true, reusePort: false, ttl: ttl);
-    });
-    if (!GlobalState.disableAutoDetectPort.value) {
-      startMDNS();
-    }
-  }
-
-  @override
-  void onNotificationReplied(String id, String reply) {
-    if (status == ConnectStatus.WAIT_PORT) {
-      if (reply.length > 5) {
-        FlutterForegroundTask.updateService(
-          notificationText: tr('connect.notification_description.fail'),
-        );
-        return;
-      }
-      if (int.tryParse(reply) != null) {
-        port = reply;
-        status = ConnectStatus.WAIT_LINK;
-        waitLink();
-      }
-    }
+    waitLink();
   }
 }
 
-class ConnectForegroundTask {
+class ShizukuConnectForegroundTask {
   Future<void> requestPermission() async {
     // Android 12 or higher, there are restrictions on starting a foreground service.
     //
@@ -177,8 +93,8 @@ class ConnectForegroundTask {
     }
   }
 
-  Future<bool> startConnectForegroundTask(ConnectLogic logic) async {
-    GlobalState.mixpanel.track("Connect Begin");
+  Future<bool> startShizukuConnectForegroundTask(ConnectLogic logic) async {
+    GlobalState.mixpanel.track("Shizuku Connect Begin");
     GlobalState.mixpanel.flush();
     await requestPermission();
     if (await FlutterForegroundTask.isRunningService) {
@@ -203,11 +119,6 @@ class ConnectForegroundTask {
               );
             },
           ));
-        } else if (data.startsWith("error.pair_cert_invalid#")) {
-          logic.inProgress.value = false;
-          File("${GlobalState.dataDir.path}/cert.pem").deleteSync();
-          File("${GlobalState.dataDir.path}/pkey.pem").deleteSync();
-          GlobalState.hasCert.value = false;
         } else {
           RegExp regex = RegExp(r'https://(.+)');
           Match? match = regex.firstMatch(data);
@@ -249,23 +160,16 @@ class ConnectForegroundTask {
         playSound: false,
       ),
       foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.repeat(5000),
         allowWakeLock: true,
         autoRunOnBoot: false,
         allowWifiLock: true,
-        eventAction: ForegroundTaskEventAction.repeat(5000),
       ),
     );
     await FlutterForegroundTask.startService(
-      notificationTitle: tr('connect.notification_title'),
-      notificationText: tr('connect.notification_description.connecting'),
+      notificationTitle: tr('shizuku_connect.notification_title'),
+      notificationText: tr('shizuku_connect.notification_description.waiting'),
       callback: startCallback,
-      notificationButtons: [
-        NotificationButton(
-          id: 'replyButton',
-          text: tr("pair.notification_reply_button"),
-          isReply: true,
-        )
-      ],
     );
     return true;
   }

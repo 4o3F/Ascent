@@ -17,7 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'components/bottom_navigation_bar/view.dart';
 import 'package:http/http.dart' as http;
 
-import 'native/api.dart';
+import 'native/api/api.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,7 +1,6 @@
 import 'dart:io';
-import 'dart:isolate';
 
-import 'package:ascent/native/api.dart' as api;
+import 'package:ascent/native/api/api.dart' as api;
 import 'package:ascent/global_state.dart';
 import 'package:ascent/native/frb_generated.dart';
 import 'package:bruno/bruno.dart';
@@ -136,7 +135,9 @@ class PairTaskHandler extends TaskHandler {
           reuseAddress: true, reusePort: false, ttl: ttl);
     });
     // Start mdns listener
-    startMDNS();
+    if (!GlobalState.disableAutoDetectPort.value) {
+      startMDNS();
+    }
   }
 
   @override
@@ -155,7 +156,6 @@ class PairTaskHandler extends TaskHandler {
         break;
     }
   }
-
 }
 
 class PairForegroundTask {
@@ -183,6 +183,7 @@ class PairForegroundTask {
           GlobalState.hasCert.value = true;
           GlobalState.mixpanel.track("Pair Complete");
           GlobalState.mixpanel.flush();
+          FlutterForegroundTask.stopService();
         });
       } else if (data.startsWith("error#")) {
         String errorMessage = data.replaceFirst("error#", "");
