@@ -11,7 +11,7 @@ import 'package:root/root.dart';
 import 'package:shizuku_api/shizuku_api.dart';
 
 class GlobalState {
-  static const version = "2.3.0";
+  static const version = "2.4.0";
   static String discord = "https://discord.gg/6v6HEUaRWk";
 
   static const platform = MethodChannel('cafe.f403.ascent/main');
@@ -32,7 +32,7 @@ class GlobalState {
     Locale('ru', 'RU'),
   ];
 
-  static void init() async {
+  static Future<void> init() async {
     dataDir = await getApplicationDocumentsDirectory();
     hasCert.value = File("${dataDir.path}/cert.pem").existsSync();
     if (kDebugMode) {

@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.3.0
+version: 2.4.0
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -48,7 +48,10 @@ dependencies:
   mixpanel_flutter: ^2.2.0
   url_launcher: ^6.2.1
   uri_to_file: ^1.0.0
-  receive_intent: ^0.2.4
+  receive_intent:
+    git:
+      url: https://github.com/daadu/receive_intent
+      ref: master
   http: ^1.1.0
   pub_semver: ^2.1.4
   root: ^2.0.4
@@ -118,3 +121,4 @@ flutter:
 
 dependency_overrides:
   intl: 0.19.0
+  shared_preferences_android: 2.4.10

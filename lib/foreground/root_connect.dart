@@ -70,7 +70,7 @@ class RootConnectTaskHandler extends TaskHandler {
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     await loadTranslations();
-    GlobalState.init();
+    await GlobalState.init();
     waitLink();
   }
 }

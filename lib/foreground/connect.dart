@@ -130,7 +130,7 @@ class ConnectTaskHandler extends TaskHandler {
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     await loadTranslations();
-    GlobalState.init();
+    await GlobalState.init();
     mDnsClient = MDnsClient(rawDatagramSocketFactory: (dynamic host, int port,
         {bool reuseAddress = true, bool reusePort = true, int ttl = 1}) {
       return RawDatagramSocket.bind(host, port,
