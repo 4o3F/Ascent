@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:ascent/native/api/api.dart' as api;
 import 'package:ascent/global_state.dart';
 import 'package:ascent/native/frb_generated.dart';
-import 'package:bruno/bruno.dart';
+import 'package:ascent/components/widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -187,14 +187,14 @@ class PairForegroundTask {
         });
       } else if (data.startsWith("error#")) {
         String errorMessage = data.replaceFirst("error#", "");
-        Get.dialog(BrnScrollableTextDialog(
+        Get.dialog(ScrollableTextDialog(
           title: tr("error.title"),
           contentText: errorMessage,
           submitText: tr("error.copy"),
           submitBgColor: Colors.orangeAccent,
           onSubmitClick: () {
             Clipboard.setData(ClipboardData(text: errorMessage));
-            BrnToast.showInCenter(
+            showCenterToast(
               text: tr("error.copied"),
               context: Get.context!,
             );

@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:root/root.dart';
+import 'package:ascent/utils/root.dart';
 import 'package:shizuku_api/shizuku_api.dart';
 
 class GlobalState {
@@ -45,7 +45,7 @@ class GlobalState {
     mixpanel = await Mixpanel.init("1bad86a59f59ee1d395c31b61bf9202a",
         trackAutomaticEvents: true);
 
-    rootEnabled.value = await Root.isRooted() ?? false;
+    rootEnabled.value = await Root.isRooted();
     final _shizukuApiPlugin = ShizukuApi();
     if ((await _shizukuApiPlugin.pingBinder() ?? false) &&
         (await _shizukuApiPlugin.checkPermission() ?? false) &&

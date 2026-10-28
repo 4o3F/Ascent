@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:ascent/global_state.dart';
-import 'package:bruno/bruno.dart';
+import 'package:ascent/components/widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,7 +44,7 @@ class PairPage extends StatelessWidget {
 
     logic.foregroundServiceStartResult.listen((result) {
       if (!result) {
-        BrnToast.showInCenter(
+        showCenterToast(
             text: tr('pair.notification_description.error_init'),
             context: context);
       }
@@ -64,9 +64,9 @@ class PairPage extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              BrnBigMainButton(
+              MainButton(
                 title: tr('pair.guide.pair'),
-                bgColor: Colors.indigoAccent.withOpacity(0.8),
+                bgColor: Colors.indigoAccent.withValues(alpha: 0.8),
                 isEnable: (logic.developerOptionEnabled.value &&
                     !GlobalState.hasCert.value),
                 onTap: () {
@@ -76,9 +76,9 @@ class PairPage extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              BrnBigMainButton(
+              MainButton(
                 title: tr('pair.guide.reset'),
-                bgColor: Colors.orangeAccent.withOpacity(0.8),
+                bgColor: Colors.orangeAccent.withValues(alpha: 0.8),
                 isEnable: (logic.developerOptionEnabled.value &&
                     GlobalState.hasCert.value),
                 onTap: () {

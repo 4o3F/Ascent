@@ -2,7 +2,7 @@ import 'package:ascent/foreground/connect.dart';
 import 'package:ascent/foreground/root_connect.dart';
 import 'package:ascent/foreground/shizuku_connect.dart';
 import 'package:ascent/global_state.dart';
-import 'package:bruno/bruno.dart';
+import 'package:ascent/components/widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -60,11 +60,11 @@ class ConnectPage extends StatelessWidget {
                   style: TextStyle(fontSize: 20),
                 ).tr(),
                 const SizedBox(height: 20),
-                BrnBigMainButton(
+                MainButton(
                   title: logic.inProgress.value
                       ? tr('connect.guide.in_progress')
                       : tr('connect.guide.connect'),
-                  bgColor: Colors.blueAccent.withOpacity(0.8),
+                  bgColor: Colors.blueAccent.withValues(alpha: 0.8),
                   isEnable: ((logic.developerOptionEnabled.value &&
                           GlobalState.hasCert.value) &&
                       !logic.inProgress.value),
@@ -73,9 +73,9 @@ class ConnectPage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 20),
-                BrnBigMainButton(
+                MainButton(
                   title: tr('connect.guide.reset'),
-                  bgColor: Colors.orangeAccent.withOpacity(0.8),
+                  bgColor: Colors.orangeAccent.withValues(alpha: 0.8),
                   onTap: () {
                     doResetProcess();
                   },
@@ -83,11 +83,11 @@ class ConnectPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 Visibility(
                   visible: GlobalState.rootEnabled.value,
-                  child: BrnBigMainButton(
+                  child: MainButton(
                     title: logic.inProgress.value
                         ? tr('connect.guide.in_progress')
                         : tr('connect.guide.root_connect'),
-                    bgColor: Colors.blueAccent.withOpacity(0.8),
+                    bgColor: Colors.blueAccent.withValues(alpha: 0.8),
                     isEnable: (GlobalState.rootEnabled.value &&
                         !logic.inProgress.value),
                     onTap: () {
@@ -97,11 +97,11 @@ class ConnectPage extends StatelessWidget {
                 ),
                 Visibility(
                   visible: GlobalState.shizukuEnabled.value,
-                  child: BrnBigMainButton(
+                  child: MainButton(
                     title: logic.inProgress.value
                         ? tr('connect.guide.in_progress')
                         : tr('connect.guide.shizuku_connect'),
-                    bgColor: Colors.blueAccent.withOpacity(0.8),
+                    bgColor: Colors.blueAccent.withValues(alpha: 0.8),
                     isEnable: (GlobalState.shizukuEnabled.value &&
                         !logic.inProgress.value),
                     onTap: () {

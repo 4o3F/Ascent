@@ -1,6 +1,6 @@
 import 'package:ascent/global_state.dart';
 import 'package:ascent/pages/connect/logic.dart';
-import 'package:bruno/bruno.dart';
+import 'package:ascent/components/widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +8,7 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:easy_localization/src/easy_localization_controller.dart';
 import 'package:easy_localization/src/localization.dart';
 import 'package:get/get.dart';
-import 'package:root/root.dart';
+import 'package:ascent/utils/root.dart';
 
 @pragma('vm:entry-point')
 void startCallback() {
@@ -106,14 +106,14 @@ class RootConnectForegroundTask {
         if (data.startsWith("error.other#")) {
           logic.inProgress.value = false;
           String errorMessage = data.replaceFirst("error.other#", "");
-          Get.dialog(BrnScrollableTextDialog(
+          Get.dialog(ScrollableTextDialog(
             title: tr("error.title"),
             contentText: errorMessage,
             submitText: tr("error.copy"),
             submitBgColor: Colors.orangeAccent,
             onSubmitClick: () {
               Clipboard.setData(ClipboardData(text: errorMessage));
-              BrnToast.showInCenter(
+              showCenterToast(
                 text: tr("error.copied"),
                 context: Get.context!,
               );
@@ -125,14 +125,14 @@ class RootConnectForegroundTask {
           if (match != null) {
             logic.link.value = match.group(0)!;
             logic.inProgress.value = false;
-            Get.dialog(BrnScrollableTextDialog(
+            Get.dialog(ScrollableTextDialog(
               title: tr("connect.link_action.title"),
               contentText: logic.link.value,
               submitText: tr("connect.link_action.copy_button"),
               submitBgColor: Colors.greenAccent,
               onSubmitClick: () {
                 Clipboard.setData(ClipboardData(text: logic.link.value));
-                BrnToast.showInCenter(
+                showCenterToast(
                   text: tr("connect.link_action.copied"),
                   context: Get.context!,
                 );

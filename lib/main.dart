@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:ascent/global_state.dart';
 import 'package:ascent/native/frb_generated.dart';
 import 'package:ascent/routes.dart';
-import 'package:bruno/bruno.dart';
+import 'package:ascent/components/widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,22 +58,27 @@ Future<void> checkUpdate() async {
     Uri url = Uri.parse(GlobalState.locale == "zh_CN"
         ? parsed['url']['backup']
         : parsed['url']['main']);
-    BrnEnhanceOperationDialog dialog = BrnEnhanceOperationDialog(
-      context: Get.context!,
-      titleText: tr('update.title') + version,
-      descText: updateInfo,
-      mainButtonText: tr('update.ok'),
-      secondaryButtonText: tr('update.cancel'),
-      onMainButtonClick: () async {
-        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-          await launchUrl(url);
-        }
-      },
-      onSecondaryButtonClick: () {
-        Get.back(closeOverlays: true);
-      },
-    );
-    dialog.show();
+    Get.dialog(AlertDialog(
+      title: Text(tr('update.title') + version),
+      content: SingleChildScrollView(child: Text(updateInfo)),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back(closeOverlays: true);
+          },
+          child: Text(tr('update.cancel')),
+        ),
+        FilledButton(
+          onPressed: () async {
+            Get.back();
+            if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+              await launchUrl(url);
+            }
+          },
+          child: Text(tr('update.ok')),
+        ),
+      ],
+    ));
   }
 }
 
@@ -94,14 +99,14 @@ class AscentApp extends StatelessWidget {
           GlobalState.mixpanel.track("System Trace Complete", properties: {
             'Game': link.contains('hkrpg') ? 'hkrpg' : 'gs',
           });
-          Get.dialog(BrnScrollableTextDialog(
+          Get.dialog(ScrollableTextDialog(
             title: tr("connect.link_action.title"),
             contentText: link,
             submitText: tr("connect.link_action.copy_button"),
             submitBgColor: Colors.greenAccent,
             onSubmitClick: () {
               Clipboard.setData(ClipboardData(text: link));
-              BrnToast.showInCenter(
+              showCenterToast(
                 text: tr("connect.link_action.copied"),
                 context: Get.context!,
               );
@@ -128,14 +133,14 @@ class AscentApp extends StatelessWidget {
           GlobalState.mixpanel.track("System Trace Complete", properties: {
             'Game': link.contains('hkrpg') ? 'hkrpg' : 'gs',
           });
-          Get.dialog(BrnScrollableTextDialog(
+          Get.dialog(ScrollableTextDialog(
             title: tr("connect.link_action.title"),
             contentText: link,
             submitText: tr("connect.link_action.copy_button"),
             submitBgColor: Colors.greenAccent,
             onSubmitClick: () {
               Clipboard.setData(ClipboardData(text: link));
-              BrnToast.showInCenter(
+              showCenterToast(
                 text: tr("connect.link_action.copied"),
                 context: Get.context!,
               );

@@ -1,7 +1,6 @@
 import 'package:ascent/global_state.dart';
 import 'package:ascent/routes.dart';
-import 'package:bruno/bruno.dart';
-import 'package:easy_localization/easy_localization.dart' as easy_localization;
+import 'package:easy_localization/easy_localization.dart' show tr;
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
@@ -13,7 +12,8 @@ class BottomNavigationBarComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Directionality(
         textDirection: TextDirection.ltr,
-        child: Obx(() => BrnBottomTabBar(
+        child: Obx(() => BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
               currentIndex: Routes.route2index(GlobalState.currentRoute.value),
               onTap: (index) {
                 GlobalState.currentRoute.value = Routes.index2route(index);
@@ -22,24 +22,23 @@ class BottomNavigationBarComponent extends StatelessWidget {
                     });
                 Get.toNamed(GlobalState.currentRoute.value);
               },
-              fixedColor: Colors.blueAccent,
-              isInkResponse: true,
+              selectedItemColor: Colors.blueAccent,
               items: [
-                BrnBottomTabBarItem(
+                BottomNavigationBarItem(
                   icon: const Icon(Icons.home),
-                  title: const Text('navigation.home').tr(),
+                  label: tr('navigation.home'),
                 ),
-                BrnBottomTabBarItem(
+                BottomNavigationBarItem(
                   icon: const Icon(Icons.key),
-                  title: const Text('navigation.pair').tr(),
+                  label: tr('navigation.pair'),
                 ),
-                BrnBottomTabBarItem(
+                BottomNavigationBarItem(
                   icon: const Icon(Icons.link),
-                  title: const Text('navigation.connect').tr(),
+                  label: tr('navigation.connect'),
                 ),
-                BrnBottomTabBarItem(
+                BottomNavigationBarItem(
                   icon: const Icon(Icons.info),
-                  title: const Text('navigation.info').tr(),
+                  label: tr('navigation.info'),
                 )
               ],
             )));

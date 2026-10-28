@@ -1,5 +1,5 @@
 import 'package:ascent/global_state.dart';
-import 'package:bruno/bruno.dart';
+import 'package:ascent/components/widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -147,9 +147,9 @@ class HomePage extends StatelessWidget {
                         ),
                       ],
                     )),
-                BrnBigMainButton(
+                MainButton(
                   title: tr('home.pairing.name'),
-                  bgColor: Colors.cyan.withOpacity(0.8),
+                  bgColor: Colors.cyan.withValues(alpha: 0.8),
                   isEnable: (logic.developerOptionEnabled.value &&
                       !GlobalState.hasCert.value),
                   onTap: () {
@@ -159,9 +159,9 @@ class HomePage extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                BrnBigMainButton(
+                MainButton(
                   title: tr('home.connect.name'),
-                  bgColor: Colors.indigoAccent.withOpacity(0.8),
+                  bgColor: Colors.indigoAccent.withValues(alpha: 0.8),
                   isEnable: ((logic.developerOptionEnabled.value &&
                           GlobalState.hasCert.value) ||
                       GlobalState.rootEnabled.value || GlobalState.shizukuEnabled.value),
@@ -172,7 +172,7 @@ class HomePage extends StatelessWidget {
                 const SizedBox(
                   height: 40,
                 ),
-                BrnBigGhostButton(
+                GhostButton(
                   title: tr('home.star'),
                   onTap: () async {
                     final Uri url = Uri.parse("https://github.com/4o3F");
@@ -185,8 +185,8 @@ class HomePage extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                BrnBigGhostButton(
-                  bgColor: Colors.orangeAccent.withOpacity(0.8),
+                GhostButton(
+                  bgColor: Colors.orangeAccent.withValues(alpha: 0.8),
                   titleColor: Colors.white,
                   title: tr('home.support'),
                   onTap: () async {
