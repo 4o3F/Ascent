@@ -3,7 +3,6 @@ package cafe.f403.ascent
 import androidx.annotation.NonNull
 import android.provider.Settings
 import android.content.Context
-import 	android.os.Build
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -22,24 +21,12 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    // DEVELOPMENT_SETTINGS_ENABLED lives in Settings.Global since API 17; newer Android
+    // no longer redirects Settings.Secure lookups of moved keys, so read Global directly.
     fun isDevMode(context: Context): Boolean {
-        return when {
-            Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN -> {
-                Settings.Secure.getInt(
-                    context.contentResolver,
-                    Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0
-                ) != 0
-            }
-
-            Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN -> {
-                @Suppress("DEPRECATION")
-                Settings.Secure.getInt(
-                    context.contentResolver,
-                    Settings.Secure.DEVELOPMENT_SETTINGS_ENABLED, 0
-                ) != 0
-            }
-
-            else -> false
-        }
+        return Settings.Global.getInt(
+            context.contentResolver,
+            Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0
+        ) != 0
     }
 }
