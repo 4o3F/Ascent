@@ -53,11 +53,11 @@ class RootConnectTaskHandler extends TaskHandler {
       String? data = await Root.exec(
           cmd:
               "logcat -d | grep -E 'https://(webstatic|hk4e-api|webstatic-sea|hk4e-api-os|api-takumi|api-os-takumi|gs|aki-gm-resources-oversea).(mihoyo\\.com|hoyoverse\\.com|aki-game\\.net|aki-game\\.com)' | grep -i 'gacha' | tail -n 1");
-      if (data != null) {
+      if (data != null && data.isNotEmpty) {
         link = data;
         FlutterForegroundTask.sendDataToMain(link);
       }
-      Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
     }
   }
 
