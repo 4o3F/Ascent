@@ -75,7 +75,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y ninja-build libclang-dev
+          sudo apt-get install -y ninja-build clang-18 libclang-18-dev
 
       - name: Install Flutter dependencies
         run: flutter pub get
@@ -84,6 +84,9 @@ jobs:
       - name: Build release APKs
         env:
           CMAKE_GENERATOR: Ninja
+          # Pin bindgen to LLVM 18 instead of whichever libclang clang-sys finds first.
+          LIBCLANG_PATH: /usr/lib/llvm-18/lib
+          CLANG_PATH: /usr/bin/clang-18
         run: flutter build apk --release
 
       - name: Collect unique APKs
