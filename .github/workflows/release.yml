@@ -175,7 +175,7 @@ jobs:
             release_args+=(--prerelease)
           fi
           gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt \
-            --title "$TAG" --generate-notes --verify-tag "${release_args[@]}"
+            --title "Ascent ${TAG#v}" --generate-notes --verify-tag "${release_args[@]}"
 
       # GITHUB_TOKEN releases do not trigger the existing Discord workflow, so notify here.
       - name: Read release for Discord
