@@ -1,0 +1,86 @@
+name: Build Android APKs
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: armv7-linux-androideabi,aarch64-linux-android,x86_64-linux-android
+
+      - name: Cache Rust build files
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust -> target
+
+      - name: Install native build dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libclang-dev
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      # The release build type has no signingConfig, so these APKs are unsigned.
+      - name: Build release APKs
+        env:
+          CMAKE_GENERATOR: Ninja
+        run: flutter build apk --release
+
+      - name: Collect unique APKs
+        run: |
+          set -euo pipefail
+          mkdir -p unsigned-apks
+          while IFS= read -r -d '' apk; do
+            name="$(basename "$apk")"
+            if [[ ! -f "unsigned-apks/$name" ]]; then
+              cp -- "$apk" "unsigned-apks/$name"
+            fi
+          done < <(find build/app/outputs -type f -name 'ascent_*.apk' -print0 | sort -z)
+          if ! compgen -G 'unsigned-apks/ascent_*.apk' > /dev/null; then
+            echo '::error::No ascent_*.apk files found under build/app/outputs.'
+            exit 1
+          fi
+
+      - name: Upload unsigned APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ascent-unsigned-apks
+          path: unsigned-apks/ascent_*.apk
+          if-no-files-found: error
+          retention-days: 14

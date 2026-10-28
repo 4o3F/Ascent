@@ -1,0 +1,213 @@
+name: Release Android APKs
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify tag matches app version
+        run: |
+          set -euo pipefail
+          version="$(sed -nE "s/^version:[[:space:]]*['\"]?([^'\"[:space:]#]+).*/\1/p" pubspec.yaml)"
+          version="${version%%+*}"
+          if [[ -z "$version" ]]; then
+            echo '::error::Could not read version from pubspec.yaml.'
+            exit 1
+          fi
+          if [[ "$TAG" != "v$version" ]]; then
+            printf '::error::Tag %s does not match pubspec.yaml version (expected v%s).\n' "$TAG" "$version"
+            exit 1
+          fi
+
+      - name: Check signing secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$ANDROID_KEYSTORE_BASE64" ]]; then
+            echo '::error::Required secret ANDROID_KEYSTORE_BASE64 is missing or empty.'
+            exit 1
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: armv7-linux-androideabi,aarch64-linux-android,x86_64-linux-android
+
+      - name: Cache Rust build files
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust -> target
+
+      - name: Install native build dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libclang-dev
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      # The release build type has no signingConfig, so these APKs are unsigned.
+      - name: Build release APKs
+        env:
+          CMAKE_GENERATOR: Ninja
+        run: flutter build apk --release
+
+      - name: Collect unique APKs
+        run: |
+          set -euo pipefail
+          mkdir -p unsigned-apks
+          while IFS= read -r -d '' apk; do
+            name="$(basename "$apk")"
+            if [[ ! -f "unsigned-apks/$name" ]]; then
+              cp -- "$apk" "unsigned-apks/$name"
+            fi
+          done < <(find build/app/outputs -type f -name 'ascent_*.apk' -print0 | sort -z)
+          if ! compgen -G 'unsigned-apks/ascent_*.apk' > /dev/null; then
+            echo '::error::No ascent_*.apk files found under build/app/outputs.'
+            exit 1
+          fi
+
+      - name: Align and sign APKs
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          umask 077
+          keystore="$RUNNER_TEMP/ascent-release.jks"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$keystore"
+          export ANDROID_KEY_PASSWORD="${ANDROID_KEY_PASSWORD:-$ANDROID_KEYSTORE_PASSWORD}"
+
+          build_tools_version="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -V | tail -n 1)"
+          build_tools="$ANDROID_HOME/build-tools/$build_tools_version"
+          zipalign="$build_tools/zipalign"
+          apksigner="$build_tools/apksigner"
+          if [[ ! -x "$zipalign" || ! -x "$apksigner" ]]; then
+            echo '::error::zipalign or apksigner is missing from the newest Android SDK build-tools.'
+            exit 1
+          fi
+
+          # Prefer 16 KB page alignment for native libraries; older tools only support -p.
+          zipalign_help="$("$zipalign" -h 2>&1 || true)"
+          if [[ "$zipalign_help" == *'-P'* ]]; then
+            align_args=(-P 16 -f 4)
+          else
+            align_args=(-p -f 4)
+          fi
+          # The keystore may have no password; apksigner reads "pass:" as an empty password.
+          sign_args=(--ks "$keystore")
+          if [[ -n "$ANDROID_KEYSTORE_PASSWORD" ]]; then
+            sign_args+=(--ks-pass env:ANDROID_KEYSTORE_PASSWORD)
+          else
+            sign_args+=(--ks-pass pass:)
+          fi
+          if [[ -n "$ANDROID_KEY_PASSWORD" ]]; then
+            sign_args+=(--key-pass env:ANDROID_KEY_PASSWORD)
+          else
+            sign_args+=(--key-pass pass:)
+          fi
+          if [[ -n "$ANDROID_KEY_ALIAS" ]]; then
+            sign_args+=(--ks-key-alias "$ANDROID_KEY_ALIAS")
+          fi
+
+          mkdir -p dist
+          for apk in unsigned-apks/ascent_*.apk; do
+            name="$(basename "$apk")"
+            aligned_apk="$RUNNER_TEMP/aligned-$name"
+            "$zipalign" "${align_args[@]}" "$apk" "$aligned_apk"
+            "$apksigner" sign "${sign_args[@]}" --out "dist/$name" "$aligned_apk"
+            "$apksigner" verify --print-certs "dist/$name"
+            rm -f -- "$aligned_apk"
+          done
+
+      - name: Generate signed APK checksums
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum -- *.apk > SHA256SUMS.txt
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          release_args=()
+          if [[ "$TAG" == *-* ]]; then
+            release_args+=(--prerelease)
+          fi
+          gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt \
+            --title "$TAG" --generate-notes --verify-tag "${release_args[@]}"
+
+      # GITHUB_TOKEN releases do not trigger the existing Discord workflow, so notify here.
+      - name: Read release for Discord
+        id: discord
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$WEBHOOK_URL" ]]; then
+            exit 0
+          fi
+          release_json="$(gh release view "$TAG" --json name,body,url)"
+          {
+            printf 'enabled=true\n'
+            printf 'name=%s\n' "$(jq -r .name <<< "$release_json")"
+            printf 'url=%s\n' "$(jq -r .url <<< "$release_json")"
+            delimiter="EOF_$(openssl rand -hex 8)"
+            printf 'body<<%s\n%s\n%s\n' "$delimiter" "$(jq -r .body <<< "$release_json")" "$delimiter"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Notify Discord
+        if: steps.discord.outputs.enabled == 'true'
+        uses: SethCohen/github-releases-to-discord@v1.20.0
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          username: "Ascent Release"
+          footer_title: "Changelog"
+          footer_timestamp: true
+          release_name: ${{ steps.discord.outputs.name }}
+          release_body: ${{ steps.discord.outputs.body }}
+          release_html_url: ${{ steps.discord.outputs.url }}
+
+      - name: Delete signing keystore
+        if: always()
+        run: |
+          set -euo pipefail
+          rm -f -- "$RUNNER_TEMP/ascent-release.jks"
