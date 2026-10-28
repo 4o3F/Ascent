@@ -142,15 +142,21 @@ class PairTaskHandler extends TaskHandler {
 
   @override
   void onNotificationReplied(String id, String reply) {
+    reply = reply.trim();
     switch (status) {
       case PairStatus.WAIT_PORT:
-        if (int.tryParse(reply) != null) {
+        final int? replyPort = int.tryParse(reply);
+        if (replyPort != null && replyPort > 0 && replyPort <= 65535) {
           port = reply;
           status = PairStatus.WAIT_CODE;
           waitCode();
         }
         break;
       case PairStatus.WAIT_CODE:
+        // Ignore invalid input to keep waiting, pairing code is always 6 digits
+        if (!RegExp(r'^\d{6}$').hasMatch(reply)) {
+          break;
+        }
         code = reply;
         doPair();
         break;
